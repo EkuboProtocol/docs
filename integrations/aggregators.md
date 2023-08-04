@@ -4,6 +4,8 @@ description: Take advantage of liquidity in Ekubo pools to provide better pricin
 
 # Aggregators
 
+### Summary
+
 Ekubo is a singleton AMM that utilizes the "till" pattern. The till pattern was publicly introduced at EthCC\[5] and is also described [here](https://github.com/OpenZeppelin/openzeppelin-contracts/issues/4361#issuecomment-1595095135).
 
 Every interaction with Ekubo starts with `ICore#lock`. In order to interact with Ekubo, you must first implement the `ILocker` interface in your calling contract:
@@ -113,6 +115,8 @@ mod Example {
 {% hint style="info" %}
 Instead of withdrawing a delta, you can also save it for use later using `#save` or load it using `#load`.
 {% endhint %}
+
+### Locker utility method
 
 You may wish to use this shared code to call core with some calldata and automagically deserialize the result:
 

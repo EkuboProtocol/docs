@@ -4,6 +4,8 @@ description: Customize pool behavior by writing extension contracts
 
 # Extensions
 
+### Summary
+
 Extensions allow you to insert custom logic at certain pool lifecycle events. This enables third party developers to leverage the efficient and secure core AMM protocol of Ekubo, including concentrated liquidity, without implementing any of the math!&#x20;
 
 But why should you build your custom pool as an extension? Extensions allow third-party developers to more easily tap into existing integrations, e.g. with aggregators and arbitrageurs. You can build pretty much any curve just by overlapping several `x*y=k` positions, which means Ekubo's core components can be used for many different AMM use cases. In the extreme case, you can use Ekubo as an order book with its extremely small ticks.
@@ -21,6 +23,8 @@ Because extensions can have their own state like any other contract, you can use
 {% hint style="info" %}
 Because extensions are immutable for a pool, you must either make them upgradeable, or focus on making them so simple they do not need to be upgraded.
 {% endhint %}
+
+### Example
 
 ```rust
 use starknet::{ContractAddress, ClassHash};
