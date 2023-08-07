@@ -16,7 +16,13 @@ Ekubo is an automated market maker built for Starknet. Check out the [key concep
 
 <summary>What is an AMM?</summary>
 
+Automated market makers connect liquidity providers and swappers, so market makers can earn fees with their capital and swappers can swap.
 
+Liquidity providers are people with assets that want to do market making by creating positions, e.g. position to buy & sell ETH with a 5 bips fee between the prices of $1500 and $2000. This position will buy 5 bips below mid price and sell 5 bips above mid price until it runs out of assets.
+
+Swappers are people who want to trade, e.g. buy 100 USDC worth of ETH.
+
+Automated market makers are the financial glue that brings these people together.
 
 </details>
 
