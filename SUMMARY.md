@@ -7,8 +7,6 @@
   * [Add liquidity](user-guides/add-liquidity.md)
   * [Swap](user-guides/swap.md)
 * [FAQ](faq.md)
-
-## 🔌 Integrations
-
-* [Extensions](integrations/extensions.md)
-* [Aggregators](integrations/aggregators.md)
+* [Integration guides](integration-guides/README.md)
+  * [Extensions](integration-guides/extensions.md)
+  * [Aggregators](integration-guides/aggregators.md)
