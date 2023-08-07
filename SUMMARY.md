@@ -3,6 +3,7 @@
 * [Introduction](README.md)
   * [Features](introduction/features.md)
   * [Key Concepts](introduction/key-concepts.md)
+  * [FAQ](introduction/faq.md)
 
 ## 🔌 Integrations
 

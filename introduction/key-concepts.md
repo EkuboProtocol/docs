@@ -4,6 +4,16 @@ description: Some things you should know before you get started
 
 # Key Concepts
 
+## Layer 2
+
+A layer 2 is a network that uses Ethereum to provide a more scalable platform for applications without sacrificing on decentralization or security. The best layer 2 platforms provide similar security guarantees to Ethereum for much lower cost.
+
+## Starknet
+
+Starknet is a layer 2 network that uses STARKs built by Starkware to allow users to transact at a much lower cost.
+
+Because Starknet is built with scalability and usability in mind, your usual Ethereum wallets are not compatible with Starknet.
+
 ## Automated Market Maker (AMM)
 
 An AMM is a common primitive in decentralized finance that allows users with capital to enter a position where they will allow users to trade with their capital as long as they pay some fees to cover the risk they are taking. The conditions under which these automated strategies trade varies. Some use a formula that is suitable for stable pairs, a la Curve, where others use formulas more suitable for volatile pairs. Many designs are based on the constant product formula.&#x20;
