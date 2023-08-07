@@ -46,7 +46,7 @@ As of August 2023, you can use [Argent X](https://www.argent.xyz/argent-x/) or [
 
 <summary>Will there be a token?</summary>
 
-We currently have no plans for a token. However, we recognize the withdrawal protocol fee collected by the protocol belongs to the relevant stakeholders.
+We currently have no plans for a token. However, we recognize the withdrawal protocol fee collected by the protocol should be returned to the users and will explore ways to do so.
 
 </details>
 
