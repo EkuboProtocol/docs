@@ -8,7 +8,7 @@ description: Frequently asked questions
 
 <summary>What is Ekubo?</summary>
 
-Ekubo is an automated market maker built for Starknet. Check out the [key concepts](https://app.gitbook.com/o/cQ09ZzPewe9cavFTiaEo/s/TLfgXtzlwI2fzDVFEifT/\~/changes/9/introduction/key-concepts) section to learn more.
+Ekubo is an automated market maker built for Starknet. Check out the [key concepts](https://docs.ekubo.org/introduction/key-concepts) section to learn more.
 
 </details>
 
@@ -30,7 +30,7 @@ Automated market makers are the financial glue that brings these people together
 
 <summary>What is Starknet?</summary>
 
-Starknet is a layer-2 on Ethereum that uses ZK proofs to provide a scalable decentralized platform for composable applications. Check out the [key concepts](https://app.gitbook.com/o/cQ09ZzPewe9cavFTiaEo/s/TLfgXtzlwI2fzDVFEifT/\~/changes/9/introduction/key-concepts) section to learn more.
+Starknet is a layer-2 on Ethereum that uses ZK proofs to provide a scalable decentralized platform for composable applications. Check out the [key concepts](https://docs.ekubo.org/introduction/key-concepts) section to learn more.
 
 </details>
 
