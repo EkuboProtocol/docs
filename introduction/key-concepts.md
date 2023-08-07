@@ -32,3 +32,11 @@ Ticks are simply discrete points on the price range used to break up the full ra
 
 It doesn't make sense to use the same tick size for every pool. Rather than having multiple different tick sizes, Ekubo's solution to this problem is to define a tick spacing for each pool. This means for more volatile pairs where a tiny price movement is not relevant to most traders, you can trade more efficiently.
 
+### Flash accounting
+
+This refers to doing all token balance accounting internally within Ekubo, before transferring any tokens. This means you can trade with many pools and create/update as many positions as you like and only transfer the difference at the end. This is amazingly efficient for tasks like arbitrage and creating many positions, which is key to market efficiency.
+
+#### Flash loans
+
+Because of flash accounting, you can simply borrow tokens from the singleton contract and then repay them in the same transaction without paying any fees!
+
