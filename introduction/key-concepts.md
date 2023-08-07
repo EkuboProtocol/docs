@@ -4,21 +4,29 @@ description: Some things you should know before you get started
 
 # Key Concepts
 
+## Ethereum
+
+[Ethereum](https://ethereum.org/en/) is a blockchain that allows for "smart contracts": autonomous programs that anyone can deploy and use.
+
 ## Layer 2
 
 A layer 2 is a network that uses Ethereum to provide a more scalable platform for applications without sacrificing on decentralization or security. The best layer 2 platforms provide similar security guarantees to Ethereum for much lower cost.
 
+## ZK Proofs
+
+See the [wikipedia](https://en.wikipedia.org/wiki/Zero-knowledge\_proof).
+
 ## Starknet
 
-Starknet is a layer 2 network that uses STARKs built by Starkware to allow users to transact at a much lower cost.
+Starknet is a layer 2 network that uses a type of zero-knowledge proof called STARKs built by Starkware to allow users to transact at a much lower cost.
 
 Because Starknet is built with scalability and usability in mind, your usual Ethereum wallets are not compatible with Starknet.
 
 ## Automated Market Maker (AMM)
 
-An AMM is a common primitive in decentralized finance that allows users with capital to enter a position where they will allow users to trade with their capital as long as they pay some fees to cover the risk they are taking. The conditions under which these automated strategies trade varies. Some use a formula that is suitable for stable pairs, a la Curve, where others use formulas more suitable for volatile pairs. Many designs are based on the constant product formula.&#x20;
+An AMM is a common primitive in decentralized finance that allows users with capital to enter a position where they will allow users to trade with their capital as long as they pay fees. Different market makers implement different strategies for trading. Some use a formula that is suitable for stable pairs, a la Curve, where others use formulas more suitable for volatile pairs. Many designs are based on the constant product formula.
 
-As long as fees from the trading volume outweigh the loss due to making bad trades, capital providers should earn yield. However, this is not always the case. One can think of depositing into an AMM as making a bet that trading fees will outweigh the loss due to price divergence.
+As long as fees from the trading volume outweigh the loss due to bad automated trades, liquidity providers see positive returns. However, this is not always the case. One can think of depositing into an AMM as making a bet that trading fees will outweigh the loss due to price divergence of the two assets in a pair.
 
 ## Constant product
 
