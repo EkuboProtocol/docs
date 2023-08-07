@@ -3,7 +3,7 @@ description: >-
   Ekubo Protocol is an AMM built for Starknet: the first of its kind featuring
   both concentrated liquidity and extensibility.
 cover: .gitbook/assets/Twitter Cover Photo@2x.png
-coverY: -25
+coverY: -224.82698249227602
 ---
 
 # Introduction
