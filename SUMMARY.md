@@ -14,6 +14,9 @@
     * [Oracle](integration-guides/extensions/oracle.md)
   * [Swapping](integration-guides/swapping.md)
   * [Contract addresses](integration-guides/contract-addresses.md)
+
+## 🔗 Links
+
 * [Home](https://ekubo.org)
 * [Launch app](https://app.ekubo.org)
 * [Join the Discord](https://discord.gg/RFbSXxtqUG)

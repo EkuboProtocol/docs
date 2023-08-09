@@ -1,5 +1,5 @@
 ---
-description: How to be a liquidity provider on Ekubo
+description: How to become a liquidity provider on Ekubo
 ---
 
 # Add liquidity
