@@ -22,7 +22,7 @@
   * [Core Interfaces](integration-guides/reference/core-interfaces.md)
   * [Contract addresses](integration-guides/reference/contract-addresses.md)
 
-## 🔗 Links
+## Links
 
 * [Home](https://ekubo.org)
 * [Launch app](https://app.ekubo.org)
