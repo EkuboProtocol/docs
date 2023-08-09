@@ -8,7 +8,7 @@ description: Frequently asked questions
 
 <summary>What is Ekubo?</summary>
 
-Ekubo is an [automated market maker](introduction/key-concepts.md#automated-market-maker-amm) built for [Starknet](introduction/key-concepts.md#starknet).
+Ekubo is an [automated market maker](key-concepts.md#automated-market-maker-amm) built for [Starknet](key-concepts.md#starknet).
 
 </details>
 
@@ -16,7 +16,7 @@ Ekubo is an [automated market maker](introduction/key-concepts.md#automated-mark
 
 <summary>What is an AMM?</summary>
 
-[Automated market makers](introduction/key-concepts.md#automated-market-maker-amm) connect liquidity providers and swappers, so market makers can earn fees with their capital and swappers can swap.
+[Automated market makers](key-concepts.md#automated-market-maker-amm) connect liquidity providers and swappers, so market makers can earn fees with their capital and swappers can swap.
 
 Liquidity providers are people with assets that want to do market making by creating positions, e.g. position to buy & sell ETH with a 5 bips fee between the prices of $1500 and $2000. This position will buy 5 bips below mid price and sell 5 bips above mid price until it runs out of assets.
 
@@ -30,7 +30,7 @@ Automated market makers are the financial glue that brings these people together
 
 <summary>What is Starknet?</summary>
 
-[Starknet](introduction/key-concepts.md#starknet) is a [layer 2](introduction/key-concepts.md#layer-2) on [Ethereum](introduction/key-concepts.md#ethereum) that uses ZK proofs to provide a scalable decentralized platform for composable applications. Check out the [key concepts](https://docs.ekubo.org/introduction/key-concepts) section to learn more.
+[Starknet](key-concepts.md#starknet) is a [layer 2](key-concepts.md#layer-2) on [Ethereum](key-concepts.md#ethereum) that uses ZK proofs to provide a scalable decentralized platform for composable applications. Check out the [key concepts](https://docs.ekubo.org/introduction/key-concepts) section to learn more.
 
 </details>
 
