@@ -22,9 +22,20 @@ Any position you create is tied to a specific pool. Pools are a combination of t
 
 The 2 tokens you select, also known as the "pair," is the market you wish to make. For example, if you want to market-make ETH to dollars, you can choose ETH as the base token and USDC or DAI as the quote token. In this context, quote token means the numerator of the prices you'll see in the following pages. You can swap the two tokens, but it still refers to the same pair--it's only used for price display.
 
-The fee you select is how much swappers are charged to trade against your liquidity, as well as how much you pay to withdraw your liquidity. Read more about the withdrawal fee [here](../about-ekubo/features.md#withdrawal-fee).
+The fee you select is how much swappers are charged to trade against your liquidity, as well as how much you pay on your principal to withdraw your liquidity.
 
 Tick spacing typically should be set to about twice the fee. Tick spacing will affect how small your price range can be, i.e. how much leverage you can get.
+
+#### Withdrawal fee
+
+The pool fee should be carefully selected, as it is exactly equal to the fee you pay on withdrawal of your principal. For example, consider the following scenario:
+
+* You deposit 1000 USDC and 1 ETH into a 5 bips pool
+* Several trades happen and you now have 1050 USDC and \~0.952 ETH
+  * You have also earned 20 USDC in fees and 0.005 ETH in fees
+* You withdraw your liquidity
+
+You will pay a 0.525 USDC and 0.00025 ETH fee from your principal. You can think of the withdrawal fee as paying a swap fee for the incurred benefit of rebalancing your liquidity.
 
 ### Selecting a price range
 
