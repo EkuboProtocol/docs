@@ -4,7 +4,8 @@
 
 * [Introduction](README.md)
 * [Features](about-ekubo/features.md)
-* [Background](about-ekubo/background.md)
+* [Roadmap](about-ekubo/roadmap.md)
+* [Key concepts](about-ekubo/key-concepts.md)
 * [FAQ](about-ekubo/faq.md)
 
 ## User Guides

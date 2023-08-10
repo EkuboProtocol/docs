@@ -6,9 +6,9 @@ description: Frequently asked questions
 
 <details>
 
-<summary>What is Ekubo?</summary>
+<summary>What is Ekubo Protocol?</summary>
 
-Ekubo is an [automated market maker](background.md#automated-market-maker-amm) built for [Starknet](background.md#starknet).
+Ekubo is an [automated market maker](key-concepts.md#automated-market-maker-amm) built for [Starknet](key-concepts.md#starknet), with several unique [features](features.md) including concentrated liquidity and a extensible and gas efficient architecture.
 
 </details>
 
@@ -16,7 +16,7 @@ Ekubo is an [automated market maker](background.md#automated-market-maker-amm) b
 
 <summary>What is an AMM?</summary>
 
-[Automated market makers](background.md#automated-market-maker-amm) connect liquidity providers and swappers, so market makers can earn fees with their capital and swappers can swap.
+[Automated market makers](key-concepts.md#automated-market-maker-amm) connect liquidity providers and swappers, so market makers can earn fees with their capital and swappers can swap.
 
 Liquidity providers are people with assets that want to do market making by creating positions, e.g. position to buy & sell ETH with a 5 bips fee between the prices of $1500 and $2000. This position will buy 5 bips below mid price and sell 5 bips above mid price until it runs out of assets.
 
@@ -30,7 +30,7 @@ Automated market makers are the financial glue that brings these people together
 
 <summary>What is Starknet?</summary>
 
-[Starknet](background.md#starknet) is a [layer 2](background.md#layer-2) on [Ethereum](background.md#ethereum) that uses ZK proofs to provide a scalable decentralized platform for composable applications. Check out the [key concepts](https://docs.ekubo.org/introduction/key-concepts) section to learn more.
+[Starknet](key-concepts.md#starknet) is a [layer 2](key-concepts.md#layer-2) on [Ethereum](key-concepts.md#ethereum) that uses ZK proofs to provide a scalable decentralized platform for composable applications. Check out the [key concepts](https://docs.ekubo.org/introduction/key-concepts) section to learn more.
 
 </details>
 
@@ -54,7 +54,7 @@ We currently have no plans for a token. However, we recognize the withdrawal pro
 
 <summary>What makes Ekubo protocol unique?</summary>
 
-Ekubo is the first AMM on Starknet to feature **any of** concentrated liquidity, extensibility and the [singleton design / "till" pattern](https://github.com/OpenZeppelin/openzeppelin-contracts/issues/4361#issue-1760901388).
+Ekubo is the first AMM on Starknet to feature **any of** concentrated liquidity, extensibility and the [singleton design / "till" pattern](https://github.com/OpenZeppelin/openzeppelin-contracts/issues/4361#issue-1760901388). Read more about its features [here](features.md).
 
 </details>
 

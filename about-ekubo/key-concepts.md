@@ -2,7 +2,7 @@
 description: Useful concepts and technologies on which Ekubo is built
 ---
 
-# Background
+# Key concepts
 
 ## Ethereum
 
@@ -14,7 +14,7 @@ A layer 2 is a network that uses Ethereum to provide a more scalable platform fo
 
 ## ZK Proofs
 
-A technology used by [Starknet](background.md#starknet) to scale [Ethereum](background.md#ethereum). See the [wikipedia](https://en.wikipedia.org/wiki/Zero-knowledge\_proof).
+A technology used by [Starknet](key-concepts.md#starknet) to scale [Ethereum](key-concepts.md#ethereum). See the [wikipedia](https://en.wikipedia.org/wiki/Zero-knowledge\_proof).
 
 ## Starknet
 
@@ -24,13 +24,13 @@ Because Starknet is built on top of a language called [Cairo](https://www.cairo-
 
 ## Automated Market Maker (AMM)
 
-A decentralized finance product that allows users to automatically "buy low, sell high." AMMs differ primarily in the amount of customization available to liquidity providers and the strategies themselves. Some use a formula that is suitable for stable pairs, a la Curve, where others use formulas more suitable for volatile pairs. Many designs are based on the [constant product](background.md#constant-product) formula.
+A decentralized finance product that allows users to automatically "buy low, sell high." AMMs differ primarily in the amount of customization available to liquidity providers and the strategies themselves. Some use a formula that is suitable for stable pairs, a la Curve, where others use formulas more suitable for volatile pairs. Many designs are based on the [constant product](key-concepts.md#constant-product) formula.
 
 As long as fees from the trading volume outweigh the loss due to bad trades, liquidity providers see positive returns. However, it is hotly debated whether providing liquidity on an AMM is a generally profitable endeavor. One can think of depositing into an AMM as making a bet that trading fees will outweigh the loss due to price divergence of the two assets in a pair.
 
 ## Constant product
 
-This refers to the `x*y=k` formula that forms the basis of most [AMMs](background.md#automated-market-maker-amm), where `x` is amount of one token, i.e. `token0`, and `y` is the amount of the other, `token1`, and `k` is held constant as users trade with the pool. This formula is how trades are computed on Ekubo within regions of constant liquidity.
+This refers to the `x*y=k` formula that forms the basis of most [AMMs](key-concepts.md#automated-market-maker-amm), where `x` is amount of one token, i.e. `token0`, and `y` is the amount of the other, `token1`, and `k` is held constant as users trade with the pool. This formula is how trades are computed on Ekubo within regions of constant liquidity.
 
 ## Concentrated liquidity
 
@@ -42,7 +42,7 @@ An AMM featuring concentrated liquidity would allow you to provide liquidity in 
 
 ### Capital efficiency
 
-If you provide [concentrated liquidity](background.md#concentrated-liquidity), you only need to provide principal for trading in the selected price range, thus you are earning the same fees for less principal. Capital efficiency is a measure of this leverage, i.e. how much more capital you would have to deposit into a full range position to earn the same amount of fees.
+If you provide [concentrated liquidity](key-concepts.md#concentrated-liquidity), you only need to provide principal for trading in the selected price range, thus you are earning the same fees for less principal. Capital efficiency is a measure of this leverage, i.e. how much more capital you would have to deposit into a full range position to earn the same amount of fees.
 
 ### Ticks
 
