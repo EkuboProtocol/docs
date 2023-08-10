@@ -16,7 +16,7 @@ Concentrated liquidity allows market makers to [provide liquidity](../user-guide
 
 ## Extensions
 
-Extensions allow third party developers to permissionlessly create new kinds of pools on Ekubo that integrate into the same ecosystem of aggregators and interfaces built on top of Ekubo. These pools can implement new features such as oracles, or new order types like limit orders or TWAMM orders. Read more about extensions [here](features.md#extensions).
+Extensions allow third party developers to permissionlessly create new kinds of pools on Ekubo that integrate into the same ecosystem of aggregators and interfaces built on top of Ekubo. These pools can implement new features such as oracles, or new order types like limit orders or TWAMM orders. Read more about extensions [here](../integration-guides/extensions/).
 
 ## Withdrawal fee
 
