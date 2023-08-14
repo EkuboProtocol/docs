@@ -44,9 +44,9 @@ As of August 2023, you can use [Argent X](https://www.argent.xyz/argent-x/) or [
 
 <details>
 
-<summary>Will there be a token?</summary>
+<summary>Is there an Ekubo token?</summary>
 
-We currently have no plans for a token. However, we recognize the withdrawal protocol fee collected by the protocol should be returned to the users and will explore ways to do so.
+There is currently no token associated with Ekubo. We believe the withdrawal fees collected by the protocol should be shared with protocol users and intend to explore ways to do so.
 
 </details>
 
