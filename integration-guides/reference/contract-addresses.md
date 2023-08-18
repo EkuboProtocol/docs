@@ -4,11 +4,15 @@ description: Addresses of the deployed contracts on Starknet
 
 # Contract addresses
 
-Last updated 2023-08-08
+Last updated 2023-08-18
 
-|                 | Goerli                                                                                                                                                                          | Mainnet |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| `Core`          | [0x05f2a5fb64efa40f414dbbe858b7f637ae268e71d1e228ec951c39386cce4ab2](https://goerli.voyager.online/contract/0x05f2a5fb64efa40f414dbbe858b7f637ae268e71d1e228ec951c39386cce4ab2) | TBA     |
-| `Positions`     | [0x01ef8331fb794a311bdbc76fd6a21ab95e97c997c6ff38bbe1fedd67e95b9121](https://goerli.voyager.online/contract/0x01ef8331fb794a311bdbc76fd6a21ab95e97c997c6ff38bbe1fedd67e95b9121) | TBA     |
-| `Positions NFT` | [0x045415c8651f7a6b5c67fb823e276f663c9216a6602b0854808d7b0c7cc4839f](https://goerli.voyager.online/contract/0x045415c8651f7a6b5c67fb823e276f663c9216a6602b0854808d7b0c7cc4839f) | TBA     |
-| `Quoter`        | [0x079df4efc432ff99cfab80b9564b0b17184f30ccd856cd102e61707913e2df53](https://goerli.voyager.online/contract/0x079df4efc432ff99cfab80b9564b0b17184f30ccd856cd102e61707913e2df53) | TBA     |
+|                 | Goerli                                                                                      | Mainnet |
+| --------------- | ------------------------------------------------------------------------------------------- | ------- |
+| `Core`          | <pre><code>0x077dae0fc813a7cce8ba3634e80c87fecf63ffc9017792a56953cd7b79d4053a
+</code></pre> | TBA     |
+| `Positions`     | <pre><code>0x02bc4e5840b4718ccbf61f00913a1f2ba57be8661500ddf20d86475e9f6d12a4
+</code></pre> | TBA     |
+| `Positions NFT` | <pre><code>0x07b0f3185bcb06edcda760ac19b2238a7afd21e81a68da1b76936c23fc41ad6c
+</code></pre> | TBA     |
+| `Quoter`        | <pre><code>0x07120f45a8364912c8f0656f3ca8814b0f4720a3cb6b0af00bc31ca5d35fdd05
+</code></pre> | TBA     |
