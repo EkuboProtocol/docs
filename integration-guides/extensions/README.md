@@ -6,6 +6,10 @@ description: Customize pool behavior by writing extension contracts
 
 Extensions allow you to insert custom logic at certain pool lifecycle events. Extensions can also re-enter core contracts (as can any other contract) in order to place their own swaps, updates, etc. before or after the external contract interacts with a pool. This enables third party developers to leverage the efficient and secure core AMM protocol of Ekubo, including concentrated liquidity, without implementing any of the maths. With this simple interface, you can build oracles, new order types, trading strategies, privacy solutions: you're limited only to your own imagination!
 
+{% hint style="info" %}
+Each pool has its own separate state, meaning the capital deposited into each pool with an extension is isolated from all other pools, including other pools with the same extension.
+{% endhint %}
+
 ### Rationale
 
 Liquidity fragmentation is inevitable. In the absence of extensions, others will make small improvements to the Ekubo design or add new features, and deploy a variant of the core AMM. As a result, users must split their trades across many different sources of liquidity.

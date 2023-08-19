@@ -14,17 +14,17 @@ A layer 2 is a network that uses Ethereum to provide a more scalable platform fo
 
 ## ZK Proofs
 
-A technology used by [Starknet](key-concepts.md#starknet) to scale [Ethereum](key-concepts.md#ethereum). See the [wikipedia](https://en.wikipedia.org/wiki/Zero-knowledge\_proof).
+ZK stands for "zero knowledge," and is the technology used by [Starknet](key-concepts.md#starknet) to scale [Ethereum](key-concepts.md#ethereum). It enables the Starknet protocol to verify the correctness of state transitions on Ethereum without re-executing all the involved transactions or even including their data on Ethereum. See the [wikipedia](https://en.wikipedia.org/wiki/Zero-knowledge\_proof).
 
 ## Starknet
 
 Starknet is a layer 2 network that uses a type of zero-knowledge proof called STARKs built by [Starkware](https://starkware.co/) to allow users to transact at a much lower cost.
 
-Because Starknet is built on top of a language called [Cairo](https://www.cairo-lang.org/), your usual Ethereum wallets are not compatible with Starknet.
+Because Starknet is built on top of a language called [Cairo](https://www.cairo-lang.org/), your usual Ethereum wallets are not yet compatible with Starknet. Wallets such as [Argent X](https://www.argent.xyz/argent-x/) and [Braavos](https://braavos.app/) work exclusively with Starknet.
 
 ## Automated Market Maker (AMM)
 
-A decentralized finance product that allows users to automatically "buy low, sell high." AMMs differ primarily in the amount of customization available to liquidity providers and the strategies themselves. Some use a formula that is suitable for stable pairs, a la Curve, where others use formulas more suitable for volatile pairs. Many designs are based on the [constant product](key-concepts.md#constant-product) formula.
+A decentralized finance product that allows users to automatically "buy low, sell high." AMMs differ primarily in the amount of customization available to liquidity providers and the strategies themselves. Some use a formula that is suitable for stable pairs, a la [Curve](https://curve.fi/), where others use formulas more suitable for volatile pairs. Many designs are based on the [constant product](key-concepts.md#constant-product) formula.
 
 As long as fees from the trading volume outweigh the loss due to bad trades, liquidity providers see positive returns. However, it is hotly debated whether providing liquidity on an AMM is a generally profitable endeavor. One can think of depositing into an AMM as making a bet that trading fees will outweigh the loss due to price divergence of the two assets in a pair.
 
@@ -59,6 +59,8 @@ Because pairs have differing amounts of volatility, it doesn't make sense to use
 ## Flash accounting
 
 This refers to doing all token balance accounting internally within Ekubo, before transferring any tokens. This means you can trade with many pools and create/update as many positions as you like and only transfer the difference at the end. This is amazingly efficient for tasks like arbitrage or creating many positions, which is key to market efficiency.
+
+Traditionally when trading with a single AMM pool, you must pay for each swap or position update immediately, even if you make multiple swaps or complicated multi-hop swaps in the same transaction.
 
 #### Free flash loans
 

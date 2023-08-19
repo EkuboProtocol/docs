@@ -22,7 +22,7 @@ Liquidity providers are people with assets that want to do market making by crea
 
 Swappers are people who want to trade, e.g. buy 100 USDC worth of ETH.
 
-Automated market makers are the financial glue that brings these people together.
+Automated market makers are the financial glue that brings these people together. Read more in the [key concepts](key-concepts.md) section.
 
 </details>
 
@@ -66,3 +66,10 @@ We are interested in open sourcing the code long-term, but in the short term the
 
 </details>
 
+<details>
+
+<summary>What does "Ekubo" mean?</summary>
+
+"Ekubo" is a reference to the character [Dimple](https://mob-psycho-100.fandom.com/wiki/Dimple) from the anime [Mob Psycho 100](https://en.wikipedia.org/wiki/Mob\_Psycho\_100).
+
+</details>
