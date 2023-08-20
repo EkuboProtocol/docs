@@ -4,21 +4,35 @@ description: A practical guide to Ekubo's internal math
 
 # Math 1-pager
 
-Ekubo represents the current state of each pool with two values: `sqrt_ratio` and `liquidity`. The `sqrt_ratio` represents the square root of the current price of the pool in terms of  `token1 / token0`, and the `liquidity` is a measure of how much of the two tokens is available for trading at the current price.
+Ekubo represents the current state of each pool with two values: `sqrt_ratio` and `liquidity`. The `sqrt_ratio` is the square root of the current price in terms of  `token1 / token0`, and the `liquidity` is a measure of how much of the two tokens is available for trading at the current price.
 
-The price can be anywhere between `2**-128` and `2**128`, which means the square root of the price can be anywhere between `2**-64` and `2**64`. We use a [fixed point number](https://en.wikipedia.org/wiki/Fixed-point\_arithmetic) type for storing the price with 128 bits after the radix. A `sqrt_ratio` of `1` is represented as `1<<128`.
+Ekubo supports pair prices between `2**-128` and `2**128`, which means the square root of the price can be anywhere between `2**-64` and `2**64`. We use a [fixed point number](https://en.wikipedia.org/wiki/Fixed-point\_arithmetic) type for storing the price with 128 bits after the radix. For example, `sqrt_ratio` for the price `1` is represented as `1<<128`.
 
-$$sqrt\_ratio = \sqrt{y/x}$$
+$$
+sqrt\_ratio = \sqrt{y/x}
+$$
 
-$$liquidity = \sqrt{x*y}$$
+$$
+liquidity = \sqrt{x*y}
+$$
 
-The value `sqrt_ratio` is defined as `sqrt(y/x)` and `liquidity` is defined as `sqrt(x*y)`. This is a different method of tracking `x` and `y` in `x * y = k` that is much easier to think about when we introduce the concept of concentrated liquidity: the act of swapping only changes the price, and adding and removing `x` and `y` only updates the liquidity. With these two values defined as such, all other formulae can be derived from it (e.g.: the amount of `x` in the pool, the differences in `x`/`y` between prices, etc.)&#x20;
+The value `sqrt_ratio` is defined as `sqrt(y/x)` and `liquidity` is defined as `sqrt(x*y)`. This is a different method of tracking `x` and `y` in `x * y = k` that is much easier to think about when we introduce the concept of concentrated liquidity: the act of swapping only changes the price, and adding and removing `x` and `y` only updates the liquidity. With these two values defined as such, all other formulae can be derived from it (e.g.: the amount of `x` in the pool, the differences in `x`/`y` between prices, etc.)
 
 {% hint style="info" %}
 Ekubo does not consider token decimals in any of its calculations. If `token0` and `token1` have different decimals, that just means the price of `1` is actually `10**token1_decimals / 10**token0_decimals.`
 {% endhint %}
 
-A constant-liquidity AMM such as Uniswap V2 can be trivially implemented using these representations instead of `x` and `y`, and Ekubo with full range liquidity is effectively a more efficient version of the traditional constant product AMM.
+Given sqrt\_ratio and liquidity, we can easily compute the equivalent amount of `x` and `y` reserves.
+
+$$
+x = liquidity \div sqrt\_ratio
+$$
+
+$$
+y = liquidity \times sqrt\_ratio
+$$
+
+A constant-liquidity AMM such as Uniswap V2 can be trivially implemented using these representations instead of `x` and `y`, and Ekubo with full range liquidity is a more efficient version of the usual AMM implementation that tracks `x` and `y` and does not support concentrated liquidity.
 
 When the price moves due to swapping, positions are entered and exited, and Ekubo adjusts the liquidity mid-trade. Thus, trades must be executed iteratively: a user's swap is broken up into pieces trading through areas of the curve with constant liquidity. Each time we cross a position boundary, we update the current liquidity. How do we define position boundaries? That's where ticks come in.
 
