@@ -4,7 +4,7 @@ description: Addresses of the deployed contracts on Starknet
 
 # Contract addresses
 
-Last updated 2023-08-18
+Last updated 2023-08-21
 
 |                 | Goerli                                                                                      | Mainnet                                                                                     |
 | --------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
