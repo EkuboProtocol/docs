@@ -23,6 +23,7 @@
   * [Math 1-pager](integration-guides/reference/math-1-pager.md)
   * [Core Interfaces](integration-guides/reference/core-interfaces.md)
   * [Contract addresses](integration-guides/reference/contract-addresses.md)
+  * [Error Codes](integration-guides/reference/error-codes.md)
 
 ## Links
 
