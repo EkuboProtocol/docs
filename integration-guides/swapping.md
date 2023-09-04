@@ -95,7 +95,7 @@ Instead of withdrawing a delta, you can also save the delta for later using `#sa
 
 ### Note on Extensions
 
-[Extensions](../extensions/) can modify pool state before you get to swap against it. Some extensions will update positions just-in-time before the swap, and others will front-run a swap with their own.
+[Extensions](extensions/) can modify pool state before you get to swap against it. Some extensions will update positions just-in-time before the swap, and others will front-run a swap with their own.
 
 There are 2 ways to integrate extensions as a swapper:
 

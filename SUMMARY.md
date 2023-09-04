@@ -17,7 +17,7 @@
 
 * [Extensions](integration-guides/extensions/README.md)
   * [Oracle](integration-guides/extensions/oracle.md)
-* [Swapping](integration-guides/swapping/README.md)
+* [Swapping](integration-guides/swapping.md)
   * [By example](integration-guides/swapping/by-example.md)
 * ["Till" pattern](integration-guides/till-pattern.md)
 * [Reference](integration-guides/reference/README.md)
