@@ -1,10 +1,10 @@
 ---
-description: Swapping by example
+description: How to execute a swap on Ekubo Protocol by example in Cairo 2.1.1
 ---
 
 # By example
 
-Below is an example of the simplest swapping contract for swapping against a single pool only.
+This contract allows a user to execute a swap on a single pool only, i.e. aggregation is not supported.
 
 {% code title="simple_swapper.cairo" %}
 ```rust
