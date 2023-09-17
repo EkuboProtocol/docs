@@ -35,7 +35,7 @@ The pool fee should be carefully selected, as it is exactly equal to the fee you
   * You have also earned 20 USDC in fees and 0.005 ETH in fees
 * You withdraw your liquidity
 
-You will pay a `1000 USDC * 5 bips = 0.5 USDC` and `~0.952 ETH * 5 bips = 0.000476 ETH` fee to withdraw your liquidity. You can think of the withdrawal fee as paying a swap fee for the incidental benefit of rebalancing your liquidity.
+You will pay a `1050 USDC * 5 bips = 0.525 USDC` and `~0.952 ETH * 5 bips = 0.000476 ETH` fee to withdraw your liquidity. You can think of the withdrawal fee as paying a swap fee for the incidental benefit of rebalancing your liquidity.
 
 ### Selecting a price range
 
