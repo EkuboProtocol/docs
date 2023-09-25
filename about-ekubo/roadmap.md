@@ -11,6 +11,7 @@ Starknet is a rapidly evolving platform, and our priorities may change as we lea
 * ✅ Mainnet closed-beta launch: End of August 2023
   * Audit completion has been postponed to Q4 2023
     * During this period, Ekubo is **unaudited**. Use at your own risk!
+* ✅ Mainnet open-beta launch: September 14th, 2023
   * ✅ Aggregators live: August/September 2023
     * [**AVNU**](https://app.avnu.fi) live 9/14/23
     * [**Fibrous**](https://app.fibrous.finance/) live 9/24/23
