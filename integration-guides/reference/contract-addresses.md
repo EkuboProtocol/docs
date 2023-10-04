@@ -4,8 +4,6 @@ description: Addresses of the deployed contracts on Starknet
 
 # Contract addresses
 
-Last updated 2023-08-24
-
 |               | Goerli                                                                                                                                                                                                                    | Mainnet                                                                                                                                                                                                            |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Core          | <p><code>0x031e8a7ab6a6a556548ac85cbb8b5f56e8905696e9f13e9a858142b8ee0cc221</code><br><a href="https://goerli.voyager.online/contract/0x031e8a7ab6a6a556548ac85cbb8b5f56e8905696e9f13e9a858142b8ee0cc221">Voyager</a></p> | <p><code>0x00000005dd3D2F4429AF886cD1a3b08289DBcEa99A294197E9eB43b0e0325b4b</code><br><a href="https://voyager.online/contract/0x00000005dd3d2f4429af886cd1a3b08289dbcea99a294197e9eb43b0e0325b4b">Voyager</a></p> |
