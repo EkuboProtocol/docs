@@ -15,6 +15,6 @@ Starknet is a rapidly evolving platform, and our priorities may change as we lea
   * ✅ Aggregators live: August/September 2023
     * [**AVNU**](https://app.avnu.fi) live 9/14/23
     * [**Fibrous**](https://app.fibrous.finance/) live 9/24/23
-* Limit orders: Late October 2023
+* Limit orders: Q4 2023
 * TWAMM orders: Q1 2024
 * Volition: Q2 2024
