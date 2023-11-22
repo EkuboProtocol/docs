@@ -40,9 +40,9 @@ Note that the absolute number of points does not matter, rather it is the quanti
 
 <summary>I don't see my points</summary>
 
-Points are not accumulated until you withdraw from your position.
+Points are not accumulated until you withdraw your fees. This is due to a technical limitation.
 
-This is due to a technical limitation. We will use uncollected fees in any calculations as well.
+But don't waste gas just to withdraw fees. When we compute your points for other purposes, we will include uncollected fees too.
 
 </details>
 
