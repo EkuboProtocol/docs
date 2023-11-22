@@ -12,6 +12,7 @@
 
 * [Add liquidity](user-guides/add-liquidity.md)
 * [Swap](user-guides/swap.md)
+* [Leaderboard](user-guides/leaderboard.md)
 
 ## Integration Guides
 
