@@ -14,6 +14,12 @@ The leaderboard is the way for users to understand how the Ekubo development tea
 
 We will tweak and improve this algorithm, but we published it early so users could understand their placement among each other, as well as give feedback on the mechanism.
 
+### Referral points
+
+You can earn points by referring other users to Ekubo. To do so, connect a wallet, go to the new position page, select some good parameters and then click the referral link button on the top right to copy your referral link.
+
+Whenever someone creates a position using your referral link, your address will be linked to the position and you will earn 20% of the points they earn from their own position. The user of the referral link still earns 100% of their points.
+
 ### FAQ
 
 <details>
@@ -48,8 +54,8 @@ But don't waste gas just to withdraw fees. When we compute your points for other
 
 <details>
 
-<summary>How will my points be used?</summary>
+<summary>How will my points be used? Will there be any reward for points?</summary>
 
-We have not yet announced plans to use the points for anything.
+We have not announced any plans to use points for anything.
 
 </details>
