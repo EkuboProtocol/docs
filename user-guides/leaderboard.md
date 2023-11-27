@@ -30,7 +30,7 @@ The multiplier follows the formula:
 
 $$f(date) = 1 + 2 * e^{MAX((date - '2023-09-14'), 0) * -0.01)}$$
 
-Here are some example dates and their corresponding multipliers:
+Here are some example dates and their corresponding multipliers. Note, as with the rest of this algorithm, the multiplier is subject to change. We will avoid adjusting the multipliers downwards for past dates.
 
 | Date       | Multiplier         |
 | ---------- | ------------------ |
@@ -38,6 +38,8 @@ Here are some example dates and their corresponding multipliers:
 | 2023-10-14 | 2.4816364413634358 |
 | 2023-11-14 | 2.0867017381489996 |
 | 2023-11-27 | 1.9542278310420688 |
+| 2023-12-31 | 1.6791910512898784 |
+| 2024-01-31 | 1.4981506092633364 |
 
 ### FAQ
 
