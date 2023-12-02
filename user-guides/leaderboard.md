@@ -53,16 +53,6 @@ Here are some example dates and their corresponding multipliers. Note, as with t
 
 <details>
 
-<summary>How are points calculated?</summary>
-
-Currently we aggregate the fee collection events emitted from the Ekubo smart contracts, and then convert to ETH at the current price of each of the 2 tokens.
-
-When we decide to utilize the points in any other mechanism, we will make sure to include uncollected fees in our calculations.
-
-</details>
-
-<details>
-
 <summary>Why did my points go down?</summary>
 
 Because the number of points is calculated based on the value of the fees earned in ETH, it will also fluctuate with the price of ETH. ETH fees earned, on the other hand, do not fluctuate in value.
@@ -73,11 +63,13 @@ Note that the absolute number of points does not matter, rather it is the quanti
 
 <details>
 
-<summary>I don't see my points</summary>
+<summary>Where are my points?</summary>
 
-Points are not accumulated until you withdraw your fees. This is due to a technical limitation.
+Points are not accumulated until you withdraw your fees. **This is due to a technical limitation**.
 
-But don't waste gas just to withdraw fees. When we compute your points for other purposes, we will include uncollected fees too.
+But **don't waste gas to withdraw fees, just to collect points**. When we compute your points for other purposes, we will include uncollected fees too.\
+\
+Points from fees are awarded at _roughly_ 1000 points per dollar of fees earned when you withdraw. If you did not earn any fees you will not earn many points.
 
 </details>
 
