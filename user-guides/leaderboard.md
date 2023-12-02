@@ -6,15 +6,23 @@ description: Understanding the leaderboard
 
 ### Purpose
 
-The leaderboard is the way for users to understand how the Ekubo development team views the impact of their liquidity on the protocol. Currently it is based on how many fees they've earned, converted to ETH. We chose this metric to start for a couple of reasons:
+The leaderboard is the way for users to understand how the Ekubo development team views the impact of their participation in Ekubo protocol. Currently it is based on the following, all affected by the points multiplier:
 
-* It is difficult to farm and it cannot be sybil attacked
-* The points scale with the amount of risk taken in providing liquidity
-* The points scale with the usefulness to traders
+* Fees earned by a position
+  * It is difficult to farm and it cannot be sybil attacked
+  * The points scale with the amount of risk taken in providing liquidity
+  * The points scale with the usefulness to traders
+* Withdrawal protocol fees paid also earn points (see adjustment factor)
+* 2k base points for each position minted
+  * This covers the gas paid for minting and withdrawing a position
 
 {% hint style="info" %}
 We will tweak and improve this algorithm, but we published it early so users could understand their placement among each other, as well as give feedback on the mechanism.
 {% endhint %}
+
+### Pool fee adjustment factor
+
+To avoid users effectively buying points via withdrawal fees, and thus further reward organic activity on the protocol, there is an adjustment factor that reduces the amount of points earned based on the pool fee. The points earned by a position are multiplied by `1 - sqrt(fee)`. For an example, a pool with a 100% fee cannot earn any points, since the pool cannot be traded against.
 
 ### Referral points
 
