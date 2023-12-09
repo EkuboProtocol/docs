@@ -1,47 +1,39 @@
 ---
-description: >-
-  Example extension implementing a time-weighted average price and liquidity
-  oracle
+description: Example extension implementing a time-weighted average price oracle
 ---
 
 # Oracle
 
 ## Summary
 
-This example allows for the computation of the TWAP of a pool. It also allows for the computation of the liquidity-seconds, i.e. the fractional number of seconds that a position held full liquidity of the pool, for a position. The former can be used in third-party protocol integrations, while the latter can be used for liquidity incentivization.
+This example allows for the computation of the TWAP of a pool. It does so by storing an accumulator of `time * tick` for every second of the pool's lifetime. By taking the difference of two different snapshot values of the accumulator, you can compute the average tick over the period by dividing out the time between them. This will give you the geometric mean price over that period.
 
-This extension takes the strategy of being so simple it never needs to be upgraded, so it does not feature any upgradeability.&#x20;
+{% hint style="danger" %}
+This extension is a pared down un-optimized version for example purposes only. It is not well tested nor is it complete. It should not be used in production.
+{% endhint %}
 
 ```rust
-use ekubo::interfaces::core::ICoreDispatcherTrait;
+use ekubo::interfaces::core::{ICoreDispatcherTrait};
 use ekubo::types::keys::{PoolKey, PositionKey};
-use ekubo::types::i129::{i129, i129Trait};
+use ekubo::types::i129::{i129};
 use ekubo::types::bounds::{Bounds};
 use traits::{TryInto, Into};
 use option::{OptionTrait};
 use starknet::{StorePacking};
 use integer::{u256_safe_divmod, u256_as_non_zero};
 
-// 192 bits total, fits in a single felt
-#[derive(Copy, Drop)]
+// 192 bits total, can be packed in a single felt using StorePacking
+#[derive(Copy, Drop, starknet::Store)]
 struct PoolState {
     // 64 bits
     block_timestamp_last: u64,
     // 96 bits
     tick_cumulative_last: i129,
-    // 32 bits
-    tick_last: i129,
 }
 
 #[starknet::interface]
 trait IOracle<TStorage> {
-    // Returns the seconds per liquidity within the given bounds. Must be used only as a snapshot
-    // You cannot rely on this snapshot to be consistent across positions
-    fn get_seconds_per_liquidity_inside(
-        self: @TStorage, pool_key: PoolKey, bounds: Bounds
-    ) -> felt252;
-
-    // Returns the cumulative tick value for a given pool, useful for computing a geomean oracle for the duration of a position
+    // Returns the cumulative tick value for a given pool, in order to compute a geomean TWAP
     fn get_tick_cumulative(self: @TStorage, pool_key: PoolKey) -> i129;
 }
 
@@ -52,7 +44,6 @@ mod Oracle {
     use ekubo::types::call_points::{CallPoints};
     use ekubo::types::bounds::{Bounds};
     use ekubo::types::i129::{i129};
-    use ekubo::math::swap::{is_price_increasing};
     use ekubo::interfaces::core::{
         ICoreDispatcher, ICoreDispatcherTrait, IExtension, SwapParameters, UpdatePositionParameters,
         Delta
@@ -66,8 +57,6 @@ mod Oracle {
     struct Storage {
         core: ICoreDispatcher,
         pool_state: LegacyMap<PoolKey, PoolState>,
-        pool_seconds_per_liquidity: LegacyMap<PoolKey, felt252>,
-        tick_seconds_per_liquidity_outside: LegacyMap<(PoolKey, i129), felt252>,
     }
 
     #[constructor]
@@ -93,17 +82,6 @@ mod Oracle {
                 return ();
             }
 
-            let liquidity = core.get_pool_liquidity(pool_key);
-
-            let seconds_per_liquidity_global_next = if (liquidity.is_non_zero()) {
-                self.pool_seconds_per_liquidity.read(pool_key)
-                    + (u256 { low: 0, high: time_passed } / u256 { low: liquidity, high: 0 })
-                        .try_into()
-                        .unwrap()
-            } else {
-                self.pool_seconds_per_liquidity.read(pool_key)
-            };
-
             let price = core.get_pool_price(pool_key);
 
             let tick_cumulative_next = state.tick_cumulative_last
@@ -116,7 +94,6 @@ mod Oracle {
                     PoolState {
                         block_timestamp_last: time,
                         tick_cumulative_last: tick_cumulative_next,
-                        tick_last: state.tick_last,
                     }
                 );
         }
@@ -124,47 +101,6 @@ mod Oracle {
 
     #[external(v0)]
     impl OracleImpl of IOracle<ContractState> {
-        // Returns the number of seconds that the position has held the full liquidity of the pool, as a fixed point number with 128 bits after the radix
-        fn get_seconds_per_liquidity_inside(
-            self: @ContractState, pool_key: PoolKey, bounds: Bounds
-        ) -> felt252 {
-            let core = self.core.read();
-            let time = get_block_timestamp();
-            let price = core.get_pool_price(pool_key);
-
-            // subtract the lower and upper tick of the bounds based on the price
-            let lower = self.tick_seconds_per_liquidity_outside.read((pool_key, bounds.lower));
-            let upper = self.tick_seconds_per_liquidity_outside.read((pool_key, bounds.upper));
-
-            if (price.tick < bounds.lower) {
-                upper - lower
-            } else if (price.tick < bounds.upper) {
-                // get the global seconds per liquidity
-                let state = self.pool_state.read(pool_key);
-                let seconds_per_liquidity_global = if (time == state.block_timestamp_last) {
-                    self.pool_seconds_per_liquidity.read(pool_key)
-                } else {
-                    let liquidity = core.get_pool_liquidity(pool_key);
-                    if (liquidity.is_zero()) {
-                        self.pool_seconds_per_liquidity.read(pool_key)
-                    } else {
-                        self.pool_seconds_per_liquidity.read(pool_key)
-                            + (u256 {
-                                low: 0, high: (time - state.block_timestamp_last).into()
-                                } / u256 {
-                                low: liquidity, high: 0
-                            })
-                                .try_into()
-                                .unwrap()
-                    }
-                };
-
-                (seconds_per_liquidity_global - lower) - upper
-            } else {
-                upper - lower
-            }
-        }
-
         fn get_tick_cumulative(self: @ContractState, pool_key: PoolKey) -> i129 {
             let time = get_block_timestamp();
             let state = self.pool_state.read(pool_key);
@@ -201,11 +137,8 @@ mod Oracle {
 
             CallPoints {
                 after_initialize_pool: false,
-                // in order to record the seconds that have passed / liquidity
                 before_swap: true,
-                // to update the per-tick seconds per liquiidty
-                after_swap: true,
-                // the same as above
+                after_swap: false,
                 before_update_position: true,
                 after_update_position: false,
             }
@@ -235,57 +168,7 @@ mod Oracle {
             params: SwapParameters,
             delta: Delta
         ) {
-            let core = self.check_caller_is_core();
-
-            let price = core.get_pool_price(pool_key);
-            let state = self.pool_state.read(pool_key);
-
-            if (state.tick_last != price.tick) {
-                let increasing = is_price_increasing(params.amount.sign, params.is_token1);
-
-                let mut tick = state.tick_last;
-
-                let current = self.tick_seconds_per_liquidity_outside.read((pool_key, tick));
-
-                let seconds_per_liquidity_global = self.pool_seconds_per_liquidity.read(pool_key);
-
-                // update all the ticks between the last updated tick to the starting tick
-                loop {
-                    let (next, initialized) = if (increasing) {
-                        core.next_initialized_tick(pool_key, tick, params.skip_ahead)
-                    } else {
-                        core.prev_initialized_tick(pool_key, tick, params.skip_ahead)
-                    };
-
-                    if ((next > price.tick) == increasing) {
-                        break ();
-                    }
-
-                    if (initialized) {
-                        self
-                            .tick_seconds_per_liquidity_outside
-                            .write((pool_key, tick), current - seconds_per_liquidity_global);
-                    }
-
-                    tick = if (increasing) {
-                        next
-                    } else {
-                        next - i129 { mag: 1, sign: false }
-                    };
-                };
-
-                // we are just updating tick last to indicate we processed all the ticks that were crossed in the swap
-                self
-                    .pool_state
-                    .write(
-                        pool_key,
-                        PoolState {
-                            block_timestamp_last: state.block_timestamp_last,
-                            tick_cumulative_last: state.tick_cumulative_last,
-                            tick_last: price.tick,
-                        }
-                    );
-            }
+            assert(false, 'NOT_USED');
         }
 
         fn before_update_position(
