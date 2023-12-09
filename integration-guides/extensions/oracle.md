@@ -131,7 +131,6 @@ mod Oracle {
                     PoolState {
                         block_timestamp_last: get_block_timestamp(),
                         tick_cumulative_last: Zeroable::zero(),
-                        tick_last: initial_tick,
                     }
                 );
 
