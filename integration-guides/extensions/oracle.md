@@ -39,7 +39,6 @@ trait IOracle<TStorage> {
     fn get_tick_cumulative(self: @TStorage, pool_key: PoolKey) -> i129;
 }
 
-// This extension can be used with pools to track the liquidity-seconds per liquidity over time. This measure can be used to incentive positions in this pool.
 #[starknet::contract]
 mod Oracle {
     use super::{IOracle, PoolKey, PositionKey, PoolState};
@@ -157,7 +156,6 @@ mod Oracle {
             pool_key: PoolKey,
             params: SwapParameters
         ) {
-            // update seconds per liquidity
             let core = self.check_caller_is_core();
             self.update_pool(core, pool_key);
         }
