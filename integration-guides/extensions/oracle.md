@@ -27,7 +27,9 @@ use integer::{u256_safe_divmod, u256_as_non_zero};
 struct PoolState {
     // 64 bits
     block_timestamp_last: u64,
-    // 96 bits
+    // this value can fit in 96 bits
+    // because the max tick is 88722883 which fits in 32 bits w/ the sign,
+    // and block timestamps (by which the tick is multiplied) are 64 bits
     tick_cumulative_last: i129,
 }
 
