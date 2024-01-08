@@ -4,17 +4,23 @@ description: Understanding the leaderboard
 
 # Leaderboard
 
+{% hint style="info" %}
+The source code for the leaderboard is available in the [indexer](https://github.com/EkuboProtocol/indexer/blob/7bfd8ff38a03d0e7f469e20a9f84a5e9d64ef8c4/src/dao.ts#L982) repository.
+{% endhint %}
+
 ### Purpose
 
-The leaderboard is the way for users to understand how the Ekubo development team views the impact of their participation in Ekubo protocol. Currently it is based on the following, all affected by the points multiplier:
+The leaderboard is the way for users to understand how the Ekubo development team views the impact of their participation in Ekubo protocol. Currently it is based on the following:
 
-* Fees earned by a position
+* **Fees earned by a position**
   * It is difficult to farm and it cannot be sybil attacked
   * The points scale with the amount of risk taken in providing liquidity
   * The points scale with the usefulness to traders
-* Withdrawal protocol fees paid also earn points (see adjustment factor)
-* 2k base points for each position minted
+* Withdrawal protocol fees paid also earn points
+* `2,000` base points for each position minted
   * This covers the gas paid for minting and withdrawing a position
+  * Small enough that you should not bother to farm this
+  * The position must be in-range to earn the base points, i.e. limit orders are not counted
 
 {% hint style="info" %}
 We will tweak and improve this algorithm, but we published it early so users could understand their placement among each other, as well as give feedback on the mechanism.
@@ -24,11 +30,15 @@ We will tweak and improve this algorithm, but we published it early so users cou
 
 To avoid users effectively buying points via withdrawal fees, and thus further reward organic activity on the protocol, there is an adjustment factor that reduces the amount of points earned based on the pool fee. The points earned by a position are multiplied by `1 - sqrt(fee)`. For an example, a pool with a 100% fee cannot earn any points, since the pool cannot be traded against.
 
+### Pair popularity multiplier
+
+A pair will have a multiplier on points earned from fees based on the popularity of the pool, to account for the usefulness to traders. Popularity is currently determined by the swap count. Provide liquidity on the most desirable trading pairs to earn the most points.
+
 ### Referral points
 
 You can earn points by referring other users to Ekubo. To do so, connect a wallet, go to the new position page, select some good parameters and then click the referral link button on the top right to copy your referral link.
 
-Whenever someone creates a position using your referral link, your address will be linked to the position and you will earn 20% of the points they earn from their own position. The user of the referral link still earns 100% of their points.
+Whenever someone creates a position using your referral link, your address will be linked to the position and you will earn **20%** of the points they earn from their own position. The user of the referral link still earns **100%** of their points.
 
 ### Points multiplier
 
@@ -53,6 +63,14 @@ Here are some example dates and their corresponding multipliers. Note, as with t
 
 <details>
 
+<summary>How do I earn the most points?</summary>
+
+The primary metric that contributes to points is fees earned. Collect fees by providing liquidity on the most popular pairs to earn the most points. Make sure to keep your position active by rebalancing after large price movements.
+
+</details>
+
+<details>
+
 <summary>Why did my points go down?</summary>
 
 Because the number of points is calculated based on the value of the fees earned in ETH, it will also fluctuate with the price of ETH. ETH fees earned, on the other hand, do not fluctuate in value.
@@ -65,11 +83,7 @@ Note that the absolute number of points does not matter, rather it is the quanti
 
 <summary>Where are my points?</summary>
 
-Points are not accumulated until you withdraw your fees. **This is due to a technical limitation**.
-
-But **don't waste gas to withdraw fees, just to collect points**. When we compute your points for other purposes, we will include uncollected fees too.\
-\
-Points from fees are awarded at _roughly_ 1000 points per dollar of fees earned when you withdraw. If you did not earn any fees you will not earn many points.
+The leaderboard is recalculated at most a few times per day. If you don't see your points, check back the following day.
 
 </details>
 
