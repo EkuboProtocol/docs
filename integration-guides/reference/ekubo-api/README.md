@@ -8,16 +8,17 @@ description: Introduction to the public API we run for our interface
 Our API is in early alpha and may undergo breaking changes without notice. [Join the Discord](https://discord.ekubo.org) to ask questions or get support.
 {% endhint %}
 
-Our API is found at two endpoints:
+Our API is found at the following endpoints:
 
 * https://mainnet-api.ekubo.org
 * https://goerli-api.ekubo.org
+* https://sepolia-api.ekubo.org
 
-These endpoints serve the Starknet Mainnet and Goerli deployments of Ekubo, respectively.
+These endpoints serve the Starknet Mainnet, Goerli and Sepolia deployments of Ekubo, respectively.
 
 #### Architecture
 
-Our API functionality is based entirely on the indexer repository. You can replicate most of the API functionality by simply running your own instance of the [indexer](https://github.com/ekuboprotocol/indexer) and querying the resulting Postgres database.
+Our API functionality is based entirely on the open source indexer repository. You can replicate most of the API functionality by simply running your own instance of the [indexer](https://github.com/ekuboprotocol/indexer) and querying the resulting Postgres database.
 
 #### Rate limiting
 

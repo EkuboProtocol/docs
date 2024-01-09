@@ -10,25 +10,43 @@ The source code for the leaderboard is available in the [indexer](https://github
 
 ### Purpose
 
-The leaderboard is the way for users to understand how the Ekubo development team views the impact of their participation in Ekubo protocol. Currently it is based on the following:
+The leaderboard is the way for users to understand how the Ekubo development team views the impact of their participation in Ekubo protocol. We advise that you prioritize effective usage of the protocol to earn the greatest number of points.
 
-* **Fees earned by a position**
-  * It is difficult to farm and it cannot be sybil attacked
-  * The points scale with the amount of risk taken in providing liquidity
-  * The points scale with the usefulness to traders
-* Withdrawal protocol fees paid also earn points
-* `2,000` base points for each position minted
-  * This covers the gas paid for minting and withdrawing a position
-  * Small enough that you should not bother to farm this
-  * The position must be in-range to earn the base points, i.e. limit orders are not counted
-
-{% hint style="info" %}
-We will tweak and improve this algorithm, but we published it early so users could understand their placement among each other, as well as give feedback on the mechanism.
+{% hint style="warning" %}
+We reserve the right to change the rules of the leaderboard at any time. We've published this early version so users can understand what activity is most valued by the protocol development team.
 {% endhint %}
 
-### Pool fee adjustment factor
+### **Factors**
 
-To avoid users effectively buying points via withdrawal fees, and thus further reward organic activity on the protocol, there is an adjustment factor that reduces the amount of points earned based on the pool fee. The points earned by a position are multiplied by `1 - sqrt(fee)`. For an example, a pool with a 100% fee cannot earn any points, since the pool cannot be traded against.
+#### **Fees earned by a position**
+
+This is the biggest factor of a user's position on the leaderboard. Prioritize earning fees from real trading volume. We chose this primary factor for the following reasons:
+
+* It is difficult to farm and it cannot be sybil attacked
+* The points scale with the amount of risk taken in providing liquidity
+  * Higher risk pairs typically charge higher fees
+* The points scale with the usefulness to traders
+  * Users will pay more fees for useful liquidity
+
+#### Withdrawal protocol fees
+
+Fees paid to the protocol on withdrawal are counted the same as fees earned from swapping.
+
+#### Base points for each position minted
+
+You will earn `2,000` base points for each position minted.
+
+* This covers the gas paid for minting and withdrawing a position
+* Small enough that you should not bother to farm this
+* The position must be in-range to earn the base points, i.e. limit orders are not counted
+
+### Multipliers
+
+### High pool fee adjustment factor
+
+To avoid users effectively buying points via withdrawal fees, and thus further reward organic activity on the protocol, there is an adjustment factor that reduces the amount of points earned based on the pool fee. The points earned by a position are multiplied by `1 - sqrt(fee)`.&#x20;
+
+For an example, a pool with a 100% fee cannot earn any points, since the pool cannot be traded against.
 
 ### Pair popularity multiplier
 
@@ -36,7 +54,7 @@ A pair will have a multiplier on points earned from fees based on the popularity
 
 ### Referral points
 
-You can earn points by referring other users to Ekubo. To do so, connect a wallet, go to the new position page, select some good parameters and then click the referral link button on the top right to copy your referral link.
+You can earn points by referring other users to Ekubo. You may copy your referral link from the [leaderboard](https://app.ekubo.org/leaderboard) page.
 
 Whenever someone creates a position using your referral link, your address will be linked to the position and you will earn **20%** of the points they earn from their own position. The user of the referral link still earns **100%** of their points.
 
@@ -46,7 +64,7 @@ We chose to reward early liquidity providers with a points multiplier based on t
 
 The multiplier follows the formula:
 
-$$f(date) = 1 + 2 * e^{MAX((date - '2023-09-14'), 0) * -0.01)}$$
+$$f(date) = 1 + 2 * e^{(date- '2023-09-14') * -0.01)}$$
 
 Here are some example dates and their corresponding multipliers. Note, as with the rest of this algorithm, the multiplier is subject to change. We will avoid adjusting the multipliers downwards for past dates.
 
