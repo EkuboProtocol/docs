@@ -2,7 +2,7 @@
 description: Every interaction with Ekubo starts with a lock
 ---
 
-# "Till" pattern
+# 💸 "Till" pattern
 
 Ekubo is a singleton AMM that utilizes the "till" pattern. The till pattern was [publicly introduced](https://www.youtube.com/watch?v=xFp8RlRq0qU) at EthCC\[5] and is also described [here](https://github.com/OpenZeppelin/openzeppelin-contracts/issues/4361#issuecomment-1595095135). This is how Ekubo allows all token payments to be deferred until the end of your transaction.
 

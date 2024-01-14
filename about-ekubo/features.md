@@ -2,7 +2,7 @@
 description: What sets Ekubo Protocol apart from other AMM protocols
 ---
 
-# Features
+# 🔑 Features
 
 ## Gas efficiency
 

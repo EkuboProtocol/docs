@@ -4,7 +4,7 @@ description: >-
   arbitrage
 ---
 
-# Swapping
+# 🔄 Swapping
 
 ## Summary
 
@@ -75,11 +75,12 @@ mod AggregatorExample {
       // A negative delta indicates you are owed tokens. A positive delta indicates core owes you tokens.
       // To take a negative delta out of core, do (assuming token0 for token1):
       ICoreDispatcher { contract_address: ekubo }.withdraw(token, recipient, delta.amount0.mag);
-      // To pay tokens you owe, do (assuming token1):
+      // To pay tokens you owe, do (assuming payment is for token1):
       IERC20Dispatcher {
         contract_address: token
-      }.transfer(ekubo, delta.mag.into());
-      ICoreDispatcher { contract_address: ekubo }.deposit(token);
+      }.approve(ekubo, delta.mag.into());
+      // ICoreDispatcher#pay will trigger a token#transferFrom(this, core) for the entire approved amount
+      ICoreDispatcher { contract_address: ekubo }.pay(token);
       
       let mut arr: Array<felt252> = ArrayTrait::new();
       Serde::<SwapResult>::serialize(@result, ref arr);

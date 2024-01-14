@@ -2,7 +2,7 @@
 description: How to swap using Ekubo Protocol
 ---
 
-# Swap
+# 🔄 Swap
 
 Ekubo provides a very simple swapping interface at [app.ekubo.org/swap](https://app.ekubo.org/swap).
 

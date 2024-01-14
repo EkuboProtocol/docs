@@ -2,7 +2,7 @@
 description: Useful concepts and technologies on which Ekubo is built
 ---
 
-# Key concepts
+# 📖 Key concepts
 
 ## Ethereum
 

@@ -2,7 +2,7 @@
 description: How to become a liquidity provider on Ekubo
 ---
 
-# Add liquidity
+# 🌊 Add liquidity
 
 To add liquidity to Ekubo, you must [create a position](https://app.ekubo.org/positions/new) using our interface hosted at [app.ekubo.org](https://app.ekubo.org).
 

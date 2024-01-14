@@ -2,7 +2,7 @@
 description: Example extension implementing a time-weighted average price oracle
 ---
 
-# Oracle
+# 👁 Oracle
 
 ## Summary
 
