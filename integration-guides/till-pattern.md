@@ -1,10 +1,10 @@
 ---
-description: Every interaction with Ekubo starts with a lock
+description: Every interaction with Ekubo starts with a call to lock
 ---
 
 # 💸 "Till" pattern
 
-Ekubo is a singleton AMM that utilizes the "till" pattern. The till pattern was [publicly introduced](https://www.youtube.com/watch?v=xFp8RlRq0qU) at EthCC\[5] and is also described [here](https://github.com/OpenZeppelin/openzeppelin-contracts/issues/4361#issuecomment-1595095135). This is how Ekubo allows all token payments to be deferred until the end of your transaction.
+Ekubo is a singleton AMM that utilizes the "till" pattern. All pools and tokens are represented as state in a single contract. The till pattern was [publicly introduced](https://www.youtube.com/watch?v=xFp8RlRq0qU) at EthCC\[5] and is also described [here](https://github.com/OpenZeppelin/openzeppelin-contracts/issues/4361#issuecomment-1595095135). This is how Ekubo allows all token payments to be deferred until the end of your transaction.
 
 {% hint style="info" %}
 Even though the entrypoint for all methods is named `#lock`, Ekubo protocol supports reentrancy. Locks can be nested, meaning any contract you call can also interact with Ekubo.
@@ -27,38 +27,6 @@ trait ILocker<TStorage> {
 ```
 {% endcode %}
 
-You must then perform your swaps and position updates within the callback. To know what you must do within the callback, encode your parameters such as the pools against which you'd like to swap, into the data argument. Below are some utility methods for writing contracts that make swaps or update positions.
+You must then make all your swaps and position updates within the `#locked` callback. If you call any of these methods outside of a `locked` callback, the call will revert.
 
-{% code title="lock_helper.cairo" %}
-```rust
-use serde::Serde;
-use starknet::{get_caller_address, call_contract_syscall, ContractAddress, SyscallResultTrait};
-use ekubo::interfaces::core::{ICoreDispatcher, ICoreDispatcherTrait};
-use array::{ArrayTrait};
-use option::{OptionTrait};
-
-// Serialize some data for calling ICore#lock, and deserialize the result
-fn call_core_with_callback<
-    TInput, impl TSerdeInput: Serde<TInput>, TOutput, impl TSerdeOutput: Serde<TOutput>, 
->(
-    core: ICoreDispatcher, input: @TInput
-) -> TOutput {
-    let mut input_data: Array<felt252> = ArrayTrait::new();
-    Serde::serialize(input, ref input_data);
-
-    let mut output_span = core.lock(input_data).span();
-
-    Serde::deserialize(ref output_span).expect('DESERIALIZE_RESULT_FAILED')
-}
-
-// Called from within locked, to deserialize the input and do the appropriate caller check
-fn consume_callback_data<TInput, impl TSerdeInput: Serde<TInput>>(
-    core: ICoreDispatcher, callback_data: Array<felt252>
-) -> TInput {
-    assert(get_caller_address() == core.contract_address, 'CORE_ONLY');
-    let mut span = callback_data.span();
-    Serde::deserialize(ref span).expect('DESERIALIZE_INPUT_FAILED')
-}
-
-```
-{% endcode %}
+To know what you must do within the callback, encode your parameters into the data argument of the call to lock. The [shared\_locker.cairo](https://github.com/EkuboProtocol/abis/blob/main/src/shared\_locker.cairo) contains some useful functions for constructing the call to lock as well as consuming the locked callback data.
