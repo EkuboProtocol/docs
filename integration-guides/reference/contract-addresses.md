@@ -9,7 +9,7 @@ description: Addresses of the deployed contracts on Starknet
 The addresses of these contracts do not change. The contracts are updated to new versions in-place.
 
 {% hint style="warning" %}
-Note that we **do** make breaking changes to the upgradeable contracts, which means old versions of immutable contracts will no longer work. Your contracts that integrate with core _and_ have state **should also be upgradeable.**
+Note that we **do** make breaking changes to the upgradeable contracts when required, which means old versions of immutable contracts may no longer work. Your contracts that integrate with core _and_ have state **should also be upgradeable.**
 {% endhint %}
 
 | Contract / Network | Goerli                                                                                                                                                                                                                                                                                                                                                     | Sepolia                                                                                                                                                                                                                                                                                                                                                     | Mainnet                                                                                                                                                                                                                                                                                                                                     |
