@@ -4,10 +4,6 @@ description: A list of endpoints generated from the OpenAPI 3.1 documentation
 
 # API Endpoints
 
-{% hint style="info" %}
-The API is documented at the endpoint `/openapi.json`, meaning you can use it with any tool that supports OpenAPI 3.1 documentation.
-{% endhint %}
-
 {% swagger src="https://mainnet-api.ekubo.org/openapi.json" path="/tokens" method="get" %}
 [https://mainnet-api.ekubo.org/openapi.json](https://mainnet-api.ekubo.org/openapi.json)
 {% endswagger %}

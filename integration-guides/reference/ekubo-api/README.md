@@ -1,5 +1,5 @@
 ---
-description: Introduction to the public API we run for our interface
+description: The API that powers Ekubo's interface
 ---
 
 # Ekubo API
@@ -18,7 +18,7 @@ These endpoints serve the Starknet Mainnet, Goerli and Sepolia deployments of Ek
 
 #### Architecture
 
-Our API functionality is based entirely on the open source indexer repository. You can replicate most of the API functionality by simply running your own instance of the [indexer](https://github.com/ekuboprotocol/indexer) and querying the resulting Postgres database.
+Our API functionality is based entirely on the Postgres schema managed by the open source indexer repository. You can replicate most of the API functionality by simply running your own instance of the [indexer](https://github.com/ekuboprotocol/indexer) and querying the resulting Postgres database. If you have specific latency or need to make a large number of requests per second, it's best to run your own indexer.
 
 #### Rate limiting
 
