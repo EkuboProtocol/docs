@@ -6,11 +6,9 @@ description: >-
 
 # 🔄 Swapping
 
-## Summary
+To swap on Ekubo, you must called `ICore#lock`. Ekubo's core contract will call back into your contract with the data you pass, via `IYourContract#locked`. In your lock callback, you must execute the swap, and pay the input, and withdraw the output in no particular order.
 
-Ekubo, Inc. does not provide any code for swapping against Ekubo pools. We believe users should get the best price, and would not build an interface that ever offers them anything less by aggregating _only_ Ekubo liquidity.
-
-We rely on an ecosystem of aggregators to provide the best routing for swapping against Ekubo pools as well as other AMMs in the ecosystem. Below is a sample of some code that could be used to swap against the Ekubo pools.
+Note you can do multiple swaps in a single callback and you only have to pay any differences.&#x20;
 
 ### Example code
 
@@ -20,70 +18,65 @@ The below code locks the Ekubo core contract and calls swap, then pays for the i
 Ekubo Protocol supports exact-output swaps, e.g. "buy 1 ETH, compute the input amount," by specifying a negative amount of the desired output token.
 {% endhint %}
 
-If you are making multiple trades against Ekubo, for example , you will see much better gas efficiency by utilizing only a single lock.
+If you are making multiple trades against Ekubo, you will see better gas efficiency by utilizing only a single lock.
 
 ```rust
 // Imports are implied
 #[starknet::contract]
-mod AggregatorExample {
+mod SwapExample {
   #[storage]
   struct Storage {
-    ekubo: ContractAddress,
+    core: ICoreDispatcher,
   }
 
   #[derive(Copy, Drop, Serde)]
   struct SwapData {
-     // the list of pools that you'd like to swap against, etc.
+     pool_key: PoolKey,
+     amount: i129,
+     token: ContractAddress,
   }
   
   #[derive(Copy, Drop, Serde)]
   struct SwapResult {
-     // the result of the swap
+     delta: Delta,
   }
 
   #[external(v0)]
-  impl AggregatorExampleImpl of IAggregatorExample<ContractState> {
-    fn aggregator_swap(ref self: ContractState, swap_data: SwapData) -> SwapResult {
-      let mut arr: Array<felt252> = ArrayTrait::new();
-      Serde::<SwapData>::serialize(@swap_data, ref arr);
-
-      let result = ICoreDispatcher { contract_address: self.ekubo.read() }.lock(arr);
-
-      let mut result_data = result.span();
-      let mut result: SwapResult = Serde::<SwapResult>::deserialize(
-          ref result_data
+  impl SwapExample of ISwapExample<ContractState> {
+    fn swap(ref self: ContractState, swap_data: SwapData) -> SwapResult {
+      // https://github.com/EkuboProtocol/abis/blob/main/src/components/shared_locker.cairo
+      ekubo::components::shared_locker::call_core_with_callback(
+        self.core.read(), @swap_data
       )
-          .expect('DESERIALIZE_RESULT_FAILED');
-
-      result
     }
+  }
 
+  #[external(v0)]
+  impl Locker of ILocker<ContractState> {
     fn locked(ref self: ContractState, id: u32, data: Array<felt252>) -> Array<felt252> {
-      let caller = get_caller_address();
-      let ekubo = self.ekubo.read();
-      // Only allow Ekubo's core contract to call this method.
-      assert(caller == ekubo, 'UNAUTHORIZED_CALLBACK');
+      let core = self.core.read();
 
-      let mut swap_data_span = data.span();
-      let mut swap_data: SwapData = Serde::<SwapData>::deserialize(ref swap_data_span)
-          .expect('DESERIALIZE_FAILED');
+      // Consume the callback data
+      let swap_data: SwapData = consume_callback_data::<CallbackParameters>(core, data);
       
-      // Do your swaps here! e.g.:
-      // let delta = ICoreDispatcher { contract_address: ekubo }.swap(pool_key, params);
+      // Do your swaps here!
+      let delta = core.swap(pool_key, params);
       
       // Each swap generates a "delta", but does not trigger any token transfers.
       // A negative delta indicates you are owed tokens. A positive delta indicates core owes you tokens.
       // To take a negative delta out of core, do (assuming token0 for token1):
-      ICoreDispatcher { contract_address: ekubo }.withdraw(token, recipient, delta.amount0.mag);
+      core.withdraw(token, recipient, delta.amount0.mag);
       // To pay tokens you owe, do (assuming payment is for token1):
       IERC20Dispatcher {
         contract_address: token
       }.approve(ekubo, delta.mag.into());
       // ICoreDispatcher#pay will trigger a token#transferFrom(this, core) for the entire approved amount
-      ICoreDispatcher { contract_address: ekubo }.pay(token);
+      core.pay(token);
       
+      // Serialize our output type into the return data
+      let swap_result = SwapResult { delta };
       let mut arr: Array<felt252> = ArrayTrait::new();
-      Serde::<SwapResult>::serialize(@result, ref arr);
+      Serde::serialize(@swap_result, ref arr);
       arr
     }
   }
