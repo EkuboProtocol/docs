@@ -57,7 +57,8 @@ mod SwapExample {
       let core = self.core.read();
 
       // Consume the callback data
-      let swap_data: SwapData = consume_callback_data::<CallbackParameters>(core, data);
+      // https://github.com/EkuboProtocol/abis/blob/main/src/components/shared_locker.cairo
+      let swap_data: SwapData = ekubo::components::shared_locker::consume_callback_data::<CallbackParameters>(core, data);
       
       // Do your swaps here!
       let delta = core.swap(pool_key, params);
