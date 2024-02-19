@@ -2,7 +2,7 @@
 description: Distributing STRK incentives to users of Ekubo protocol
 ---
 
-# Starknet DeFi Spring
+# 🌻 Starknet DeFi Spring
 
 ### Introduction
 

@@ -6,6 +6,7 @@
 * [🔑 Features](about-ekubo/features.md)
 * [📖 Key concepts](about-ekubo/key-concepts.md)
 * [❓ FAQ](about-ekubo/faq.md)
+* [🌻 Starknet DeFi Spring](about-ekubo/starknet-defi-spring.md)
 
 ## User Guides
 
@@ -20,7 +21,6 @@
 * [🔄 Swapping](integration-guides/swapping.md)
 * [💸 "Till" pattern](integration-guides/till-pattern.md)
 * [📚 Reference](integration-guides/reference/README.md)
-  * [Starknet DeFi Spring](integration-guides/reference/starknet-defi-spring.md)
   * [Math 1-pager](integration-guides/reference/math-1-pager.md)
   * [Core Interfaces](integration-guides/reference/core-interfaces.md)
   * [Contract addresses](integration-guides/reference/contract-addresses.md)
