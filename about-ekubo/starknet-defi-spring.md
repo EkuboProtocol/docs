@@ -34,7 +34,7 @@ Keep in mind the following guidelines for receiving the most STRK, in order of i
 * STRK rewards will be directed towards the most volatile pairs
 * The more capital efficient your position, the greater your rewards
 * The longer your position stays active, the greater your rewards
-* Higher fee pairs will receive fewer rewards per liquidity
+* Higher fee pools will receive fewer rewards per liquidity (e.g. ETH/USDC `0.05%` pool will earn slightly more rewards than ETH/USDC `0.3%` pool)
 
 ### Participation in the program
 
