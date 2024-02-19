@@ -6,7 +6,7 @@ description: Distributing STRK incentives to users of Ekubo protocol
 
 ### Introduction
 
-Starknet Foundation is distributing STRK rewards to users of Ekubo Protocol as part of the [Starknet DeFi Spring](http://defispring.starknet.io/). Our methodology for the allocation, subject to change, is described below.
+Starknet Foundation is distributing STRK rewards to users of Ekubo Protocol as part of the [Starknet DeFi Spring](http://intract.io/starknet). Our methodology for the allocation is described below.
 
 ### Incentive allocation methodology
 
@@ -14,9 +14,9 @@ Starknet Foundation is distributing STRK rewards to users of Ekubo Protocol as p
 This section is currently under development. As with the leaderboard, we encourage you to optimize your activity for profitability, rather than rewards.
 {% endhint %}
 
-We will define allocation to users based on the same measures that are used to determine protocol-level allocations, so that users responsible for Ekubo's incentive allocation receive all of the incentives.
+We will define allocation to users based on the same measures that are used to determine protocol-level allocations, so that users responsible for Ekubo's portion of the total incentive allocation receive all of the incentives.
 
-We will split the allocation by pair, and reward all active liquidity providers equally for each second they provide liquidity in the pair.
+We will split the allocation by pair, and reward all active liquidity providers equally for each second they provide liquidity in the pair. Liquidity provided in lower fee pools will earn marginally higher rewards.
 
 The following pairs are eligible for rewards:
 
@@ -29,12 +29,12 @@ The query we use to determine allocation will be published for review to the [in
 
 ### How do I earn the most STRK incentives?
 
-Keep in mind the following guidelines for receiving the most STRK. The exact algorithm is subject to change from fortnight to fortnight.
+Keep in mind the following guidelines for receiving the most STRK, in order of importance. The exact algorithm is subject to change from fortnight to fortnight.
 
-* Higher fee pairs will receive fewer rewards per liquidity
+* STRK rewards will be directed towards the most volatile pairs
 * The more capital efficient your position, the greater your rewards
 * The longer your position stays active, the greater your rewards
-* STRK rewards will be directed towards the most volatile pairs
+* Higher fee pairs will receive fewer rewards per liquidity
 
 ### Participation in the program
 
