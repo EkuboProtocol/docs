@@ -25,4 +25,8 @@ When you withdraw liquidity from Ekubo, you pay a fee equal to the swap fee of t
 * It _decreases_ as a percentage of _liquidity_ as capital efficiency increases
 * It _decreases_ as a percentage of `principal + fees` as fees are earned over time
 
-Thus, the fee incentivizes all of liquidity concentration, passive liquidity and low fees.
+Thus, the fee incentivizes **all of** liquidity concentration, passive liquidity and low fees.
+
+{% hint style="info" %}
+This fee is collected by the protocol, able to be withdrawn by the protocol's current `owner`. The Ekubo team has no plans to collect the withdrawal fee revenue while it serves in the administrative `owner` role.
+{% endhint %}
