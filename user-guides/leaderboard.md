@@ -67,6 +67,8 @@ Here are some example dates and their corresponding multipliers. Note, as with t
 | 2023-11-27 | 1.9542278310420688 |
 | 2023-12-31 | 1.6791910512898784 |
 | 2024-01-31 | 1.4981506092633364 |
+| 2024-03-24 | 1.2932139242607    |
+| 2024-04-01 | 1.27067            |
 
 ### Referral points
 
