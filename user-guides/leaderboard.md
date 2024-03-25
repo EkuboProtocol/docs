@@ -35,13 +35,6 @@ We chose this to be the primary component of points earned for the following rea
 
 Fees paid to the protocol on withdrawal are counted using only the time-based multiplier.
 
-#### Base points for each position minted
-
-You will earn `2,000` base points for each position minted.
-
-* This covers the gas paid for minting and withdrawing a position
-* The position must be in-range to earn the base points, i.e. limit orders are not counted
-
 ### Multipliers
 
 #### Pool popularity multiplier
