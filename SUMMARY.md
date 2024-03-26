@@ -28,6 +28,7 @@
   * [Error Codes](integration-guides/reference/error-codes.md)
   * [Ekubo API](integration-guides/reference/ekubo-api/README.md)
     * [API Endpoints](integration-guides/reference/ekubo-api/api-endpoints.md)
+  * [Audits](integration-guides/reference/audits.md)
 
 ## Links
 
