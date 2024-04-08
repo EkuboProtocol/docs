@@ -13,6 +13,7 @@
 * [🌊 Add liquidity](user-guides/add-liquidity.md)
 * [🔄 Swap](user-guides/swap.md)
 * [🏆 Leaderboard](user-guides/leaderboard.md)
+* [⌛ Dollar-cost average orders](user-guides/dollar-cost-average-orders.md)
 
 ## Integration Guides
 

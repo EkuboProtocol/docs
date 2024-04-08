@@ -35,6 +35,12 @@ We chose this to be the primary component of points earned for the following rea
 
 Fees paid to the protocol on withdrawal are counted using only the time-based multiplier.
 
+#### DCA Orders
+
+[DCA Orders](dollar-cost-average-orders.md) placed on Ekubo earn fees based on how much volume has executed times the fee of the pool on which it was placed. Orders earn points even if they do not pay fees because they are netted against other orders.&#x20;
+
+Note that you do not earn points on the unsold amount when you stop your DCA order and pay a fee on the remaining amount to be sold. Only the executed portion of a DCA order earns points.
+
 ### Multipliers
 
 #### Pool popularity multiplier
