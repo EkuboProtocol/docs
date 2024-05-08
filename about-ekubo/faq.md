@@ -46,7 +46,7 @@ As of August 2023, you can use [Argent X](https://www.argent.xyz/argent-x/) or [
 
 <summary>Is there an Ekubo token?</summary>
 
-There is currently no token associated with Ekubo. We believe the withdrawal fees collected by the protocol should be shared with protocol users and intend to explore ways to do so.
+Yes, there is an EKUBO token. You can find the address on the [contract-addresses.md](../integration-guides/reference/contract-addresses.md "mention") page.
 
 </details>
 
