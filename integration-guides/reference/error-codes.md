@@ -96,5 +96,9 @@ You must be approved or the owner of an NFT or the operator of an account to mod
 
 The minimum size of the position was not met with the given amount of tokens. This is the slippage check for adding liquidity.
 
+### SQRT\_RATIO\_ORDER
+
+Thrown when modifying a modifying a position where the lower bound is not less than the upper bound.
+
 
 
