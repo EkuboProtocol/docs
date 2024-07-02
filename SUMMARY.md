@@ -18,7 +18,7 @@
 ## Integration Guides
 
 * [🔌 Extensions](integration-guides/extensions/README.md)
-  * [👁️ Oracle](integration-guides/extensions/oracle.md)
+  * [Oracle](https://github.com/EkuboProtocol/oracle-extension)
 * [🔄 Swapping](integration-guides/swapping.md)
 * [💸 "Till" pattern](integration-guides/till-pattern.md)
 * [📚 Reference](integration-guides/reference/README.md)
