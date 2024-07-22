@@ -4,11 +4,7 @@ description: A list of endpoints generated from the OpenAPI 3.1 documentation
 
 # API Endpoints
 
-{% swagger src="https://mainnet-api.ekubo.org/openapi.json" path="/tokens" method="get" %}
-[https://mainnet-api.ekubo.org/openapi.json](https://mainnet-api.ekubo.org/openapi.json)
-{% endswagger %}
-
-{% swagger src="https://mainnet-api.ekubo.org/openapi.json" path="/tokens/{identifier}/logo" method="get" %}
+{% swagger src="https://mainnet-api.ekubo.org/openapi.json" path="/tokens" method="get" expanded="false" %}
 [https://mainnet-api.ekubo.org/openapi.json](https://mainnet-api.ekubo.org/openapi.json)
 {% endswagger %}
 
@@ -53,10 +49,6 @@ description: A list of endpoints generated from the OpenAPI 3.1 documentation
 {% endswagger %}
 
 {% swagger src="https://mainnet-api.ekubo.org/openapi.json" path="/pools/{keyHash}/liquidity" method="get" %}
-[https://mainnet-api.ekubo.org/openapi.json](https://mainnet-api.ekubo.org/openapi.json)
-{% endswagger %}
-
-{% swagger src="https://mainnet-api.ekubo.org/openapi.json" path="/pools/{keyHash}/delta_to_sqrt_ratio/{newSqrtRatio}" method="get" %}
 [https://mainnet-api.ekubo.org/openapi.json](https://mainnet-api.ekubo.org/openapi.json)
 {% endswagger %}
 
