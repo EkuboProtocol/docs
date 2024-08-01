@@ -5,7 +5,7 @@ description: The API that powers Ekubo's interface
 # Ekubo API
 
 {% hint style="warning" %}
-Our API is in early alpha and may undergo breaking changes without notice. [Join the Discord](https://discord.ekubo.org) to ask questions or get support.
+Our API is in alpha and may undergo breaking changes without notice. [Join the Discord](https://discord.ekubo.org) to ask questions or get support.
 {% endhint %}
 
 Our API is found at the following endpoints, for Starknet mainnet and sepolia respectively:
@@ -22,3 +22,9 @@ There are multiple layers of caching with varying TTL between the database and t
 #### Rate limiting
 
 We have a rate limiting web application firewall applied to the API. If you would like to make calls in excess of the limit, please reach out on Discord to discuss an arrangement.
+
+### Endpoints
+
+Our endpoints are documented via OpenAPI 3.1 at the `/openapi.json` endpoint. For example, for mainnet: [https://mainnet-api.ekubo.org/openapi.json](https://mainnet-api.ekubo.org/openapi.json)
+
+This means you can use it with any REST API explorer, e.g. the [example swagger explorer](https://petstore3.swagger.io/?url=https://mainnet-api.ekubo.org/openapi.json) or postman.

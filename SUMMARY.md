@@ -27,8 +27,7 @@
   * [Contract addresses](integration-guides/reference/contract-addresses.md)
   * [Reading pool price](integration-guides/reference/reading-pool-price.md)
   * [Error Codes](integration-guides/reference/error-codes.md)
-  * [Ekubo API](integration-guides/reference/ekubo-api/README.md)
-    * [API Endpoints](integration-guides/reference/ekubo-api/api-endpoints.md)
+  * [Ekubo API](integration-guides/reference/ekubo-api.md)
   * [Audits](integration-guides/reference/audits.md)
 
 ## Links
