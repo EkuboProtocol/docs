@@ -38,5 +38,5 @@ Because we compute the suggested allocation of rewards off-chain and retroactive
 You can claim your allocation on the [rewards page](https://app.ekubo.org/defi-spring) of the app.
 
 {% hint style="info" %}
-If you need to send a claim manually to the airdrop contract, the proof data is made available in [this repository](https://github.com/EkuboProtocol/strk-defi-spring-proof-data).
+If you need to send a claim manually to the airdrop contract, the proof data is included in the [weekly backup of our indexer database](https://github.com/EkuboProtocol/indexer/actions/workflows/backup.yml).
 {% endhint %}
