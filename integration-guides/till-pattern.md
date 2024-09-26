@@ -29,4 +29,4 @@ trait ILocker<TStorage> {
 
 You must then make all your swaps and position updates within the `#locked` callback. If you call any of these methods outside of a `locked` callback, the call will revert.
 
-To know what you must do within the callback, encode your parameters into the data argument of the call to lock. The [shared\_locker.cairo](https://github.com/EkuboProtocol/abis/blob/main/src/shared\_locker.cairo) contains some useful functions for constructing the call to lock as well as consuming the locked callback data.
+To know what you must do within the callback, encode your parameters into the data argument of the call to lock. The [shared\_locker.cairo](https://github.com/EkuboProtocol/abis/blob/main/src/components/shared\_locker.cairo) contains some useful functions for constructing the call to lock as well as consuming the locked callback data.
