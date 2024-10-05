@@ -6,17 +6,23 @@ description: Incentives for Ekubo Protocol liquidity providers
 
 ### Introduction
 
-Users of Ekubo protocol are receiving STRK rewards as part of the [Starknet DeFi Spring](http://intract.io/starknet) by the Starknet Foundation. Our methodology for generating the suggested allocation of these incentives to Ekubo users is described below.
+Users of Ekubo protocol are receiving STRK rewards as part of the [Starknet DeFi Spring](https://defispring.starknet.io/) by the Starknet Foundation. Our methodology for computing allocation of these incentives to Ekubo liquidity providers is described below.
+
+### Rationale
+
+We follow the methodology of the foundation's distribution as closely as possible so that any incentives allocated to Ekubo protocol go directly to the users that provided the respective liquidity.
+
+This methodology was designed with input from Ekubo, Inc. to allocate incentives to liquidity providers that make useful contributions to the overall liquidity, i.e. liquidity that is used or likely to be used by swappers.
 
 ### Methodology
 
-We suggest allocation to users based on the same measures that are used to determine protocol-level allocations, so that the same users responsible for Ekubo's portion of the total incentive allocation also receive all of the incentives.
+First, the foundation assigns fixed amounts of tokens to each pair that it wishes to incentivize. This is discretionary and based on the foundation's goals.
 
-The first split of the allocation is per-pair. The foundation assigns Ekubo protocol allocations of STRK incentives for a list of pairs, based on Ekubo protocol's share of the total market depth for that pair, i.e. its market depth score. The market depth score is computed from the time-weighted market depth around the current price of the pool, where the exact depth measured is determined by the 30-day realized volatility for the pair.
+Liquidity providers for a specific pair earn a share of incentives equal to their proportion of the total Market Depth Score (MDS). The MDS is computed from the a position's contribution to market depth around the current price of the pool. We take the 1-day realized volatility for the pair on the day the incentives are earned, and measure the market depth within many multiples of this realized volatility (e.g. 0.25x, 0.5x, 1x, 2x) and assign weights to each slice based on how likely it is to be used.
 
-Within a specific pair, we allocate to liquidity providers based on the amount of principal they have within a specific range of the current price, determined by the 14-day realized volatility of the pair (we use a tighter range than the foundation in order to incentivize active liquidity providers.) In order for your position to earn rewards, it must be placed near to the current price.
+In layman's terms: in order for your position to earn rewards, it must be placed near to the current price, where "near" is defined by the pair's volatility for that day. The more likely your liquidity is to be used, the more incentives you will earn.
 
-The pool fee is deducted from the market depth score of a position.
+The fee of the pool is also incorporated into the calculation of MDS by ignoring liquidity within `+/- 4x fee` of the current price.
 
 To see the list of eligible pairs, visit the [rewards page](https://app.ekubo.org/defi-spring) of the app.
 
@@ -24,10 +30,10 @@ To see the list of eligible pairs, visit the [rewards page](https://app.ekubo.or
 
 Keep in mind the following guidelines for receiving the most STRK, in order of importance. The exact algorithm is subject to change from fortnight to fortnight.
 
-* Larger positions earn more incentives
+* Larger positions earn a larger share of the total incentives
 * The closer your liquidity is to the current price, the more rewards it earns
-  * This is based on the 14-day realized volatility of the pair&#x20;
-* Higher fee pools will receive slightly less incentives
+  * "Closeness" is determined by the realized volatility of the pair&#x20;
+* Higher fee pools will receive a smaller share of incentives
 
 ### Participation in the program
 
