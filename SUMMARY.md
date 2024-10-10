@@ -13,7 +13,8 @@
 * [🌊 Add liquidity](user-guides/add-liquidity.md)
 * [🔄 Swap](user-guides/swap.md)
 * [⌛ Dollar-cost average orders](user-guides/dollar-cost-average-orders.md)
-* [🏩 Governance](user-guides/governance.md)
+* [🏩 Governance](user-guides/governance/README.md)
+  * [EKUBO token](user-guides/governance/ekubo-token.md)
 
 ## Integration Guides
 
