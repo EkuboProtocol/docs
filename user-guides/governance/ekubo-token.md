@@ -8,7 +8,7 @@ The EKUBO token is an [L1 Ethereum token](https://etherscan.io/token/0x04C46E830
 
 ### Initial distribution
 
-There were 3 categories of distribution for the EKUBO token generation event:
+The total supply of the EKUBO token is 10 million (`10,000,000`). The total supply was split into 3 equal parts of `3,333,333` tokens. The 3 categories of distribution for the EKUBO token generation event were:
 
 * **Airdrop**: 1/3rd of the total supply was distributed to users via airdrop
 * **Team**: 1/3rd of the total supply is held by the company Ekubo, Inc.
