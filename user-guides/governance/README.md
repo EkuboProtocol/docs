@@ -12,7 +12,7 @@ The governance contracts are open source and permissively licensed on [GitHub](h
 
 ### Proposal Lifecycle
 
-#### 1. Staking Tokens
+#### Staking Tokens
 
 Before you can create or vote on proposals, you need to stake your tokens with the Staker contract. You can do so via the [Delegate](https://app.ekubo.org/governance/simple-delegate) page in the app. Staking tokens means you lock your tokens in the Governor contract, which gives you voting power. There is no penalty for unstaking, nor minimum amount of time that tokens can be staked.
 
@@ -27,7 +27,7 @@ Staking can also be done at the smart contract level. Note that voting weight is
    * Use the `stake_amount` function to delegate a specified amount of tokens.
    * Example: `stake_amount(delegateAddress, amount)`
 
-#### 2. Creating a Proposal
+#### Creating a Proposal
 
 Once you have staked tokens, you can create a proposal. The page in the app to do so is [here](https://app.ekubo.org/governance/create-proposal). A proposal is a request to execute a specific set of calls, either to self (Governor) or other smart contracts.
 
@@ -45,7 +45,7 @@ Proposals can be created directly from the smart contracts as well:
    * Combine the above two steps using the `propose_and_describe` function.
    * Example: `propose_and_describe(actions, description)`
 
-#### 3. Voting on Proposals
+#### Voting on Proposals
 
 After a proposal is created, it enters the voting phase where token holders can vote for or against (i.e. `yea` or `nay`) the proposal.
 
@@ -55,25 +55,16 @@ After a proposal is created, it enters the voting phase where token holders can 
    * Use the `vote` function to cast your vote.
    * Example: `vote(proposalId, yea)` (where `yea` is `true` for yea, `false` for nay)
 
-#### 4. Cancelling a Proposal
+#### Cancelling a Proposal
 
-If you are the proposer, you can cancel your proposal if the voting period has not started. This allows proposers to correct errors identified during the voting start delay.
+If you are the proposer, you can cancel your proposal if the voting period has not started. This allows proposers to correct errors identified during the delay period before voting starts.
 
 **How to Cancel a Proposal**
 
 * Use the `cancel` function to cancel your proposal.
 * Example: `cancel(proposalId)`
 
-#### 5. Reporting a Breach
-
-If you notice that the proposer's voting weight fell below the required proposal creation threshold during the voting period, you can report this breach, canceling the proposal.
-
-**How to Report a Breach**
-
-* Use the `report_breach` function with the timestamp at which the voting weight fell below the creation threshold during the voting period.
-* Example: `report_breach(proposalId, breachTimestamp)`
-
-#### 6. Executing a Proposal
+#### Executing a Proposal
 
 If a proposal passes the voting phase, meaning it received at least `quorum` 'yea' votes and the simple majority voted in favor, it can be executed after the execution delay period.
 

@@ -4,7 +4,7 @@ description: Information about the EKUBO token
 
 # EKUBO token
 
-The EKUBO token is an [L1 Ethereum token](https://etherscan.io/token/0x04C46E830Bb56ce22735d5d8Fc9CB90309317d0f) bridged to [Starknet](https://voyager.online/token/0x075afe6402ad5a5c20dd25e10ec3b3986acaa647b77e4ae24b0cbc9a54a27a87) developed for the purpose of decentralizing ownership of Ekubo Protocol.
+The EKUBO token is an [L1 Ethereum token](https://etherscan.io/token/0x04C46E830Bb56ce22735d5d8Fc9CB90309317d0f) bridged to [Starknet](https://voyager.online/token/0x075afe6402ad5a5c20dd25e10ec3b3986acaa647b77e4ae24b0cbc9a54a27a87), developed for the purpose of decentralizing ownership of Ekubo Protocol.
 
 ### Initial distribution
 
@@ -32,7 +32,7 @@ A CSV containing the entirety of the merkle tree for the EKUBO airdrop
 
 #### Sale
 
-The DCA orders executed over 2 months, starting 5/23/24, 10:48 PM and ending 7/23/24, 3:09 PM. The proceeds of the DCA order were owned by the [Governor ](https://voyager.online/contract/0x053499f7aa2706395060fe72d00388803fb2dcc111429891ad7b2d9dcea29acd), a.k.a. the DAO.
+The DCA orders executed over 2 months, starting 5/24/24, 2:48 AM UTC and ending 7/23/24, 7:09 PM. The proceeds of the DCA order were owned by the [Governor ](https://voyager.online/contract/0x053499f7aa2706395060fe72d00388803fb2dcc111429891ad7b2d9dcea29acd), a.k.a. the DAO.
 
 The following pools were used: [EKUBO/ETH 5%](https://app.ekubo.org/positions/new?poolType=twamm\&quoteCurrency=ETH\&baseCurrency=EKUBO\&fee=17014118346046923173168730371588410570\&poolOnly=true), [EKUBO/STRK 5%](https://app.ekubo.org/positions/new?poolType=twamm\&quoteCurrency=STRK\&baseCurrency=EKUBO\&fee=17014118346046923173168730371588410570\&poolOnly=true), and [EKUBO/USDC 5%](https://app.ekubo.org/positions/new?poolType=twamm\&quoteCurrency=USDC\&baseCurrency=EKUBO\&fee=17014118346046923173168730371588410570\&poolOnly=true).
 
@@ -42,9 +42,11 @@ Approximately `3,269,920` EKUBO was sold for `343.675` ETH, `1,204,770` USDC, an
 
 The company Ekubo, Inc., a service provider to the DAO, holds one-third of the total supply. There is no vesting schedule for these tokens. The team has come to an agreement with the DAO to hold these tokens indefinitely via [governance proposal](https://app.ekubo.org/governance/proposals/0x1bfc2ccdd2f9a718c45a9aa3a88770435f5272fbfeeb38ca2b3ad54c51c81e9) to fund the company's provision of services.
 
-#### Important contracts
+#### Governance contracts
 
-The governance contract addresses can be found [here](../../integration-guides/reference/contract-addresses.md).
+The governance contract addresses can be found [here](../../integration-guides/reference/contract-addresses.md#governance-contracts).
+
+You can learn more about how the governance contracts work [here](./).
 
 #### Disclaimer
 
