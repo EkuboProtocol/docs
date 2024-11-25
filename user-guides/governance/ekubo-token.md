@@ -30,6 +30,38 @@ An airdrop can be claimed by using a block explorer to submit a transaction usin
 A CSV containing the entirety of the merkle tree for the EKUBO airdrop
 {% endfile %}
 
+#### Claiming your airdrop
+
+We have removed the ability to claim from the interface. Below is a guide to claiming the airdrop using the Voyager block explorer:
+
+{% stepper %}
+{% step %}
+### Download the airdrop data CSV file
+
+This CSV contains a list of all the accounts and allocation amounts that were included in the airdrop. Each row corrresponds to a single address's claim in the airdrop.
+{% endstep %}
+
+{% step %}
+### Find your address in the CSV file
+
+Extract the `.csv` from the `.zip` file , and then open the file in any text editor like Notepad or Sublime. Search for the line containing your address in the file. If you cannot find it, make sure to remove any leading zeroes from your address. E.g. if your address is `0x0000abcd`, search for `0xabcd`.  If you still cannot find your address, you did not receive an airdrop.
+{% endstep %}
+
+{% step %}
+### Copy the row into Voyager block explorer
+
+The columns in the CSV are claimee, id, amount and proof from left to right. For the row containing your address, copy each column value into the [block explorer](https://voyager.online/contract/0x04bfacd0fcf70f444815de9150008fd12b5fb6721562707e502ce71ccb327d88#writeContract). Remove the quotes and curly braces from the `proof` column data. Then connect your wallet and it should look something like this.
+
+![](../../.gitbook/assets/image.png)
+{% endstep %}
+
+{% step %}
+### Click transact to claim!
+
+When you click transact, the transaction should simulate successfully, and if you are transacting from the `claimee` address you should see an EKUBO balance increase from the simulation.
+{% endstep %}
+{% endstepper %}
+
 #### Sale
 
 The DCA orders executed over 2 months, starting 5/24/24, 2:48 AM UTC and ending 7/23/24, 7:09 PM. The proceeds of the DCA order were owned by the [Governor ](https://voyager.online/contract/0x053499f7aa2706395060fe72d00388803fb2dcc111429891ad7b2d9dcea29acd), a.k.a. the DAO.
