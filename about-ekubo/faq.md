@@ -8,7 +8,7 @@ description: Frequently asked questions
 
 <summary>What is Ekubo Protocol?</summary>
 
-Ekubo is an [automated market maker](key-concepts.md#automated-market-maker-amm) built for [Starknet](key-concepts.md#starknet), with several unique [features](features.md) including concentrated liquidity and a extensible and gas efficient architecture.
+Ekubo is an [automated market maker](../integration-guides/reference/key-concepts.md#automated-market-maker-amm) built for [Starknet](../integration-guides/reference/key-concepts.md#starknet), with several unique [features](features.md) including concentrated liquidity and a extensible and gas efficient architecture.
 
 </details>
 
@@ -16,13 +16,13 @@ Ekubo is an [automated market maker](key-concepts.md#automated-market-maker-amm)
 
 <summary>What is an AMM?</summary>
 
-[Automated market makers](key-concepts.md#automated-market-maker-amm) connect liquidity providers and swappers, so market makers can earn fees with their capital and swappers can swap.
+[Automated market makers](../integration-guides/reference/key-concepts.md#automated-market-maker-amm) connect liquidity providers and swappers, so market makers can earn fees with their capital and swappers can swap.
 
 Liquidity providers are people with assets that want to do market making by creating positions, e.g. position to buy & sell ETH with a 5 bips fee between the prices of $1500 and $2000. This position will buy 5 bips below mid price and sell 5 bips above mid price until it runs out of assets.
 
 Swappers are people who want to trade, e.g. buy 100 USDC worth of ETH.
 
-Automated market makers are the financial glue that brings these people together. Read more in the [key concepts](key-concepts.md) section.
+Automated market makers are the financial glue that brings these people together. Read more in the [key concepts](../integration-guides/reference/key-concepts.md) section.
 
 </details>
 
@@ -30,7 +30,7 @@ Automated market makers are the financial glue that brings these people together
 
 <summary>What is Starknet?</summary>
 
-[Starknet](key-concepts.md#starknet) is a [layer 2](key-concepts.md#layer-2) on [Ethereum](key-concepts.md#ethereum) that uses ZK proofs to provide a scalable decentralized platform for composable applications. Check out the [key concepts](https://docs.ekubo.org/introduction/key-concepts) section to learn more.
+[Starknet](../integration-guides/reference/key-concepts.md#starknet) is a [layer 2](../integration-guides/reference/key-concepts.md#layer-2) on [Ethereum](../integration-guides/reference/key-concepts.md#ethereum) that uses ZK proofs to provide a scalable decentralized platform for composable applications. Check out the [key concepts](https://docs.ekubo.org/introduction/key-concepts) section to learn more.
 
 </details>
 
@@ -70,6 +70,6 @@ We are interested in open sourcing the code long-term, but in the short term the
 
 <summary>What does "Ekubo" mean?</summary>
 
-"Ekubo" is a reference to the character [Dimple](https://mob-psycho-100.fandom.com/wiki/Dimple) from the anime [Mob Psycho 100](https://en.wikipedia.org/wiki/Mob\_Psycho\_100).
+"Ekubo" is a reference to the character [Dimple](https://mob-psycho-100.fandom.com/wiki/Dimple) from the anime [Mob Psycho 100](https://en.wikipedia.org/wiki/Mob_Psycho_100).
 
 </details>

@@ -6,7 +6,7 @@ description: A practical guide to Ekubo's internal math
 
 Ekubo represents the current state of each pool with two values: `sqrt_ratio` and `liquidity`. The `sqrt_ratio` is the square root of the current price in terms of  `token1 / token0`, and the `liquidity` is a measure of how much of the two tokens is available for trading at the current price.
 
-Ekubo supports pair prices between `2**-128` and `2**128`, which means the square root of the price can be anywhere between `2**-64` and `2**64`. We use a [fixed point number](https://en.wikipedia.org/wiki/Fixed-point\_arithmetic) type for storing the price with 128 bits after the radix. For example, `sqrt_ratio` for the price `1` is represented as `1<<128`.
+Ekubo supports pair prices between `2**-128` and `2**128`, which means the square root of the price can be anywhere between `2**-64` and `2**64`. We use a [fixed point number](https://en.wikipedia.org/wiki/Fixed-point_arithmetic) type for storing the price with 128 bits after the radix. For example, `sqrt_ratio` for the price `1` is represented as `1<<128`.
 
 $$
 sqrt\_ratio = \sqrt{y/x}
@@ -22,7 +22,7 @@ The value `sqrt_ratio` is defined as `sqrt(y/x)` and `liquidity` is defined as `
 Ekubo does not consider token decimals in any of its calculations. If `token0` and `token1` have different decimals, that just means the price of `1` is actually `10**token1_decimals / 10**token0_decimals.`
 {% endhint %}
 
-Given sqrt\_ratio and liquidity, we can easily compute the equivalent amount of `x` and `y` reserves.
+Given sqrt\_ratio and liquidity, we can compute the equivalent amount of `x` and `y` reserves.
 
 $$
 x = liquidity \div sqrt\_ratio
@@ -32,11 +32,11 @@ $$
 y = liquidity \times sqrt\_ratio
 $$
 
-A constant-liquidity AMM such as Uniswap V2 can be trivially implemented using these representations instead of `x` and `y`, and Ekubo with full range liquidity is a more efficient version of the usual AMM implementation that tracks `x` and `y` and does not support concentrated liquidity.
+A constant-liquidity AMM such as Uniswap V2 can be trivially implemented using these representations instead of `x` and `y`, and Ekubo with full range liquidity is a more efficient version of the usual AMM implementation that tracks `x` and `y` without support for concentrated liquidity.
 
-When the price moves due to swapping, positions are entered and exited, and Ekubo adjusts the liquidity mid-trade. Thus, trades must be executed iteratively: a user's swap is broken up into pieces trading through areas of the curve with constant liquidity. Each time we cross a position boundary, we update the current liquidity. How do we define position boundaries? That's where ticks come in.
+When the price moves due to swapping, positions are entered and exited, and Ekubo adjusts the liquidity mid-trade. Thus, trades must be executed iteratively: a user's swap is broken up into pieces trading through areas of the curve with constant liquidity, a la constant-liquidity AMMs. Each time we cross a position boundary, we update the current liquidity. How do we define position boundaries? That's where ticks come in.
 
-Ticks divide the entire price range into discrete regions. They can be defined however an AMM designer wishes, but in Ekubo prices are divided up logarithmically so that each tick is equally spaced. The base of the log for Ekubo is set to `1.000001`. You can compute the `sqrt_ratio` corresponding to ticks using decimal math libraries, for example in TypeScript:
+Ticks divide the entire price range into discrete regions. They can be defined however an AMM designer wishes, but in Ekubo prices are divided up logarithmically so that each tick is equidistant from one another. The base of the log for Ekubo's ticks (i.e. tick size) is set to `1.000001`. You can compute the `sqrt_ratio` corresponding to ticks using decimal math libraries, for example in TypeScript:
 
 {% code title="tick_to_sqrt_ratio.ts" %}
 ```typescript
@@ -60,6 +60,6 @@ const sqrt_ratio_x128 =
 ```
 {% endcode %}
 
-The inverse can be computed (`tick` from `sqrt_ratio`), by doing taking the logarithm of `sqrt_ratio` in base `1.000001`.
+The inverse can be computed (`tick` from `sqrt_ratio`), by doing taking the logarithm of `sqrt_ratio` in base `1.000001`. To get the _exact_ fixed point 64.128 number used by Ekubo to represent a tick's price, you can use one of our open source SDKs ([TypeScript](https://github.com/EkuboProtocol/starknet-typescript-sdk), [Rust](https://github.com/EkuboProtocol/starknet-rust-sdk)).
 
-Once you've broken up the price range into pieces, positions are just a combination of an amount of liquidity and lower/upper tick boundaries.
+Once you've broken up the price range into pieces, positions are just a combination of an amount of liquidity and lower/upper tick boundaries. Users update positions by updating the liquidity that goes in/out of range at these prices, and swappers move the price across position boundaries.

@@ -2,7 +2,7 @@
 description: Useful concepts and technologies on which Ekubo is built
 ---
 
-# 📖 Key concepts
+# Key concepts
 
 ## Ethereum
 
@@ -14,7 +14,7 @@ A layer 2 is a network that uses Ethereum to provide a more scalable platform fo
 
 ## ZK Proofs
 
-ZK stands for "zero knowledge," and is the technology used by [Starknet](key-concepts.md#starknet) to scale [Ethereum](key-concepts.md#ethereum). It enables the Starknet protocol to verify the correctness of state transitions on Ethereum without re-executing all the involved transactions or even including their data on Ethereum. See the [wikipedia](https://en.wikipedia.org/wiki/Zero-knowledge\_proof).
+ZK stands for "zero knowledge," and is the technology used by [Starknet](key-concepts.md#starknet) to scale [Ethereum](key-concepts.md#ethereum). It enables the Starknet protocol to verify the correctness of state transitions on Ethereum without re-executing all the involved transactions or even including their data on Ethereum. See the [wikipedia](https://en.wikipedia.org/wiki/Zero-knowledge_proof).
 
 ## Starknet
 

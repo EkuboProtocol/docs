@@ -6,17 +6,19 @@ description: What sets Ekubo Protocol apart from other AMM protocols
 
 ## Gas efficiency
 
-Ekubo uses the ["till" pattern](../integration-guides/till-pattern.md) and a singleton design to provide the cheapest trades against concentrated liquidity on Starknet. That means all the pools are managed in a single contract, and when you swap against a pool or update a position on Ekubo, token transfers are deferred until the end of the transaction. In fact, you don't have to transfer tokens at all. Aggregators could save them in Ekubo for later, avoiding expensive token transfers altogether.
+Ekubo uses the ["till" pattern](../integration-guides/till-pattern.md) and a singleton design to provide the cheapest trades against many pools all featuring concentrated liquidity. That means all the pools are managed in a single contract, and when you swap against a pool or update a position on Ekubo Protocol, token transfers are deferred until the end of the transaction. In fact, you don't have to transfer tokens at all--advanced swappers could save those tokens in Ekubo Protocol for later, avoiding expensive token transfers and undesirable token behavior altogether.
 
-The result is that you can execute many actions across many pools and only make the minimum number of required token transfers. The highly optimized and capital efficient design combined with Starknet's low fees enables Ekubo protocol to provide the best execution net of gas.
+The result is that you can execute many actions across many pools and only make the minimum number of required token transfers. The highly optimized and capital efficient design and ruthlessly optimized contracts enables Ekubo protocol to provide the best execution net of gas.
 
 ## Concentrated liquidity
 
 Concentrated liquidity allows market makers to [provide liquidity](../user-guides/add-liquidity.md) within a specified price range. Each liquidity provider chooses the exact parameters of their position, but all positions in a pool are aggregated from a swapper's perspective. As a result, swappers get better pricing because liquidity providers can leverage up within a price range, _or_ earn yield on unused capital elsewhere.
 
+Ekubo Protocol uses ticks 100x smaller than the competitors at 1/100th of a basis point. This allows $1,000 in liquidity in EKUBO to work as well as $100k in the next best AMM protocol.
+
 ## Extensions
 
-Extensions allow third party developers to permissionlessly create new kinds of pools on Ekubo that integrate into the same ecosystem of aggregators and interfaces built on top of Ekubo. These pools can implement new features such as oracles, or new order types like limit orders or TWAMM orders. Read more about extensions [here](../integration-guides/extensions/).
+Extensions allow third party developers to permissionlessly create new kinds of pools on Ekubo that integrate into the same ecosystem of aggregators and interfaces built on top of Ekubo. These pools can implement new features such as oracles, or additional order types like limit orders or TWAMM orders. Read more about extensions [here](../integration-guides/extensions/).
 
 ## Withdrawal fee
 
@@ -28,5 +30,7 @@ When you withdraw liquidity from Ekubo, you pay a fee equal to the swap fee of t
 Thus, the fee incentivizes **all of** liquidity concentration, passive liquidity and low fees.
 
 {% hint style="info" %}
-This fee is collected by the protocol, able to be withdrawn by the protocol's current `owner`. The Ekubo team has no plans to collect the withdrawal fee revenue while it serves in the administrative `owner` role.
+This fee is collected by the protocol, able to be withdrawn by the protocol's current `owner`.&#x20;
+
+The owner of the protocol is [Ekubo Governance](../user-guides/governance/). As of January 2025, Ekubo Governance currently directs all protocol revenue towards [EKUBO buybacks](https://app.ekubo.org/governance/revenue-buybacks).
 {% endhint %}

@@ -4,14 +4,10 @@ description: The external interfaces for interacting with Ekubo Protocol
 
 # Core Interfaces
 
-You should first consider using the scarb package for Ekubo interfaces, which you can import here:
+## Starknet
 
-[https://github.com/EkuboProtocol/abis](https://github.com/EkuboProtocol/abis)
+Use the [scarb package](https://github.com/EkuboProtocol/abis) for the Ekubo Protocol interfaces.
 
-{% file src="../../.gitbook/assets/core.cairo" %}
-All the interfaces and types used by the interface with comments
-{% endfile %}
+### Ethereum
 
-{% file src="../../.gitbook/assets/core-abi.json" %}
-The ABI for the core contract
-{% endfile %}
+Reach out on [Discord](https://discord.ekubo.org) in the `#devs`channel to get access to the ABIs.

@@ -4,7 +4,6 @@
 
 * [👋 Introduction](README.md)
 * [🔑 Features](about-ekubo/features.md)
-* [📖 Key concepts](about-ekubo/key-concepts.md)
 * [❓ FAQ](about-ekubo/faq.md)
 * [🌻 Starknet DeFi Spring](about-ekubo/starknet-defi-spring.md)
 
@@ -23,13 +22,14 @@
 * [🔄 Swapping](integration-guides/swapping.md)
 * [💸 "Till" pattern](integration-guides/till-pattern.md)
 * [📚 Reference](integration-guides/reference/README.md)
-  * [Math 1-pager](integration-guides/reference/math-1-pager.md)
   * [Core Interfaces](integration-guides/reference/core-interfaces.md)
   * [Contract addresses](integration-guides/reference/contract-addresses.md)
   * [Reading pool price](integration-guides/reference/reading-pool-price.md)
   * [Error Codes](integration-guides/reference/error-codes.md)
   * [Ekubo API](integration-guides/reference/ekubo-api.md)
   * [Audits](integration-guides/reference/audits.md)
+  * [Key concepts](integration-guides/reference/key-concepts.md)
+  * [Math 1-pager](integration-guides/reference/math-1-pager.md)
 
 ## Links
 
@@ -37,4 +37,4 @@
 * [Launch app](https://app.ekubo.org)
 * [Discord](https://discord.gg/RFbSXxtqUG)
 * [Twitter](https://twitter.com/EkuboProtocol)
-* [Telegram](https://t.me/Ekubo\_Protocol)
+* [Telegram](https://t.me/Ekubo_Protocol)
