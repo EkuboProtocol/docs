@@ -4,8 +4,6 @@
 
 * [👋 Introduction](README.md)
 * [🔑 Features](about-ekubo/features.md)
-* [❓ FAQ](about-ekubo/faq.md)
-* [🌻 Starknet DeFi Spring](about-ekubo/starknet-defi-spring.md)
 
 ## User Guides
 
@@ -14,6 +12,8 @@
 * [⌛ Dollar-cost average orders](user-guides/dollar-cost-average-orders.md)
 * [🏩 Governance](user-guides/governance/README.md)
   * [EKUBO token](user-guides/governance/ekubo-token.md)
+* [Incentives](user-guides/incentives/README.md)
+  * [🌻 Starknet DeFi Spring](user-guides/incentives/starknet-defi-spring.md)
 
 ## Integration Guides
 
@@ -30,6 +30,7 @@
   * [Audits](integration-guides/reference/audits.md)
   * [Key concepts](integration-guides/reference/key-concepts.md)
   * [Math 1-pager](integration-guides/reference/math-1-pager.md)
+  * [Frequently Asked Questions (FAQ)](integration-guides/reference/frequently-asked-questions-faq.md)
 
 ## Links
 
