@@ -26,21 +26,23 @@ These are the addresses of the latest versions of the contracts. They may change
 
 ## Ethereum
 
-All our smart contracts on Ethereum are immutable. The owner role in the contract can only withdraw protocol fees, and is set to the L1 StarknetOwnerProxy contract representing L2 governance.
-
-### Alpha v1 (Deployed February 2025)
-
-These contracts expire on [July 1st, 12:00 AM GMT](https://www.epochconverter.com/countdown?q=1751327999), after which swapping and depositing liquidity will be frozen. You must migrate to the new version of contracts before this date.
+All our smart contracts on Ethereum are **immutable**. The `owner` role in the contract can only withdraw protocol fees, and is set to the L1 StarknetOwnerProxy contract, representing the governor on Starknet.
 
 There are two kinds of contracts, stateful and stateless. Stateless contracts may be redeployed at any time for the use in our backend and interface. Stateful contracts do not change addresses for the lifetime of the deployment.
 
+{% hint style="info" %}
+Version 2 of the contracts are not yet live. We do not recommend integrating version 1 of Ekubo Protocol. Join the [Discord](https://discord.ekubo.org) if you would like help integrating version 2.&#x20;
+{% endhint %}
+
+<details>
+
+<summary>Alpha v1 (Deployed February 2025)</summary>
+
+These contracts are deprecated, and also expire [July 1st, 12:00 AM GMT](https://www.epochconverter.com/countdown?q=1751327999) after which swapping and depositing liquidity will be frozen. Addresses are kept here for posterity.
+
 #### Stateful
 
-| Contract / Network | Sepolia                                                                                                                                                                   | Mainnet                                                                                                                                                           |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Core               | <p><code>0x95c26d0c07dd774afc3c82a29f2cb301ee535e25</code><br><a href="https://sepolia.etherscan.io/address/0x95c26d0c07dd774afc3c82a29f2cb301ee535e25">Etherscan</a></p> | <p><code>0x39d8ab62fcaa5b466eb8397187732b6ba455aaa8</code><br><a href="https://etherscan.io/address/0x39d8ab62fcaa5b466eb8397187732b6ba455aaa8">Etherscan</a></p> |
-| Positions          | <p><code>0x1d0876afd3108a2d3a446ea410b81a09d17f1e4e</code><br><a href="https://sepolia.etherscan.io/address/0x1d0876afd3108a2d3a446ea410b81a09d17f1e4e">Etherscan</a></p> | <p><code>0x4e541ffb7afda7d2ff20204f6128c7b84efc204f</code><br><a href="https://etherscan.io/address/0x4e541ffb7afda7d2ff20204f6128c7b84efc204f">Etherscan</a></p> |
-| Oracle             | <p><code>0x51373cfe405c627956fccb44fa0933dd48b6151d</code><br><a href="https://sepolia.etherscan.io/address/0x51373cfe405c627956fccb44fa0933dd48b6151d">Etherscan</a></p> | <p><code>0x51ee1902db6d5640163506b9e178a21ff027282c</code><br><a href="https://etherscan.io/address/0x51ee1902db6d5640163506b9e178a21ff027282c">Etherscan</a></p> |
+<table><thead><tr><th width="191">Contract / Network</th><th>Sepolia</th><th>Mainnet</th></tr></thead><tbody><tr><td>Core</td><td><code>0x95c26d0c07dd774afc3c82a29f2cb301ee535e25</code><br><a href="https://sepolia.etherscan.io/address/0x95c26d0c07dd774afc3c82a29f2cb301ee535e25">Etherscan</a></td><td><code>0x39d8ab62fcaa5b466eb8397187732b6ba455aaa8</code><br><a href="https://etherscan.io/address/0x39d8ab62fcaa5b466eb8397187732b6ba455aaa8">Etherscan</a></td></tr><tr><td>Positions</td><td><code>0x1d0876afd3108a2d3a446ea410b81a09d17f1e4e</code><br><a href="https://sepolia.etherscan.io/address/0x1d0876afd3108a2d3a446ea410b81a09d17f1e4e">Etherscan</a></td><td><code>0x4e541ffb7afda7d2ff20204f6128c7b84efc204f</code><br><a href="https://etherscan.io/address/0x4e541ffb7afda7d2ff20204f6128c7b84efc204f">Etherscan</a></td></tr><tr><td>Oracle</td><td><code>0x51373cfe405c627956fccb44fa0933dd48b6151d</code><br><a href="https://sepolia.etherscan.io/address/0x51373cfe405c627956fccb44fa0933dd48b6151d">Etherscan</a></td><td><code>0x51ee1902db6d5640163506b9e178a21ff027282c</code><br><a href="https://etherscan.io/address/0x51ee1902db6d5640163506b9e178a21ff027282c">Etherscan</a></td></tr></tbody></table>
 
 #### Stateless
 
@@ -51,6 +53,10 @@ There are two kinds of contracts, stateful and stateless. Stateless contracts ma
 | SimpleSwapper      | <p><code>0x958bf949ec15d9b2eeb6bdb068d80f66d37bbf7b</code><br><a href="https://sepolia.etherscan.io/address/0x958bf949ec15d9b2eeb6bdb068d80f66d37bbf7b">Etherscan</a></p> | <p><code>0xcd87828f4f279d3c5fd7af531370298964b5eaab</code><br><a href="https://etherscan.io/address/0xcd87828f4f279d3c5fd7af531370298964b5eaab">Etherscan</a></p> |
 | PriceFetcher       | <p><code>0xe1306e1830dbab989bf56216176511a959e40baf</code><br><a href="https://sepolia.etherscan.io/address/0xe1306e1830dbab989bf56216176511a959e40baf">Etherscan</a></p> | <p><code>0xd8fb96efe48b7226c035b672fcd9b8fc65b3d318</code><br><a href="https://etherscan.io/address/0xd8fb96efe48b7226c035b672fcd9b8fc65b3d318">Etherscan</a></p> |
 | CoreDataFetcher    | <p><code>0x455363ecb2046c06db2cbb55ee4b76794672fc6a</code><br><a href="https://sepolia.etherscan.io/address/0x455363ecb2046c06db2cbb55ee4b76794672fc6a">Etherscan</a></p> | <p><code>0x2d41e5886b3996430918f03c2c36874ca2531ab3</code><br><a href="https://etherscan.io/address/0x2d41e5886b3996430918f03c2c36874ca2531ab3">Etherscan</a></p> |
+
+
+
+</details>
 
 
 
