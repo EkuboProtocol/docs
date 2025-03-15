@@ -38,9 +38,16 @@ The [oracle extension](https://github.com/EkuboProtocol/oracle-extension) has no
 
 ## Ethereum
 
-The Ethereum smart contracts have not been audited. Our contracts on Ethereum are non-upgradeable _and_ expiring. This means that after they are deployed, swaps and deposits can only happen for a fixed amount of time. After that time has passed, the contracts can only be withdrawn from. This forced migration allows us to continue to improve our contracts at launch.
+The Ethereum Ekubo Protocol smart contracts have been audited by both ABDK and Plainshift. The Ethereum smart contracts are immutable.
+
+### Ekubo Protocol Audits
+
+{% file src="../../.gitbook/assets/Ekubo EVM Deployment Plainshift Audit.pdf" %}
+Plainshift audit report
+{% endfile %}
+
+ABDK audit report coming soon.
 
 ### Starknet L1 Proxy
 
-The Governance Starknet L1 Proxy has been audited and the report can be found on [GitHub](https://github.com/EkuboProtocol/governance/blob/main/l1_proxy/Ekubo_Governance_L1_Proxy.pdf).
-
+The Governance Starknet L1 Proxy has been audited by Cairo Security Clan and the report can be found on [GitHub](https://github.com/EkuboProtocol/governance/blob/main/l1_proxy/Ekubo_Governance_L1_Proxy.pdf).
