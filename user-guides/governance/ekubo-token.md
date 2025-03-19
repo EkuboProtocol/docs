@@ -45,6 +45,10 @@ This CSV contains a list of all the accounts and allocation amounts that were in
 ### Find your address in the CSV file
 
 Extract the `.csv` from the `.zip` file , and then open the file in any text editor like Notepad or Sublime. Search for the line containing your address in the file. If you cannot find it, make sure to remove any leading zeroes from your address. E.g. if your address is `0x0000abcd`, search for `0xabcd`.  If you still cannot find your address, you did not receive an airdrop.
+
+{% hint style="warning" %}
+Do not use Excel or Numbers to open the spreadsheet. They will round the numbers in the columns causing you to get "Invalid proof" when you try to submit your transaction.
+{% endhint %}
 {% endstep %}
 
 {% step %}
