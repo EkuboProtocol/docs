@@ -11,7 +11,7 @@ Ekubo's first extension is the TWAMM, or "time-weighted average market maker," w
 DCA-enabled pools are liquidity pools that use the extension to make these orders possibly by supporting trades when the buy and sell DCA orders are imbalanced.
 
 {% hint style="info" %}
-In practice, execution of orders happens up to once per block. On Starknet, blocks occur approximately once per 6 minutes, so DCA orders are best suited for trades that happen over hours, days or weeks--at least until block times on Starknet are shorter.
+In practice, execution of orders happens up to once per block. On Starknet, blocks occur approximately once per 30 seconds, so DCA orders are best suited for trades that happen over hours, days or weeks. As block times are decreased, orders will be split into more pieces and thus larger orders can be placed over shorter time periods given the same amount of liquidity.
 {% endhint %}
 
 Orders on both sides of a DCA-enabled pool are netted against each other, and the difference is swapped on the pool to compute the resulting price for the orders.
