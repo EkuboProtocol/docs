@@ -14,6 +14,7 @@
   * [EKUBO token](user-guides/governance/ekubo-token.md)
 * [Incentives](user-guides/incentives/README.md)
   * [🌻 Starknet DeFi Spring](user-guides/incentives/starknet-defi-spring.md)
+  * [Methodology](user-guides/incentives/methodology.md)
 
 ## Integration Guides
 
@@ -35,7 +36,7 @@
 ## Links
 
 * [Home](https://ekubo.org)
-* [Launch app](https://app.ekubo.org)
+* [Launch app](https://evm.ekubo.org/)
 * [Discord](https://discord.gg/RFbSXxtqUG)
 * [Twitter](https://twitter.com/EkuboProtocol)
 * [Telegram](https://t.me/Ekubo_Protocol)
