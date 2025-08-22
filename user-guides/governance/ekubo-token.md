@@ -76,7 +76,17 @@ Approximately `3,269,920` EKUBO was sold for `343.675` ETH, `1,204,770` USDC, an
 
 #### Team
 
-The company Ekubo, Inc., a service provider to the DAO, holds one-third of the total supply. There is no vesting schedule for these tokens. The team has come to an agreement with the DAO to hold these tokens indefinitely via [governance proposal](https://app.ekubo.org/governance/proposals/0x1bfc2ccdd2f9a718c45a9aa3a88770435f5272fbfeeb38ca2b3ad54c51c81e9) to fund the company's provision of services.
+The company Ekubo, Inc., a service provider to the DAO, holds one-third of the total supply. There is no vesting schedule for these tokens. The team has come to an agreement with the DAO to hold these tokens indefinitely via [governance proposal](https://app.ekubo.org/governance/proposals/0x1bfc2ccdd2f9a718c45a9aa3a88770435f5272fbfeeb38ca2b3ad54c51c81e9) to fund the company's provision of services to the DAO.
+
+#### Value accrual
+
+As of August 2025, the DAO currently holds total ownership of Ekubo Protocol smart contracts, meaning it can upgrade the contracts on Starknet, and collect revenue on EVM and Starknet. Note there is no upgrade mechanism for EVM contracts.
+
+It is the right and responsibility of the DAO to decide what to do with the revenue. The DAO may direct protocol revenue towards EKUBO buybacks, and then may further direct that EKUBO to active participants in the protocol, such as governance stakers or liquidity providers.
+
+As of  August 2025, the position of Ekubo, Inc. is that the revenue should be directed towards growth of the protocol, and we will vote accordingly until the protocol achieves sustainable revenue, i.e. the revenue earned by the protocol exceeds the total costs to keep the protocol running.
+
+The team allocation of EKUBO tokens is entirely held by Ekubo, Inc., and the company is committed to maintaining its share of Ekubo Protocol. The end-goal is for Ekubo, Inc. to be sustained by protocol revenue that is directed towards token holders. This aligns the equity holders with the interests of the protocol. The vision is further described in the [alignment proposal](https://app.ekubo.org/governance/proposals/0x1bfc2ccdd2f9a718c45a9aa3a88770435f5272fbfeeb38ca2b3ad54c51c81e9).
 
 #### Governance contracts
 
