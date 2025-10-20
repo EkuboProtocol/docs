@@ -64,13 +64,15 @@ mod SwapExample {
       let delta = core.swap(pool_key, params);
       
       // Each swap generates a "delta", but does not trigger any token transfers.
-      // A negative delta indicates you are owed tokens. A positive delta indicates core owes you tokens.
+      // Deltas are always from the perspective of the pool:
+      //  - A negative delta indicates the pool owes you tokens.
+      //  - A positive delta indicates you owe the pool tokens.
       // To take a negative delta out of core, do (assuming token0 for token1):
       core.withdraw(token, recipient, delta.amount0.mag);
       // To pay tokens you owe, do (assuming payment is for token1):
       IERC20Dispatcher {
         contract_address: token
-      }.approve(ekubo, delta.mag.into());
+      }.approve(ekubo, delta.amount1.mag.into());
       // ICoreDispatcher#pay will trigger a token#transferFrom(this, core) for the entire approved amount
       core.pay(token);
       
