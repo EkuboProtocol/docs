@@ -23,7 +23,7 @@ https://app.ekubo.org/positions/new?baseCurrency=ETH&quoteCurrency=USDC&fee=1701
 
 The second easiest way is to compute the value. Fee is a 0.128 fixed point number, so to compute the fee, we can do [`floor(0.05% * 2**128)`](https://www.wolframalpha.com/input?i=floor%280.05%25*2**128%29). The result is `170141183460469235273462165868118016`.  The tick spacing of `0.01%` is represented as an exponent of `1.000001`, so it can be computed as [`log base 1.000001 of 1.001`](https://www.wolframalpha.com/input?i=log+base+1.000001+of+1.001), which is roughly equal to `1000`. The extension is `0` because it is not used for this pool.
 
-Input the values into the [Core](contract-addresses.md) contract on Voyager to read the pool price. If you're following along, you'll get a value that looks like this:
+Input the values into the [Core](evm-contracts-v2.md) contract on Voyager to read the pool price. If you're following along, you'll get a value that looks like this:
 
 ```json
 {
