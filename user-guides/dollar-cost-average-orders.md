@@ -1,22 +1,22 @@
 ---
 description: >-
-  Place orders that execute over time to enter and exit positions more
-  efficiently or even programmatically
+  Also known as TWAMM. Place orders that execute over time to enter and exit
+  positions more efficiently or even programmatically
 ---
 
 # ⌛ Dollar-cost average orders
 
-Ekubo's first extension is the TWAMM, or "time-weighted average market maker," which shows up in the [interface](https://app.ekubo.org) as "DCA" orders and "DCA-enabled" pools. DCA orders are orders to sell a token at a specified rate between a start and end time. The mechanism involved in executing Ekubo's TWAMM orders is best described by [Paradigm](https://www.paradigm.xyz/2021/07/twamm).&#x20;
+TWAMM, or "time-weighted average market maker," is an Ekubo extension which is enables a feature in the [interface](https://app.ekubo.org) called "DCA" orders and "DCA-enabled" pools. DCA orders are orders to sell a token at a specified rate between a start and end time. The mechanism involved in executing Ekubo's DCA orders is best described by [Paradigm](https://www.paradigm.xyz/2021/07/twamm).&#x20;
 
-DCA-enabled pools are liquidity pools that use the extension to make these orders possibly by supporting trades when the buy and sell DCA orders are imbalanced.
+DCA-enabled pools are liquidity pools that use the extension to support these orders by providing liquidity for the buy/sell side when DCA orders are imbalanced. In practice, orders are split up to execute every second, netted against each other, and if the ratio of buy and sell orders is not exactly equal to the current pool price some amount of the orders is swapped against the pool. Note that the pool price is very rarely equal to the ratio of the DCA orders; and thus, this liquidity is necessary for DCA orders to get good pricing.
 
 {% hint style="info" %}
-In practice, execution of orders happens up to once per block. On Starknet, blocks occur approximately once per 30 seconds, so DCA orders are best suited for trades that happen over hours, days or weeks. As block times are decreased, orders will be split into more pieces and thus larger orders can be placed over shorter time periods given the same amount of liquidity.
+In practice, execution of orders happens up to once per block. On Starknet, blocks are created once every few seconds, so DCA orders are best suited for trades that happen over longer time periods. As block times decrease, orders will be split into more pieces and thus orders can be placed with greater size or shorter duration given the same amount of liquidity.
 {% endhint %}
 
 Orders on both sides of a DCA-enabled pool are netted against each other, and the difference is swapped on the pool to compute the resulting price for the orders.
 
-Ekubo's TWAMM implementation is integrated into the core protocol via [extensions](../integration-guides/extensions/ "mention"). There are two new features in the user interface:
+Ekubo's TWAMM implementation is integrated into the core protocol via [extensions](../integration-guides/extensions/ "mention"). There are two features in the user interface:
 
 * **DCA-enabled pools:** liquidity pools that use the TWAMM extension
   * Provide liquidity to these pools to earn fees from DCA orders as well as regular swap volume
@@ -34,17 +34,19 @@ Consider using TWAMM in the following cases:
 * When converting tokens programatically
 * When you want to buy/sell a token but don't want to time the entry/exit
 
+Note that the price you receive on your DCA orders is heavily dependent on the liquidity in the pools and other orders on the pool over the period that the order executes. If you want to ensure good execution, it's best to supply liquidity to the pool on which you want to place the order to limit the price impact of each swap.
+
 ### Creating DCA orders
 
-The ability to place DCA orders is available in the interface [here](https://app.ekubo.org/dca).
+The ability to place DCA orders is available in the interface [here](https://app.ekubo.org/evm/dca).
 
 DCA orders pay fees in 2 ways:
 
-* When you stop the order, you pay a fee to the liquidity providers of the pool on which you placed the order
-* When the orders are imbalanced, you pay fees to liquidity providers of the pool on which you placed the order to swap your tokens
+* When you stop the order, you pay a fee to the liquidity providers of the pool on which you placed the order equal to the swap fee times the remaining sell amount
+* When the orders are imbalanced, you pay swap fees to liquidity providers of the pool on which you placed the order to swap your tokens, depending on how one-sided the orders are
 
 {% hint style="info" %}
-The contracts allow durations between `1` second and `2**32` seconds, but the specified start and end time for an order must follow certain rules to be valid.
+The contracts allow durations between `1` second and `2**32` seconds, but the specified start and end time for an order must follow specific rules to be valid.
 {% endhint %}
 
 ### Adding liquidity to DCA pools
