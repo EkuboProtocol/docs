@@ -3,23 +3,19 @@
 ## About Ekubo
 
 * [👋 Introduction](README.md)
+* [🔮 Vision](about-ekubo/vision.md)
 * [🔑 Features](about-ekubo/features.md)
 
 ## User Guides
 
 * [🌊 Add liquidity](user-guides/add-liquidity.md)
-* [🔄 Swap](user-guides/swap.md)
 * [⌛ Dollar-cost average orders](user-guides/dollar-cost-average-orders.md)
 * [🏩 Governance](user-guides/governance/README.md)
   * [EKUBO token](user-guides/governance/ekubo-token.md)
-* [Incentives](user-guides/incentives/README.md)
-  * [🌻 Starknet DeFi Spring](user-guides/incentives/starknet-defi-spring.md)
-  * [Methodology](user-guides/incentives/methodology.md)
 
 ## Integration Guides
 
-* [🔌 Extensions](integration-guides/extensions/README.md)
-  * [Oracle](https://github.com/EkuboProtocol/oracle-extension)
+* [🔌 Extensions](integration-guides/extensions.md)
 * [🔄 Swapping](integration-guides/swapping.md)
 * [💸 "Till" pattern](integration-guides/till-pattern.md)
 * [📚 Reference](integration-guides/reference/README.md)
@@ -38,7 +34,8 @@
 ## Links
 
 * [Home](https://ekubo.org)
-* [Launch app](https://evm.ekubo.org/)
+* [Launch app (EVM)](https://ekubo.org/evm)
+* [Launch app (Starknet)](https://ekubo.org/starknet)
 * [Discord](https://discord.gg/RFbSXxtqUG)
 * [Twitter](https://twitter.com/EkuboProtocol)
 * [Telegram](https://t.me/Ekubo_Protocol)

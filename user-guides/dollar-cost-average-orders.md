@@ -16,7 +16,7 @@ In practice, execution of orders happens up to once per block. On Starknet, bloc
 
 Orders on both sides of a DCA-enabled pool are netted against each other, and the difference is swapped on the pool to compute the resulting price for the orders.
 
-Ekubo's TWAMM implementation is integrated into the core protocol via [extensions](../integration-guides/extensions/ "mention"). There are two features in the user interface:
+Ekubo's TWAMM implementation is integrated into the core protocol via [extensions.md](../integration-guides/extensions.md "mention"). There are two features in the user interface:
 
 * **DCA-enabled pools:** liquidity pools that use the TWAMM extension
   * Provide liquidity to these pools to earn fees from DCA orders as well as regular swap volume

@@ -1,5 +1,6 @@
 ---
 description: A practical guide to Ekubo's internal math
+hidden: true
 ---
 
 # Math 1-pager

@@ -4,9 +4,13 @@ description: What sets Ekubo Protocol apart from other AMM protocols
 
 # 🔑 Features
 
+## Free by default
+
+The core contracts are ownerless and permissionless. They are deployed to the same address on every chain using a script that anyone can run. There is no protocol fee collection built into the Core contracts or any of the extensions--all generated fees go directly to users. Instead, any protocol fees are collected at the periphery. This is the key innovation that allows Ekubo V3 to service many different licensees.
+
 ## Gas efficiency
 
-Ekubo uses the ["till" pattern](../integration-guides/till-pattern.md) and a singleton design to provide the cheapest trades against many pools all featuring concentrated liquidity. That means all the pools are managed in a single contract, and when you swap against a pool or update a position on Ekubo Protocol, token transfers are deferred until the end of the transaction. In fact, you don't have to transfer tokens at all--advanced swappers could save those tokens in Ekubo Protocol for later, avoiding expensive token transfers and undesirable token behavior altogether.
+Ekubo uses the ["till" pattern](../integration-guides/till-pattern.md) and a singleton design to provide the cheapest trades against many pools all featuring concentrated liquidity. That means all the pools are managed in a single contract, and when you swap against a pool or update a position on Ekubo Protocol, token transfers are deferred until the end of the transaction. In fact, you don't have to transfer tokens at all--advanced swappers could save those tokens in Ekubo Protocol for later, avoiding expensive token transfers and undesirable token behavior altogether. Or they could mint the saved balance into a ERC-1155 token to re-use in Ekubo later.
 
 The result is that you can execute many actions across many pools and only make the minimum number of required token transfers. The highly optimized and capital efficient design and ruthlessly optimized contracts enables Ekubo protocol to provide the best execution net of gas.
 
@@ -18,19 +22,4 @@ Ekubo Protocol uses ticks 100x smaller than the competitors at 1/100th of a basi
 
 ## Extensions
 
-Extensions allow third party developers to permissionlessly create new kinds of pools on Ekubo that integrate into the same ecosystem of aggregators and interfaces built on top of Ekubo. These pools can implement new features such as oracles, or additional order types like limit orders or TWAMM orders. Read more about extensions [here](../integration-guides/extensions/).
-
-## Withdrawal fee
-
-When you withdraw liquidity from Ekubo, you pay a fee equal to the swap fee of the selected pool from your principal. Because this fee is taken on principal:
-
-* It _decreases_ as a percentage of _liquidity_ as capital efficiency increases
-* It _decreases_ as a percentage of `principal + fees` as fees are earned over time
-
-Thus, the fee incentivizes **all of** liquidity concentration, passive liquidity and low fees.
-
-{% hint style="info" %}
-This fee is collected by the protocol, able to be withdrawn by the protocol's current `owner`.&#x20;
-
-The owner of the protocol is [Ekubo Governance](../user-guides/governance/). As of January 2025, Ekubo Governance currently directs all protocol revenue towards [EKUBO buybacks](https://app.ekubo.org/governance/revenue-buybacks).
-{% endhint %}
+Extensions allow third party developers to permissionlessly create new kinds of pools on Ekubo that integrate into the same ecosystem of aggregators and interfaces built on top of Ekubo. These pools can implement new features such as oracles, or additional order types like limit orders or TWAMM orders. Read more about extensions [here](../integration-guides/extensions.md).

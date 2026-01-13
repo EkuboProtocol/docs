@@ -4,7 +4,7 @@ description: How to become a liquidity provider on Ekubo
 
 # 🌊 Add liquidity
 
-To add liquidity to Ekubo, you must [create a position](https://app.ekubo.org/positions/new) using our interface hosted at [app.ekubo.org](https://app.ekubo.org).
+To add liquidity to Ekubo and start earning fees from user swaps, you must [create a position](https://ekubo.org/evm/positions/new).
 
 {% hint style="info" %}
 Bookmark the app and beware of signing transactions from other websites claiming to be Ekubo that are not hosted on ekubo.org. [Read more](https://en.wikipedia.org/wiki/Phishing) about phishing scams.
@@ -25,17 +25,6 @@ The 2 tokens you select, also known as the "pair," is the market you wish to mak
 The fee you select is how much swappers are charged to trade against your liquidity, as well as how much you pay on your principal to withdraw your liquidity.
 
 Tick spacing typically should be set to about twice the fee. Tick spacing will affect how small your price range can be, i.e. how much leverage you can get.
-
-#### Withdrawal fee
-
-The pool fee should be carefully selected, as it is exactly equal to the fee you pay on withdrawal of your principal. For example, consider the following scenario:
-
-* You deposit 1000 USDC and 1 ETH into a 5 bips pool
-* Several trades happen and you now have 1050 USDC and \~0.952 ETH
-  * You have also earned 20 USDC in fees and 0.005 ETH in fees
-* You withdraw your liquidity
-
-You will pay a `1050 USDC * 5 bips = 0.525 USDC` and `~0.952 ETH * 5 bips = 0.000476 ETH` fee to withdraw your liquidity. You can think of the withdrawal fee as paying a swap fee for the incidental benefit of rebalancing your liquidity.
 
 ### Selecting a price range
 
