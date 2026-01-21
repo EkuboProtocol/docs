@@ -1,5 +1,6 @@
 ---
 description: Addresses of the deployed contracts on Ethereum (V2)
+hidden: true
 ---
 
 # EVM Contracts (V2)

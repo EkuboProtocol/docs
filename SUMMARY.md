@@ -17,25 +17,21 @@
 
 * [🔌 Extensions](integration-guides/extensions.md)
 * [🔄 Swapping](integration-guides/swapping.md)
-* [💸 "Till" pattern](integration-guides/till-pattern.md)
 * [📚 Reference](integration-guides/reference/README.md)
   * [EVM Contracts (V2)](integration-guides/reference/contract-addresses.md)
-  * [EVM Contracts (V3)](integration-guides/reference/evm-contracts-v3.md)
+  * [EVM Contracts](integration-guides/reference/evm-contracts.md)
   * [Starknet Contracts](integration-guides/reference/starknet-contracts.md)
   * [Governance Contracts](integration-guides/reference/governance-contracts.md)
   * [Reading pool price](integration-guides/reference/reading-pool-price.md)
-  * [Error Codes](integration-guides/reference/error-codes.md)
   * [Ekubo API](integration-guides/reference/ekubo-api.md)
   * [Audits](integration-guides/reference/audits.md)
   * [Key concepts](integration-guides/reference/key-concepts.md)
   * [Math 1-pager](integration-guides/reference/math-1-pager.md)
-  * [Frequently Asked Questions (FAQ)](integration-guides/reference/frequently-asked-questions-faq.md)
+  * ["Till" pattern](integration-guides/reference/till-pattern.md)
 
 ## Links
 
 * [Home](https://ekubo.org)
-* [Launch app (EVM)](https://ekubo.org/evm)
-* [Launch app (Starknet)](https://ekubo.org/starknet)
 * [Discord](https://discord.gg/RFbSXxtqUG)
 * [Twitter](https://twitter.com/EkuboProtocol)
 * [Telegram](https://t.me/Ekubo_Protocol)
