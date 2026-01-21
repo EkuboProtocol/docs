@@ -19,7 +19,7 @@
 * [🔄 Swapping](integration-guides/swapping.md)
 * [📚 Reference](integration-guides/reference/README.md)
   * [EVM Contracts (V2)](integration-guides/reference/contract-addresses.md)
-  * [EVM Contracts](integration-guides/reference/evm-contracts.md)
+  * [EVM Contracts](integration-guides/reference/evm-contracts-v3.md)
   * [Starknet Contracts](integration-guides/reference/starknet-contracts.md)
   * [Governance Contracts](integration-guides/reference/governance-contracts.md)
   * [Reading pool price](integration-guides/reference/reading-pool-price.md)
@@ -27,7 +27,7 @@
   * [Audits](integration-guides/reference/audits.md)
   * [Key concepts](integration-guides/reference/key-concepts.md)
   * [Math 1-pager](integration-guides/reference/math-1-pager.md)
-  * ["Till" pattern](integration-guides/reference/till-pattern.md)
+  * ["Till" pattern](integration-guides/till-pattern.md)
 
 ## Links
 

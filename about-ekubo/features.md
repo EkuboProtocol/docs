@@ -10,7 +10,7 @@ The core contracts are ownerless and permissionless. They are deployed to the sa
 
 ## Gas efficiency
 
-Ekubo uses the ["till" pattern](../integration-guides/reference/till-pattern.md) and a singleton design to provide the cheapest trades against many pools all featuring concentrated liquidity. That means all the pools are managed in a single contract, and when you swap against a pool or update a position on Ekubo Protocol, token transfers are deferred until the end of the transaction. In fact, you don't have to transfer tokens at all--advanced swappers could save those tokens in Ekubo Protocol for later, avoiding expensive token transfers and undesirable token behavior altogether. Or they could mint the saved balance into a ERC-1155 token to re-use in Ekubo later.
+Ekubo uses the ["till" pattern](../integration-guides/till-pattern.md) and a singleton design to provide the cheapest trades against many pools all featuring concentrated liquidity. That means all the pools are managed in a single contract, and when you swap against a pool or update a position on Ekubo Protocol, token transfers are deferred until the end of the transaction. In fact, you don't have to transfer tokens at all--advanced swappers could save those tokens in Ekubo Protocol for later, avoiding expensive token transfers and undesirable token behavior altogether. Or they could mint the saved balance into a ERC-1155 token to re-use in Ekubo later.
 
 The result is that you can execute many actions across many pools and only make the minimum number of required token transfers. The highly optimized and capital efficient design and ruthlessly optimized contracts enables Ekubo protocol to provide the best execution net of gas.
 

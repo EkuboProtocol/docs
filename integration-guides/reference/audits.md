@@ -42,14 +42,22 @@ The Ethereum Ekubo Protocol smart contracts have been audited by both ABDK and P
 
 ### Ekubo Protocol Audits
 
-These audits covered both the Core smart contracts and the Oracle extension.
+Audits for our V3 smart contracts can be found in the [audits directory](https://github.com/EkuboProtocol/evm-contracts/tree/main/audits) of our source code. Below are audits of previous versions of the EVM smart contracts.
 
 {% file src="../../.gitbook/assets/Ekubo EVM Deployment Plainshift Audit.pdf" %}
-Plainshift audit report
+Plainshift V2 audit report
 {% endfile %}
 
 {% file src="../../.gitbook/assets/ABDK_Ekubo_EkuboProtocol_v_1_0.pdf" %}
-ABDK Core Audit Report
+ABDK V2 Core Audit Report
+{% endfile %}
+
+{% file src="../../.gitbook/assets/ABDK_Ekubo_InvariantAnalysis_v_1_0.pdf" %}
+ABDK V2 TWAMM Invariant Analysis
+{% endfile %}
+
+{% file src="../../.gitbook/assets/ABDK_Ekubo_TWAMM_v_1_0.pdf" %}
+ABDK V2 TWAMM Audit
 {% endfile %}
 
 ### Starknet L1 Proxy
