@@ -32,17 +32,13 @@ The [first version of the revenue buybacks contract](https://github.com/EkuboPro
 
 {% file src="../../.gitbook/assets/NM_0282_FINAL_Ekubo_Revenue_Buybacks.pdf" %}
 
-### Oracle Extension
-
-The [oracle extension](https://github.com/EkuboProtocol/oracle-extension) has not been audited.
-
 ## Ethereum
 
 The Ethereum Ekubo Protocol smart contracts have been audited by both ABDK and Plainshift. The Ethereum smart contracts are immutable.
 
 ### Ekubo Protocol Audits
 
-Audits for our V3 smart contracts can be found in the [audits directory](https://github.com/EkuboProtocol/evm-contracts/tree/main/audits) of our source code. Below are audits of previous versions of the EVM smart contracts.
+Audits for our V3 smart contracts can be found in the [audits directory](https://github.com/EkuboProtocol/evm-contracts/tree/main/audits) of our source code. Below are audits of older versions of the EVM smart contracts.
 
 {% file src="../../.gitbook/assets/Ekubo EVM Deployment Plainshift Audit.pdf" %}
 Plainshift V2 audit report
