@@ -6,7 +6,7 @@ description: >-
 
 # Indexer
 
-The [indexer](https://github.com/EkuboProtocol/indexer) is the open source service that ingests Ekubo events into a Postgres database. It is the same code that powers the public [Ekubo API](../reference/ekubo-api/README.md), so anything the API can answer, your own instance can answer too.
+The [indexer](https://github.com/EkuboProtocol/indexer) is the open-source service that ingests Ekubo events into a Postgres database. It is the same code that powers the public [Ekubo API](../reference/ekubo-api/README.md), so anything the API can answer, your own instance can answer too.
 
 Its design goal is an **always-consistent realtime view**: events are cataloged rather than transformed, and the schema is reorg-safe. Analysis happens on top, in materialized views and queries, so the raw record stays faithful to the chain.
 

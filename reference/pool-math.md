@@ -44,7 +44,7 @@ import {Decimal} from 'decimal.js-light';
 
 const tick = 1234;
 
-// A fixed point .128 number has at most 128 bits after the decimal, 
+// A fixed point .128 number has at most 128 bits after the decimal,
 // which translates to about 10**38.5 in decimal.
 // That means ~78 decimals of precision should be able to represent
 // any price with full precision.
@@ -52,7 +52,7 @@ const tick = 1234;
 // but this should be sufficient for just computing the price.
 Decimal.set({ precision: 78 });
 
-const sqrt_ratio_x128 = 
+const sqrt_ratio_x128 =
     new Decimal('1.000001')
         .sqrt()
         .pow(tick)

@@ -12,7 +12,7 @@ Most AMMs today follow the same pattern:
 - Each deployment holds its own liquidity and token balances.
 - Each “version” requires new integrations, new analytics, and new approvals.
 
-From users’ and integrators’ perspectives this leads to:
+From users' and integrators' perspectives this leads to:
 
 - **Fragmented liquidity** – the same pair trades in many unrelated pools.
 - **Duplicated work** – every fork needs its own indexers, explorers, and tooling.
@@ -39,7 +39,7 @@ Core also supports additional pool configurations, such as stableswap‑style cu
 - The **curve logic and pool mechanics live in Core itself.**
 - Licensees do **not** ship their own AMM math; they all rely on this shared implementation.
 
-This keeps the “hard part” – the AMM’s correctness and efficiency – in one place that is audited for correctness, while still allowing many different products to be built on top of it.
+This keeps the “hard part” – the AMM's correctness and efficiency – in one place that is audited for correctness, while still allowing many different products to be built on top of it.
 
 ## 3. Engineering for Gas Efficiency
 
@@ -88,7 +88,7 @@ All licensees:
 - Share the **same** token custody.
 - Share the **same** global state that integrators and tools observe.
 
-From a user’s point of view:
+From a user's point of view:
 
 - Different licensees can feel like different “venues” or “frontends” with their own economic models and features.
 - At a low level, they are all trading against one shared set of pools in the same Core contract, which directly results in better pricing.
@@ -123,7 +123,7 @@ Having many licensees share a single Core contract creates several reinforcing n
 
 Because Core is the canonical place where all swaps and liquidity changes happen:
 
-- Indexers, explorers, and analytics platforms only need to understand Core’s event stream.
+- Indexers, explorers, and analytics platforms only need to understand Core's event stream.
 - Risk and monitoring tools can be written once and reused across every licensee.
 - New licensees can launch without waiting for custom integrations; they inherit the existing ecosystem “for free”.
 
@@ -131,7 +131,7 @@ This is similar to the way a common L2 or common DEX becomes a focal point for t
 
 ### 6.2 Integrations and Routing
 
-Aggregators, market makers, and other protocols only need to target Core’s interface:
+Aggregators, market makers, and other protocols only need to target Core's interface:
 
 - A single integration immediately supports all current and future licensees.
 - Routing strategies can reason about one pool per pair (per configuration), not a forest of forks with small differences of behavior.

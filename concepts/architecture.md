@@ -6,7 +6,7 @@ description: >-
 
 # Protocol architecture
 
-Ekubo is built as a **singleton**: a single Core contract holds every pool, every position, and all token balances. Instead of deploying a new contract per pool or per version, all liquidity lives in one place. This is what makes shared liquidity, cheap multi-pool routing, and a single integration surface possible — see the [V3 whitepaper](../about-ekubo/v3-whitepaper.md) for the reasoning.
+Ekubo is built as a **singleton**: a single Core contract holds every pool, every position, and all token balances. Rather than a separate contract per pool or per version, all liquidity lives in one place. This is what makes shared liquidity, cheap multi-pool routing, and a single integration surface possible — see the [V3 whitepaper](../about-ekubo/v3-whitepaper.md) for the reasoning.
 
 ## The "till" pattern
 
@@ -53,9 +53,9 @@ Ekubo V3 supports several pool types in the same Core contract: concentrated liq
 
 Core is ownerless and charges no protocol fee. Everything user-facing lives in periphery contracts that hold locks on your behalf:
 
-* **Positions** — wraps liquidity positions as NFTs and is where the protocol fee on collected swap fees is applied
-* **Orders** — manages TWAMM ([DCA](../user-guides/dollar-cost-average-orders.md)) orders
-* **Routers** — execute swap routes, including the gas-optimized [Yul Router](../integration-guides/yul-router.md) used in production on EVM
-* **Lens contracts** — read-only helpers for prices, quotes, and pool state
+* **Positions** wraps liquidity positions as NFTs, and is where the protocol fee on collected swap fees is applied
+* **Orders** manages TWAMM ([DCA](../user-guides/dollar-cost-average-orders.md)) orders
+* **Routers** execute swap routes, including the gas-optimized [Yul Router](../integration-guides/yul-router.md) used in production on EVM
+* **Lens contracts** provide read-only helpers for prices, quotes, and pool state
 
 This separation is deliberate: Core stays neutral and durable, while fee models and user experience live at the edges. See [Contract addresses](../reference/contracts/README.md) for what is deployed where.

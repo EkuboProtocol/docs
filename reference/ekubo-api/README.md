@@ -8,7 +8,7 @@ description: The API that powers Ekubo's websites
 Our API is available to support our website and may undergo breaking changes without notice. [Join the Discord](https://discord.ekubo.org) to ask questions or get support.
 {% endhint %}
 
-The API URL is hosted at the following URL: &#x20;
+The API URL is hosted at the following URL:
 
 `https://prod-api.ekubo.org`
 
@@ -16,7 +16,7 @@ It contains data for all the chains that we are deployed to and index. It also h
 
 ### API Architecture
 
-Our API functionality is based entirely on querying the Postgres schema kept up-to-date by the open source indexer repository ([GitHub](https://github.com/EkuboProtocol/indexer)). You can replicate all of the API functionality by simply running your own instance of the Indexer and querying the your own Postgres database. Much of the API functionality is conveniently contained in views and scheduled jobs allowing you to easily replicate all the functionalities of our API.
+Our API functionality is based entirely on querying the Postgres schema kept up-to-date by the open-source indexer repository ([GitHub](https://github.com/EkuboProtocol/indexer)). You can replicate all of the API functionality by simply running your own instance of the Indexer and querying the your own Postgres database. Much of the API functionality is conveniently contained in views and scheduled jobs allowing you to easily replicate all the functionalities of our API.
 
 #### Caching
 

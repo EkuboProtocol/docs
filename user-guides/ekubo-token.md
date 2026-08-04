@@ -8,25 +8,25 @@ The EKUBO token is an [L1 Ethereum token](https://etherscan.io/token/0x04C46E830
 
 ## Initial distribution
 
-The total supply of the EKUBO token is 10 million (`10,000,000`). The total supply was split into 3 equal parts of `3,333,333` tokens. The 3 categories of distribution for the EKUBO token generation event were:
+The total supply of the EKUBO token is 10 million (`10,000,000`), split into three equal parts of `3,333,333` tokens. The three distribution categories at the token generation event were:
 
-* **Airdrop**: 1/3rd of the total supply was distributed to users via airdrop
-* **Team**: 1/3rd of the total supply is held by the company Ekubo, Inc.
-* **Sale**: 1/3rd of the total supply was sold by the DAO for ETH, USDC and STRK via Ekubo's DCA order feature
+* **Airdrop**: one third of the total supply was distributed to users via airdrop
+* **Team**: one third of the total supply is held by Ekubo, Inc.
+* **Sale**: one third of the total supply was sold by the DAO for ETH, USDC, and STRK using Ekubo's DCA orders
 
 ### Airdrop
 
-Each user's allocation of EKUBO was calculated based on their share of total points on the leaderboard, with a few adjustments: we exponentiated each user's points (i.e. `p^x`) based on their role in the ecosystem, and accounts that earned less than 1,000 points were excluded. As a result, users who used fewer accounts received slightly more EKUBO tokens from the airdrop.
+Each user's allocation was calculated from their share of total leaderboard points, with two adjustments: points were raised to an exponent (`p^x`) that depended on the user's role in the ecosystem, and accounts with fewer than 1,000 points were excluded. As a result, users who concentrated their activity in fewer accounts received slightly more EKUBO.
 
 * Moderators had a boost of `1.01`
 * Active translators received a boost of `1.001`
 * Everyone else received a boost of `1.0001`
 
-The airdrop contract is deployed at the address `0x04bfacd0fcf70f444815de9150008fd12b5fb6721562707e502ce71ccb327d88` ([Starkscan](https://starkscan.co/contract/0x04bfacd0fcf70f444815de9150008fd12b5fb6721562707e502ce71ccb327d88), [Voyager](https://voyager.online/contract/0x04bfacd0fcf70f444815de9150008fd12b5fb6721562707e502ce71ccb327d88)). It uses the open source airdrop contract found [here](https://github.com/EkuboProtocol/governance/releases/tag/v2.2.1). There is no deadline to claim the airdrop.
+The airdrop contract is deployed at the address `0x04bfacd0fcf70f444815de9150008fd12b5fb6721562707e502ce71ccb327d88` ([Starkscan](https://starkscan.co/contract/0x04bfacd0fcf70f444815de9150008fd12b5fb6721562707e502ce71ccb327d88), [Voyager](https://voyager.online/contract/0x04bfacd0fcf70f444815de9150008fd12b5fb6721562707e502ce71ccb327d88)). It uses the open-source airdrop contract found [here](https://github.com/EkuboProtocol/governance/releases/tag/v2.2.1). There is no deadline to claim the airdrop.
 
 An airdrop can be claimed by using a block explorer to submit a transaction using data found in this spreadsheet:
 
-{% file src="../../.gitbook/assets/airdrop_data.csv.zip" %}
+{% file src="../.gitbook/assets/airdrop_data.csv.zip" %}
 A CSV containing the entirety of the merkle tree for the EKUBO airdrop
 {% endfile %}
 
@@ -44,7 +44,7 @@ This CSV contains a list of all the accounts and allocation amounts that were in
 {% step %}
 #### Find your address in the CSV file
 
-Extract the `.csv` from the `.zip` file , and then open the file in any text editor like Notepad or Sublime. Search for the line containing your address in the file. If you cannot find it, make sure to remove any leading zeroes from your address. E.g. if your address is `0x0000abcd`, search for `0xabcd`.  If you still cannot find your address, you did not receive an airdrop.
+Extract the `.csv` from the `.zip` file, then open it in any text editor. Search for the line containing your address. If you cannot find it, remove any leading zeroes from your address and search again — if your address is `0x0000abcd`, search for `0xabcd`. If you still cannot find it, you did not receive an airdrop.
 
 {% hint style="warning" %}
 Do not use Excel or Numbers to open the spreadsheet. They will round the numbers in the columns causing you to get "Invalid proof" when you try to submit your transaction.
@@ -56,7 +56,7 @@ Do not use Excel or Numbers to open the spreadsheet. They will round the numbers
 
 The columns in the CSV are claimee, id, amount and proof from left to right. For the row containing your address, copy each column value into the [block explorer](https://voyager.online/contract/0x04bfacd0fcf70f444815de9150008fd12b5fb6721562707e502ce71ccb327d88#writeContract). Remove the quotes and curly braces from the `proof` column data. Then connect your wallet and it should look something like this.
 
-![](../../.gitbook/assets/image.png)
+![](../.gitbook/assets/image.png)
 {% endstep %}
 
 {% step %}

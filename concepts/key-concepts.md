@@ -16,7 +16,7 @@ The `x*y=k` formula that forms the basis of most AMMs, where `x` is the amount o
 
 ### Concentrated liquidity
 
-The main feature that allows Ekubo to provide better pricing than other AMMs. In simple constant-product AMMs, deposited capital backs trading at every possible price — including unrealistic ones — so most of it sits unused. Concentrated liquidity lets each position specify the price range in which it is willing to trade. If you think ETH will only trade between 1800–2200 USDC, you can provide liquidity only in that range and deploy the rest of your capital elsewhere — or leverage up within the range to earn more fees (which also amplifies losses from price divergence).
+The main feature that allows Ekubo to provide better pricing than other AMMs. In simple constant-product AMMs, deposited capital backs trading at every possible price — including unrealistic ones — so most of it sits unused. Concentrated liquidity lets you choose the price range each position trades in. If you think ETH will only trade between 1,800 and 2,200 USDC, you can provide liquidity in just that range and deploy the rest of your capital elsewhere — or leverage up within the range to earn more fees (which also amplifies losses from price divergence).
 
 **Capital efficiency** measures this leverage: how much more capital a full-range position would need to earn the same fees as a concentrated one.
 
@@ -24,7 +24,7 @@ The main feature that allows Ekubo to provide better pricing than other AMMs. In
 
 Ticks are the discrete price points that can serve as position boundaries. Ekubo divides the price range logarithmically: tick `i` corresponds to the price `1.000001^i`, so each tick is 1/100th of a basis point — finer precision than most centralized limit order books. One-tick positions behave like limit orders, which makes Ekubo suitable as an on-chain order book.
 
-**Tick spacing** is the minimum distance between ticks a pool's positions may use, specified per pool. Smaller tick spacing allows tighter ranges; larger tick spacing makes swaps cheaper to compute. Volatile pairs, where tiny price differences don't matter, are better served by a larger tick spacing.
+**Tick spacing** is the minimum distance between the ticks a pool's positions may use, and is set per pool. Smaller tick spacing allows tighter ranges; larger tick spacing makes swaps cheaper to compute. Volatile pairs, where tiny price differences don't matter, are better served by a larger tick spacing.
 
 ### Flash accounting
 

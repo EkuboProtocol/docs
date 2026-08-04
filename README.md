@@ -1,7 +1,6 @@
 ---
 description: >-
-  Ekubo Protocol is an open source, permissionless and free by default AMM
-  infrastructure
+  Open-source, permissionless, free-by-default AMM infrastructure
 ---
 
 # Introduction
