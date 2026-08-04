@@ -38,7 +38,16 @@ The Ethereum Ekubo Protocol smart contracts have been audited by both ABDK and P
 
 ### Ekubo Protocol Audits
 
-Audits for our V3 smart contracts can be found in the [audits directory](https://github.com/EkuboProtocol/evm-contracts/tree/main/audits) of our source code. Below are audits of older versions of the EVM smart contracts.
+Audits for our V3 smart contracts live in the [audits directory](https://github.com/EkuboProtocol/evm-contracts/tree/main/audits) of the source code:
+
+* [Code4rena competitive audit, November 2025](https://github.com/EkuboProtocol/evm-contracts/blob/main/audits/Code4rena%20x%20Ekubo%20audit%20report%202025-11.pdf)
+* [Riley Holterhus audit](https://github.com/EkuboProtocol/evm-contracts/blob/main/audits/Ekubo-Riley-Holterhus-Audit.pdf) and [February 2026 update](https://github.com/EkuboProtocol/evm-contracts/blob/main/audits/Ekubo-Feb-2026-Update-Riley-Holterhus-Audit.pdf)
+* [Auctions audit — Riley Holterhus](https://github.com/EkuboProtocol/evm-contracts/blob/main/audits/Ekubo-Auctions-Riley-Holterhus-Audit.pdf)
+* [SignedExclusiveSwap scoped review](https://github.com/EkuboProtocol/evm-contracts/blob/main/audits/SignedExclusiveSwap-Extension-Audit.md)
+* [Ve33 audit invariants](https://github.com/EkuboProtocol/evm-contracts/blob/main/audits/ve33-audit-invariants.md) and [invariant verification](https://github.com/EkuboProtocol/evm-contracts/blob/main/audits/ve33-audit-invariant-verification.md)
+* [AI audit scan](https://github.com/EkuboProtocol/evm-contracts/blob/main/audits/EkuboProtocol%20Audit%20Scan%20-%20AI%20Scan.pdf)
+
+Below are audits of older versions of the EVM smart contracts.
 
 {% file src="../../.gitbook/assets/Ekubo EVM Deployment Plainshift Audit.pdf" %}
 Plainshift V2 audit report
