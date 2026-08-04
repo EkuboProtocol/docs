@@ -38,7 +38,7 @@ Extensions attach behavior to a pool without moving liquidity out of Core:
 * **MEV capture** — charges extra on price-moving swaps and returns that value to LPs instead of searchers.
 * **Boosted fees** — lets anyone fund additional fee rewards for a pool's LPs, on top of swap fees. Used for targeted liquidity campaigns.
 * **[Ve33](ve33.md)** — replaces swap-fee income with emissions of a stake token, with voters directing where those emissions go and setting each pool's fee. LPs earn emissions; voters earn the swap fees.
-* **Oracle** — records price history for a pair. Oracle pools are full-range and fee-free by design.
+* **Oracle** — records price history for a token against native ETH on EVM (a configured quote token on Starknet). Oracle pools are full-range and fee-free by design.
 
 ## Positions are NFTs
 

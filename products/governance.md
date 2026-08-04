@@ -18,7 +18,7 @@ The contracts are open source in the [governance repository](https://github.com/
 
 Voting weight is not simply your staked balance. The Staker records delegation over time, and weight is the **average amount delegated to you** over a smoothing window ending when voting opens. This makes weight expensive to manufacture immediately before a vote.
 
-**Governor** runs the proposal lifecycle and executes approved calls. It is a Starknet account contract, so a passed proposal can execute arbitrary calls — including sending messages to Ethereum.
+**Governor** runs the proposal lifecycle and executes approved calls itself, so a passed proposal can make arbitrary calls — including `send_message_to_l1`, which is how it drives the owner proxies on other chains. (It also implements the account interface, but only so that proposals can be simulated off-chain.)
 
 ## Proposal lifecycle
 
@@ -48,10 +48,10 @@ For the practical steps, see [Participate in governance](../user-guides/governan
 
 ## What governance controls
 
-* **Starknet contracts** — Core, Positions, and the extensions on Starknet are upgradeable in place and owned by the Governor
+* **Starknet contracts** — Core, Positions, and the extensions are upgradeable in place. The extensions are owned directly by the Governor; Core and Positions are held by the RevenueBuybacks contracts, which the Governor owns and can reclaim from by proposal
 * **The treasury** — assets held by the DAO, disbursed by proposal (including streamed payments)
 * **Cross-chain deployments** — owner proxies on Ethereum, Arbitrum, Optimism, Base, and Robinhood Chain let a Starknet proposal control contracts on other chains
-* **Periphery parameters** — such as the protocol fee applied by the Positions contract
+* **Periphery ownership** — the owner role on Positions and other periphery contracts, which withdraws accumulated protocol fees to the DAO. The fee *rate* itself is not a governance parameter: it is immutable on EVM and a compile-time constant on Starknet, so changing it requires a new deployment
 
 Notably *not* controlled: the EVM V3 Core contract, which has no owner at all.
 
@@ -63,7 +63,7 @@ The mechanism is permissionless: anyone can trigger it. It withdraws accumulated
 
 ## Ekubo, Inc.'s role
 
-Ekubo, Inc. is the Delaware C corporation that built the initial version of Ekubo Protocol, along with the [indexer](indexer.md), the interface, the governance contracts, and the API. It was founded by [Moody Salem](https://x.com/sendmoodz), and bootstrapped the Ekubo DAO in May 2024 — which distributed over 95% of total supply and passed 8 proposals in its first two months, and received the largest [Starknet Catalyst Program grant](https://www.starknet.io/blog/announcing-the-catalyst-program-igniting-transformative-change/) in recognition of that work.
+Ekubo, Inc. is the Delaware C corporation that built the initial version of Ekubo Protocol, along with the [indexer](indexer.md), the interface, the governance contracts, and the API. It was founded by [Moody Salem](https://x.com/sendmoodz), and bootstrapped the Ekubo DAO in May 2024, distributing two thirds of total supply — one third by airdrop and one third sold by the DAO (see [EKUBO token](../user-guides/ekubo-token.md)) — and governing actively from the start. The DAO received the largest [Starknet Catalyst Program grant](https://www.starknet.io/blog/announcing-the-catalyst-program-igniting-transformative-change/) in recognition of that work.
 
 In July 2024 the DAO approved a proposal defining the company's role in exchange for a one-time grant of roughly $1.5M — intended to be the only grant the company ever requests. Under it, Ekubo, Inc. committed to:
 
