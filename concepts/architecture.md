@@ -10,7 +10,7 @@ Ekubo is built as a **singleton**: a single Core contract holds every pool, ever
 
 ## The "till" pattern
 
-Every interaction with Ekubo starts with a call to `lock`. Core calls back into your contract, you perform any number of operations (swap, add or remove liquidity, collect fees), and only the **net** token amounts are settled at the end. Payments are deferred until you have finished — like a shop till that is reconciled once, rather than per item.
+Every interaction that moves tokens starts with a call to `lock`. Core calls back into your contract, you perform any number of operations (swap, add or remove liquidity, collect fees), and only the **net** token amounts are settled at the end. A few operations that move no funds — notably pool initialization and extension registration — are callable directly, without a lock. Payments are deferred until you have finished — like a shop till that is reconciled once, rather than per item.
 
 This is the "till" pattern, [publicly introduced](https://www.youtube.com/watch?v=xFp8RlRq0qU) at EthCC\[5] and described in more detail [here](https://github.com/OpenZeppelin/openzeppelin-contracts/issues/4361#issuecomment-1595095135).
 
@@ -51,9 +51,9 @@ Ekubo V3 supports several pool types in the same Core contract: concentrated liq
 
 ## Periphery
 
-Core is ownerless and charges no protocol fee. Everything user-facing lives in periphery contracts that hold locks on your behalf:
+Core charges no protocol fee, and on EVM it is ownerless — there is no privileged account at all. (The Starknet Core is owner-upgradeable by governance, but likewise charges no protocol fee.) Everything user-facing lives in periphery contracts that hold locks on your behalf:
 
-* **Positions** wraps liquidity positions as NFTs, and is where the protocol fee on collected swap fees is applied
+* **Positions** wraps liquidity positions as NFTs, and is where protocol fees are applied. It supports a fee on collected swap fees and, separately, one on withdrawn principal — the canonical deployment sets the latter to zero (see [Providing liquidity](../products/liquidity.md#fees))
 * **Orders** manages TWAMM ([DCA](../user-guides/dollar-cost-average-orders.md)) orders
 * **Routers** execute swap routes, including the gas-optimized [Yul Router](../integration-guides/yul-router.md) used in production on EVM
 * **Lens contracts** provide read-only helpers for prices, quotes, and pool state

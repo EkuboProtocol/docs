@@ -15,7 +15,7 @@ Source: [`SignedExclusiveSwap.sol`](https://github.com/EkuboProtocol/evm-contrac
 ## What the extension enforces
 
 * Direct swaps are blocked; swaps must be forwarded with a signed payload
-* Signatures are one-time-use, via nonce replay protection
+* Signatures are one-time-use, via a nonce bitmap — with one reserved exception (see [Replay protection](#replay-protection-and-nonce-management))
 * A signature can optionally restrict which locker may use it
 * The pool's own fee must be zero — all fee logic lives in the signature
 * Pools must be initialized through the extension's owner-only `initializePool(...)`
@@ -47,12 +47,13 @@ With [`@ekubo/yul-router-sdk`](yul-router.md), `encodeSignedSwapMeta({ deadline,
 ## Swap flow
 
 1. The caller holds a Core lock and forwards to the extension.
-2. The extension validates the deadline, the locker authorization, that the nonce is unused, and the signature against the pool's stored controller.
-3. If this is the first touch of the pool in the block, previously collected extension fees are donated to LPs.
+2. The extension validates the deadline (which must also be no further than 30 days out), the locker authorization, and the signature against the pool's stored controller.
+3. If this is the pool's first touch at the current block timestamp, previously collected extension fees are donated to LPs.
 4. The extension calls `Core.swap(...)`.
-5. The signed `fee` is applied to the result — charged on the output for exact-in swaps, on the required input for exact-out.
-6. The resulting balance update is checked component-wise against `minBalanceUpdate`.
-7. The charged fee is held in the extension's own Core saved balances, to be donated to the pool's liquidity providers on the next block touch (below).
+5. The balance update returned by Core is checked component-wise against `minBalanceUpdate`. **This check happens before the fee is applied**, so the bound constrains the raw swap result, not the amount the swapper finally receives.
+6. Only now is the nonce consumed — deliberately after the bounds check, so a swap that fails its bounds costs less gas and does not burn the nonce.
+7. The signed `fee` is applied — charged on the output for exact-in swaps, on the required input for exact-out — and the fee-adjusted balance update is returned to the caller.
+8. The charged fee is credited to the **extension contract's own** saved balance in Core, salted by the pool ID, from which it is later donated to that pool's liquidity providers.
 
 ## Why `minBalanceUpdate` matters
 
@@ -65,11 +66,15 @@ With [`@ekubo/yul-router-sdk`](yul-router.md), `encodeSignedSwapMeta({ deadline,
 
 ## Fee donation timing
 
-Collected fees are not donated to LPs immediately. On the first touch of a pool in a new block — a swap, a position update, or a fee collection — the extension donates previously collected fees into LP accounting and marks the pool as updated for that block. This prevents same-block liquidity from being added purely to capture fees earned in earlier blocks.
+Collected fees are not donated to LPs immediately. On a pool's first touch at a new block *timestamp* — a swap, a position update, or a fee collection — the extension donates previously collected fees into LP accounting and records the timestamp. This prevents liquidity from being added purely to capture fees earned earlier. Note the gate is the block timestamp, not the block number, so on chains that can produce more than one block per second donation happens at most once per second.
 
 ## Replay protection and nonce management
 
-Each signed quote carries a nonce that can be consumed only once. Managing the nonce lifecycle is the controller's responsibility off-chain: track which nonces were consumed on-chain, which were issued but expired unfilled, and only recycle a nonce when it is safe to do so. The owner can reset nonce state through admin bitmap management when controlled recycling is needed.
+Each signed quote carries a nonce that can be consumed only once, tracked in a bitmap. Managing the lifecycle is the controller's responsibility off-chain: track which nonces were consumed on-chain, which were issued but expired unfilled, and only recycle a nonce when it is safe to do so. The owner can reset nonce state through admin bitmap management when controlled recycling is needed.
+
+{% hint style="warning" %}
+The nonce `type(uint64).max` is a **reserved, reusable sentinel**: it is never consumed, so a signature carrying it can be replayed without limit until its deadline passes. Issue it only when unlimited reuse within the deadline is exactly what you intend.
+{% endhint %}
 
 ## Quote selection risk
 
@@ -82,4 +87,4 @@ Off-chain signed quotes carry selective execution risk: a counterparty can reque
 
 ## Controller management
 
-The extension is `Ownable`. The owner initializes each pool with a controller address via `initializePool(poolKey, tick, controller)`; direct initialization through Core is blocked. The controller for an already-initialized pool can be updated by the owner. Controller signatures work for both EOAs and ERC-1271 contract wallets — the EOA-versus-contract flag is encoded in the high bit of the controller address.
+The extension is `Ownable`. The owner initializes each pool with a controller address via `initializePool(poolKey, tick, controller)`; direct initialization through Core is blocked. The controller for an already-initialized pool can be updated by the owner. Controller signatures work for both EOAs and ERC-1271 contract wallets, and which path is used is determined by **bit 159 of the controller address itself**, not by a separate flag: addresses below `2^159` are verified as EOAs via ECDSA, addresses at or above it via ERC-1271. Initialization and controller updates enforce that the address's code presence matches, so an EOA whose address happens to have bit 159 set cannot be used as a controller.

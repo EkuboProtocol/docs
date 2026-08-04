@@ -65,8 +65,8 @@ SqrtRatio constant ONE = SqrtRatio.wrap(uint96((1 << 95) + (1 << 62)));
 Key properties:
 
 * **Monotonic**: a larger raw `uint96` always means a larger sqrt ratio, so comparisons are plain integer comparisons — no decoding required.
-* **Normalized**: a valid value always has at least 62 significant mantissa bits (`isValid` requires the mantissa to be ≥ `2^62` and the raw value to be within the min/max bounds). Effective precision therefore ranges from 62 to 94 significant bits depending on where in the range the value falls — far more than enough for 1/100th-basis-point ticks.
-* **Bounded**: `MIN_SQRT_RATIO` (raw `4611797791050542631`) through `MAX_SQRT_RATIO` (raw `79227682466138141934206691491`), corresponding to the same `[2^-64, 2^64]` sqrt ratio range as Starknet, i.e. prices in `[2^-128, 2^128]`.
+* **Normalized**: a valid value always has at least 63 significant mantissa bits (`isValid` requires the mantissa to be ≥ `2^62`, so bit 62 is set, and the raw value to be within the min/max bounds). Effective precision therefore ranges from 63 to 94 significant bits depending on where in the range the value falls — far more than enough for 1/100th-basis-point ticks.
+* **Bounded**: `MIN_SQRT_RATIO` (raw `4611797791050542631`) through `MAX_SQRT_RATIO` (raw `79227682466138141934206691491`), covering approximately the same `[2^-64, 2^64]` sqrt ratio range as Starknet — the EVM bounds are very slightly tighter, matching its slightly narrower tick range.
 
 ### Converting to and from 64.128
 
@@ -87,7 +87,7 @@ Both directions round-trip losslessly for any valid `SqrtRatio`. To compute a hu
 
 * **Swap parameters**: `sqrtRatioLimit` in swap params and router `RouteNode`s is a `SqrtRatio` (a value of `0` means "no limit").
 * **Pool state and events**: `PoolInitialized` emits the initial `SqrtRatio`; extension hooks (`afterSwap`, `afterUpdatePosition`, ...) receive the packed pool state containing it.
-* **Reading prices**: the `CoreDataFetcher` lens returns pool prices already expanded to 64.128 via `toFixed()`, so most integrators never need to decode the packed form manually.
+* **Reading prices**: `CoreDataFetcher.poolPrice()` returns the price already expanded to 64.128 via `toFixed()`, so most integrators never need to decode the packed form manually. Its `poolState()` returns the packed `SqrtRatio` undecoded.
 * **SDKs**: [`@ekubo/sdk`](https://www.npmjs.com/package/@ekubo/sdk) (TypeScript) and the [Rust SDK](https://github.com/EkuboProtocol/rust-sdk) implement the exact tick and sqrt-ratio conversions for both Starknet and EVM.
 
 ## Fee encoding differs too
