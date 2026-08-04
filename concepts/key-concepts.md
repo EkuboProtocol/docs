@@ -28,9 +28,7 @@ Ticks are the discrete price points that can serve as position boundaries. Ekubo
 
 ### Flash accounting
 
-All token balance accounting happens inside Ekubo before any tokens are transferred: you can trade with many pools and create or update many positions, then transfer only the net difference at the end (see the ["till" pattern](till-pattern.md)). Traditionally, each swap or position update settles immediately — even for multi-hop swaps within one transaction.
-
-**Free flash loans** fall out of this design: you can `withdraw` tokens from the singleton and `deposit` them back in the same transaction without paying any fees.
+All token balance accounting happens inside Ekubo before any tokens are transferred: you can trade with many pools and update many positions, then settle only the net difference at the end. This is what the ["till" pattern](architecture.md) enables, and it is why multi-pool routing on Ekubo is cheap.
 
 ## Platform concepts
 

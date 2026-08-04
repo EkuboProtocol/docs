@@ -5,7 +5,8 @@ structure:
   summary: SUMMARY.md
 
 redirects:
-  integration-guides/till-pattern: concepts/till-pattern.md
+  integration-guides/till-pattern: concepts/architecture.md
+  concepts/till-pattern: concepts/architecture.md
   integration-guides/extensions: concepts/extensions.md
   integration-guides/integrating-ekubo: integration-guides/README.md
   integration-guides/reference: reference/contracts/README.md

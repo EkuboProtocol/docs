@@ -14,7 +14,7 @@ Each pool has its own separate state, meaning the capital deposited into each po
 
 Liquidity fragmentation is inevitable. In the absence of extensions, others will make small improvements to the Ekubo design or add new features, and deploy a variant of the core AMM. As a result, users must split their trades across many different sources of liquidity.
 
-Ekubo aims to solve this problem by reducing the cost of fragmentation to near-zero. This is the purpose of the singleton design and the till pattern. Ekubo is a platform for an ecosystem of different types of pools that are all aggregated with every aggregator and arbitrageur, so markets can operate as efficiently as possible. This ecosystem of different kinds of liquidity also has the benefit of providing traders the best possible execution.
+Ekubo aims to solve this problem by reducing the cost of fragmentation to near-zero. This is the purpose of the [singleton design and the till pattern](architecture.md). Ekubo is a platform for an ecosystem of different types of pools that are all aggregated with every aggregator and arbitrageur, so markets can operate as efficiently as possible. This ecosystem of different kinds of liquidity also has the benefit of providing traders the best possible execution.
 
 ### Flexibility
 
@@ -51,4 +51,18 @@ Because extensions can have their own state like any other contract, you can use
 Extensions are immutable for a pool, so you must either make them upgradeable, or make them so simple they never need to be upgraded. We recommend making extensions immutable and deploying new versions when necessary.
 {% endhint %}
 
-Examples of extensions can be found [here (EVM)](https://github.com/EkuboProtocol/evm-contracts/tree/main/src/extensions) or [here (Starknet)](https://github.com/EkuboProtocol/starknet-contracts/tree/main/src/extensions). Deployed extensions include the Oracle, TWAMM (powering [DCA orders](../user-guides/dollar-cost-average-orders.md)), limit orders, MEVCapture, and [Ve33](../user-guides/ve33.md).
+## Available extensions
+
+These extensions are already built and deployed. Each one is a pool type you can trade against or build on — see [Contract addresses](../reference/contracts/README.md) for deployments.
+
+| Extension | What it does |
+| --- | --- |
+| **Oracle** | Records on-chain price history for a token pair against native ETH, for use by lending markets and other protocols |
+| **TWAMM** | Executes orders gradually over time, powering [DCA orders](../user-guides/dollar-cost-average-orders.md) |
+| **Limit orders** | One-tick positions that are pulled automatically once fully executed |
+| **MEV capture** | Charges additional fees on swaps that move the price significantly, directing that value back to liquidity providers |
+| **Boosted fees** | Streams externally funded fee rewards to a pool's liquidity providers |
+| **[Ve33](../user-guides/ve33.md)** | Token-governed liquidity: stakers vote to direct emissions and set pool fees, and earn the fees of the pools they support |
+| **[Signed exclusive swaps](../integration-guides/signed-exclusive-swaps.md)** | RFQ-style pools where a controller signs each swap off-chain with its own fee and bounds |
+
+Source code: [EVM extensions](https://github.com/EkuboProtocol/evm-contracts/tree/main/src/extensions) and [Starknet extensions](https://github.com/EkuboProtocol/starknet-contracts/tree/main/src/extensions).
