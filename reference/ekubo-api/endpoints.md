@@ -7,9 +7,8 @@ description: >-
 # Endpoints
 
 The canonical, always-current reference is the OpenAPI 3.1 document served by
-the API itself: [https://prod-api.ekubo.org/openapi.json](https://prod-api.ekubo.org/openapi.json).
-It also loads into any REST explorer (e.g. [Swagger UI](https://petstore3.swagger.io/?url=https://prod-api.ekubo.org/openapi.json)
-or Postman).
+the API itself: [https://prod-api.ekubo.org/openapi.json](https://prod-api.ekubo.org/openapi.json),
+which can also be imported into REST clients like Postman.
 
 All endpoints take a `chainId` (path or query parameter) identifying the
 network — the API serves every chain Ekubo is deployed to and indexes.

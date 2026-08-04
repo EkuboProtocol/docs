@@ -30,4 +30,4 @@ We have a rate limiting web application firewall (WAF) in front of the API. If y
 
 Every endpoint is browsable and testable on the [Endpoints](endpoints.md) page, which renders the OpenAPI specification interactively — including sending requests to the live API.
 
-The endpoints are documented via OpenAPI 3.1 at the `/openapi.json` endpoint. The URL is [https://prod-api.ekubo.org/openapi.json](https://prod-api.ekubo.org/openapi.json), so you can also use any REST API explorer, e.g. the [example swagger explorer](https://petstore3.swagger.io/?url=https://prod-api.ekubo.org/openapi.json) or postman.
+The endpoints are documented via OpenAPI 3.1 at the `/openapi.json` endpoint. The URL is [https://prod-api.ekubo.org/openapi.json](https://prod-api.ekubo.org/openapi.json), which can also be imported into REST clients like Postman.
