@@ -12,7 +12,7 @@ The core contracts are ownerless and permissionless. They are deployed to the sa
 
 Ekubo uses the ["till" pattern](../concepts/architecture.md) and a singleton design to provide the cheapest trades across many pools, all featuring concentrated liquidity. All pools live in a single contract, and token transfers are deferred until the end of the transaction. Advanced users don't have to transfer tokens at all: balances can be saved inside Ekubo for later use, avoiding repeated token transfers entirely.
 
-The result is that you can execute many actions across many pools and only make the minimum number of required token transfers. Combined with contracts optimized down to the storage-slot and calldata level (see [Price representation](../concepts/price-representation.md)), Ekubo provides the best execution net of gas.
+The result is that you can execute many actions across many pools and only make the minimum number of required token transfers. Combined with contracts optimized down to the storage-slot and calldata level (see [Price representation](../reference/price-representation.md)), Ekubo provides the best execution net of gas.
 
 ### Concentrated liquidity
 
@@ -26,4 +26,6 @@ Beyond concentrated liquidity, Ekubo V3 pools can be configured as stableswap po
 
 ### Extensions
 
-[Extensions](../concepts/extensions.md) allow third-party developers to permissionlessly create new kinds of pools on Ekubo that plug into the same ecosystem of aggregators and interfaces. Deployed extensions include price [oracles](../reference/contracts/evm-v3.md), TWAMM ([DCA orders](../user-guides/dollar-cost-average-orders.md)), limit orders, MEV capture, and [Ve33](../user-guides/ve33.md) token-governed liquidity.
+[Extensions](../concepts/extensions.md) allow third-party developers to permissionlessly create new kinds of pools on Ekubo that plug into the same ecosystem of aggregators and interfaces. Deployed extensions include price [oracles](../reference/contracts/evm-v3.md), TWAMM ([DCA orders](../user-guides/dollar-cost-average-orders.md)), limit orders, MEV capture, and [Ve33](../products/ve33.md) token-governed liquidity.
+
+For what you can actually do with all of this — trading, providing liquidity, running incentive campaigns, indexing the data — see [Products](../products/README.md).

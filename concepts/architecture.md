@@ -41,7 +41,7 @@ Two consequences worth knowing:
 
 ## Pools
 
-A pool is identified by its **pool key**: the two tokens (sorted, so `token0 < token1`), the fee, the pool type parameters, and the [extension](extensions.md) address. Pool state is deliberately compact — on EVM, the current price, tick, and liquidity pack into a single storage word (see [Price representation](price-representation.md)) so that swaps touch as little storage as possible.
+A pool is identified by its **pool key**: the two tokens (sorted, so `token0 < token1`), the fee, the pool type parameters, and the [extension](extensions.md) address. Pool state is deliberately compact — on EVM, the current price, tick, and liquidity pack into a single storage word (see [Price representation](../reference/price-representation.md)) so that swaps touch as little storage as possible.
 
 Ekubo V3 supports several pool types in the same Core contract: concentrated liquidity, stableswap (liquidity concentrated around a center price with an amplification factor), and full range.
 

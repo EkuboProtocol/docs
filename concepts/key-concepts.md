@@ -12,7 +12,7 @@ A decentralized finance protocol that lets users trade against pooled liquidity 
 
 ### Constant product
 
-The `x*y=k` formula that forms the basis of most AMMs, where `x` is the amount of one token (`token0`), `y` is the amount of the other (`token1`), and `k` is held constant as users trade with the pool. This formula is how trades are computed on Ekubo within regions of constant liquidity — see the [pool math](pool-math.md).
+The `x*y=k` formula that forms the basis of most AMMs, where `x` is the amount of one token (`token0`), `y` is the amount of the other (`token1`), and `k` is held constant as users trade with the pool. This formula is how trades are computed on Ekubo within regions of constant liquidity — see the [pool math](../reference/pool-math.md).
 
 ### Concentrated liquidity
 

@@ -7,22 +7,28 @@
 * [🔮 Vision](about-ekubo/vision.md)
 * [📄 V3 Whitepaper](about-ekubo/v3-whitepaper.md)
 
+## Products
+
+* [✨ Overview](products/README.md)
+* [🔄 Trading](products/trading.md)
+* [🌊 Providing liquidity](products/liquidity.md)
+* [🗳️ Ve33 and STONX](products/ve33.md)
+* [🎁 Rewards and incentives](products/rewards.md)
+* [🗄️ Indexer](products/indexer.md)
+* [🏩 Governance](products/governance.md)
+
 ## Concepts
 
 * [🧠 Key concepts](concepts/key-concepts.md)
 * [🏛️ Protocol architecture](concepts/architecture.md)
-* [🧮 Pool math](concepts/pool-math.md)
-* [💹 Price representation](concepts/price-representation.md)
 * [🔌 Extensions](concepts/extensions.md)
 
 ## User Guides
 
 * [🌊 Add liquidity](user-guides/add-liquidity.md)
 * [⌛ Dollar-cost average orders](user-guides/dollar-cost-average-orders.md)
-* [🗳️ Ve33](user-guides/ve33.md)
-* [🏩 Governance](user-guides/governance/README.md)
-  * [EKUBO token](user-guides/governance/ekubo-token.md)
-  * [Ekubo, Inc. and the DAO](user-guides/governance/ekubo-inc.md)
+* [🪙 EKUBO token](user-guides/ekubo-token.md)
+* [🏛️ Participate in governance](user-guides/governance.md)
 
 ## Integration Guides
 
@@ -36,6 +42,8 @@
 
 ## Reference
 
+* [🧮 Pool math](reference/pool-math.md)
+* [💹 Price representation](reference/price-representation.md)
 * [📜 Contract addresses](reference/contracts/README.md)
   * [EVM (V3)](reference/contracts/evm-v3.md)
   * [Starknet](reference/contracts/starknet.md)

@@ -14,7 +14,7 @@ Every interaction with Ekubo goes through the Core singleton's [`lock` callback 
 
 ### 2. Quote Ekubo liquidity off-chain (aggregators, solvers)
 
-To route trades through Ekubo pools you need to simulate swaps off-chain. The easiest path is the [Quoter API](../reference/quoter-api.md), which returns block-pinned split routes ready to execute. To compute quotes yourself, use the [SDKs](sdks.md) — the Rust SDK implements every pool type and extension — or see [Price representation](../concepts/price-representation.md) and [Pool math](../concepts/pool-math.md) to implement the math directly. Remember that pools with [extensions](../concepts/extensions.md) can modify swap behavior; see the [Aggregators guide](aggregators.md) for how to handle them safely.
+To route trades through Ekubo pools you need to simulate swaps off-chain. The easiest path is the [Quoter API](../reference/quoter-api.md), which returns block-pinned split routes ready to execute. To compute quotes yourself, use the [SDKs](sdks.md) — the Rust SDK implements every pool type and extension — or see [Price representation](../reference/price-representation.md) and [Pool math](../reference/pool-math.md) to implement the math directly. Remember that pools with [extensions](../concepts/extensions.md) can modify swap behavior; see the [Aggregators guide](aggregators.md) for how to handle them safely.
 
 ### 3. Index Ekubo data
 

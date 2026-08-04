@@ -13,7 +13,7 @@ Ekubo Protocol V3 is the open-source EVM deployment of Ekubo. The source code li
   * **Concentrated liquidity** — tick-spacing-parameterized, as on Starknet
   * **Stableswap** — liquidity concentrated around a configurable center tick with an amplification factor
   * **Full range** — a zero-amplification stableswap pool; the cheapest option
-* **Fees** are a `uint64` binary fraction of `2^64` (e.g. 0.3% = `55340232221128654`). See [Price representation](../../concepts/price-representation.md) for fee and price encodings.
+* **Fees** are a `uint64` binary fraction of `2^64` (e.g. 0.3% = `55340232221128654`). See [Price representation](../price-representation.md) for fee and price encodings.
 * **Extensions** customize pool behavior at eight lifecycle call points. On EVM, an extension's call points are **encoded in the top byte of its own address** (extensions are deployed by mining an address with the right bits).
 * **Periphery** (Positions, Orders, Router, Incentives, ...) is where protocol fees are applied — Core itself takes no fees. The canonical Positions deployment applies a 10% protocol fee to collected swap fees (for the Ekubo DAO) and no withdrawal fee.
 
@@ -63,7 +63,7 @@ Deployed on Ethereum, Base, Arbitrum, MegaETH, and Monad. The Positions deployme
 
 Contracts added or reworked in `v3.2.0` are configuration-specific and have no universal address — their addresses are per deployment:
 
-* [Ve33](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/extensions/Ve33.sol), [VeToken](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/VeToken.sol), [Ve33Positions](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/Ve33Positions.sol), Ve33Periphery, Ve33EmissionRateScheduler, and [Ve33DataFetcher](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/lens/Ve33DataFetcher.sol) — the [Ve33](../../user-guides/ve33.md) token-governed liquidity system (each instance is deployed around its own stake token, e.g. STONX on Robinhood Chain)
+* [Ve33](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/extensions/Ve33.sol), [VeToken](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/VeToken.sol), [Ve33Positions](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/Ve33Positions.sol), Ve33Periphery, Ve33EmissionRateScheduler, and [Ve33DataFetcher](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/lens/Ve33DataFetcher.sol) — the [Ve33](../../products/ve33.md) token-governed liquidity system (each instance is deployed around its own stake token, e.g. STONX on Robinhood Chain)
 * [SignedExclusiveSwap](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/extensions/SignedExclusiveSwap.sol) — extension for controller-signed EIP-712 swaps ([integration guide](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/signed-exclusive-swap-extension.md))
 * [Router](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/Router.sol) — configurable router executing Core swaps and forwarding to MEVCapture / Ve33 pools
 * [PoolKeyIndex](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/PoolKeyIndex.sol) — optional registry for discovering initialized pool keys by pool ID, token, or extension

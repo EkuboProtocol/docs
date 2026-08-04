@@ -90,7 +90,7 @@ The team allocation of EKUBO tokens is entirely held by Ekubo, Inc., and the com
 
 ## Governance contracts
 
-The governance contract addresses can be found [here](../../reference/contracts/evm-v2.md#governance-contracts).
+The governance contract addresses can be found [here](../reference/contracts/evm-v2.md#governance-contracts).
 
 You can learn more about how the governance contracts work [here](./).
 

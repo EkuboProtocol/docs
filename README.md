@@ -12,9 +12,10 @@ The contracts are open source under the [Ekubo DAO Shared Revenue License](https
 
 ### Where to go
 
-* **New to Ekubo?** Start with [Features](about-ekubo/features.md) and the [key concepts](concepts/key-concepts.md).
-* **Providing liquidity or trading?** See the [user guides](user-guides/add-liquidity.md).
+* **New to Ekubo?** Start with [Features](about-ekubo/features.md), then browse the [products](products/README.md).
+* **Trading or providing liquidity?** See [Trading](products/trading.md), [Providing liquidity](products/liquidity.md), and the [user guides](user-guides/add-liquidity.md).
 * **Building on Ekubo?** Start with [Integrating Ekubo](integration-guides/README.md).
+* **Curious how it works?** Read [Protocol architecture](concepts/architecture.md).
 * **Looking up an address, API, or audit?** See the [reference](reference/contracts/README.md).
 
 Questions? Ask in the [Discord](https://discord.ekubo.org).

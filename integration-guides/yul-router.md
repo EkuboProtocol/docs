@@ -27,7 +27,7 @@ Supported hop types:
 | Hop type | Executes |
 | --- | --- |
 | `core` | A direct `Core.swap` against the pool key |
-| `forwarded` | `Core.forward(forwardee, ...)` for forward-only swap extensions such as MEVCapture and [Ve33](../user-guides/ve33.md) |
+| `forwarded` | `Core.forward(forwardee, ...)` for forward-only swap extensions such as MEVCapture and [Ve33](../products/ve33.md) |
 | `signedExclusiveSwap` | A controller-signed swap on a SignedExclusiveSwap pool (pool key, params, signed meta, minimum balance update, and signature) |
 | `wrapper` | Wrapping or unwrapping through an Ekubo token wrapper |
 
@@ -88,7 +88,7 @@ For `signedExclusiveSwap` hops, `encodeSignedSwapMeta({ deadline, fee, nonce, au
 ### Other exports
 
 * `YUL_ROUTER_ADDRESS` — the deterministic router address
-* `MIN_SQRT_RATIO` / `MAX_SQRT_RATIO` — bounds for `sqrtRatioLimit` on hops (see [Price representation](../concepts/price-representation.md))
+* `MIN_SQRT_RATIO` / `MAX_SQRT_RATIO` — bounds for `sqrtRatioLimit` on hops (see [Price representation](../reference/price-representation.md))
 * `PoolKey`, `Hop`, `MultiHop`, and parameter types for TypeScript consumers
 * `calldataSize(data)` — helper for estimating calldata cost
 
