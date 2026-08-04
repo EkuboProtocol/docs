@@ -27,7 +27,7 @@ Because an extension can re-enter the core Ekubo contract to perform its own act
 Extensions are specified as part of the pool key. The specified extension is an immutable configuration of a pool. Before a pool can be initialized with an extension, the extension must be registered with Core along with the set of pool lifecycle events ("call points") at which it should be called.
 
 {% hint style="info" %}
-The set of "call points" never changes for the pool, so you should specify all the places you might need to respond to pool actions. How call points are declared differs by deployment: on Starknet, the extension registers them with Core via `set_call_points`; on EVM (V3), the call points are encoded in the top byte of the extension's own address — extension addresses are mined so the address itself declares the hooks.
+Declare every hook you might need up front. How call points are declared — and how permanent they are — differs by deployment. On EVM (V3) they are encoded in the top byte of the extension's own address (addresses are mined so the address itself declares the hooks), and Core rejects a second registration, so they are genuinely immutable. On Starknet the extension registers them with Core via `set_call_points`, which can be called again; a change applies to all of that extension's existing pools, so treat them as immutable by convention.
 {% endhint %}
 
 The full list of call points is:
@@ -55,14 +55,14 @@ An extension is immutable for a given pool, so either make the extension itself 
 
 These extensions are already built and deployed. Each one is a pool type you can trade against or build on — see [Contract addresses](../reference/contracts/README.md) for deployments.
 
-| Extension | What it does |
-| --- | --- |
-| **Oracle** | Records on-chain price history for a token pair against native ETH, for use by lending markets and other protocols |
-| **TWAMM** | Executes orders gradually over time, powering [DCA orders](../user-guides/dollar-cost-average-orders.md) |
-| **Limit orders** | One-tick positions that are pulled automatically once fully executed |
-| **MEV capture** | Charges additional fees on swaps that move the price significantly, directing that value back to liquidity providers |
-| **Boosted fees** | Streams externally funded fee rewards to a pool's liquidity providers |
-| **[Ve33](../products/ve33.md)** | Token-governed liquidity: stakers vote to direct emissions and set pool fees, and earn the fees of the pools they support |
-| **[Signed exclusive swaps](../integration-guides/signed-exclusive-swaps.md)** | RFQ-style pools where a controller signs each swap off-chain with its own fee and bounds |
+| Extension | Chains | What it does |
+| --- | --- | --- |
+| **Oracle** | Both | Records on-chain price history for a token against a designated quote asset — native ETH on EVM, a configured oracle token on Starknet |
+| **TWAMM** | Both | Executes orders gradually over time, powering [DCA orders](../user-guides/dollar-cost-average-orders.md) |
+| **Limit orders** | Starknet | Narrow positions exactly one tick spacing wide (128 ticks, about 1.28 bps) that are pulled automatically once fully executed |
+| **MEV capture** | EVM | Charges additional fees on swaps that move the price significantly within a block, directing that value back to liquidity providers |
+| **Boosted fees** | EVM | Streams externally funded fee rewards to a pool's liquidity providers |
+| **[Ve33](../products/ve33.md)** | EVM | Token-governed liquidity: stakers vote to direct emissions and set pool fees, and earn the fees of the pools they support |
+| **[Signed exclusive swaps](../integration-guides/signed-exclusive-swaps.md)** | EVM | RFQ-style pools where a controller signs each swap off-chain with its own fee and bounds |
 
 Source code: [EVM extensions](https://github.com/EkuboProtocol/evm-contracts/tree/main/src/extensions) and [Starknet extensions](https://github.com/EkuboProtocol/starknet-contracts/tree/main/src/extensions).

@@ -24,7 +24,9 @@ Ekubo's ticks are 1/100th of a basis point — 100x finer than most concentrated
 
 ## Fees
 
-The pool fee is what swappers pay to trade against your liquidity, and it is chosen when the pool is created rather than from a fixed set of tiers. A protocol fee is applied to the swap fees you collect (10% on EVM, 20% on Starknet, both applied by the Positions contract) and funds the DAO through [revenue buybacks](governance.md#revenue-buybacks). There is **no fee on your principal** when you withdraw.
+The pool fee is what swappers pay to trade against your liquidity, and it is chosen when the pool is created rather than from a fixed set of tiers. A protocol fee is applied to the swap fees you collect (10% on EVM, 20% on Starknet, both applied by the Positions contract) and funds the DAO through [revenue buybacks](governance.md#revenue-buybacks). The canonical Positions deployment charges **no fee on your principal** when you withdraw — the contract supports a withdrawal fee, but it is configured to zero.
+
+Because any licensee can deploy their own Positions contract with its own fee settings, always check the deployment you are actually using.
 
 Core itself charges nothing — see [Protocol architecture](../concepts/architecture.md).
 
