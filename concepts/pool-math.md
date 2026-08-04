@@ -2,7 +2,7 @@
 description: A practical guide to Ekubo's internal math
 ---
 
-# Math 1-pager
+# Pool math
 
 Ekubo represents the current state of each pool with two values: `sqrt_ratio` and `liquidity`. The `sqrt_ratio` is the square root of the current price in terms of  `token1 / token0`, and the `liquidity` is a measure of how much of the two tokens is available for trading at the current price.
 

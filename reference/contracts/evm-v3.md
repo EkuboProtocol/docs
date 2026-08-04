@@ -8,12 +8,12 @@ Ekubo Protocol V3 is the open-source EVM deployment of Ekubo. The source code li
 
 ## Architecture
 
-* **Core** is an ownerless, permissionless singleton holding all pools and tokens, using [flash accounting](key-concepts.md#flash-accounting) and the ["till" pattern](../till-pattern.md). All interactions start with `lock()`; Core calls back into your contract, which performs swaps and position updates and settles net balances at the end. Native ETH is supported directly as `address(0)` (so ETH is always `token0`).
+* **Core** is an ownerless, permissionless singleton holding all pools and tokens, using [flash accounting](../../concepts/key-concepts.md#flash-accounting) and the ["till" pattern](../../concepts/till-pattern.md). All interactions start with `lock()`; Core calls back into your contract, which performs swaps and position updates and settles net balances at the end. Native ETH is supported directly as `address(0)` (so ETH is always `token0`).
 * **Pool types** — a pool's configuration is packed into a single word (`PoolConfig`: extension, fee, and pool-type parameters):
   * **Concentrated liquidity** — tick-spacing-parameterized, as on Starknet
   * **Stableswap** — liquidity concentrated around a configurable center tick with an amplification factor
   * **Full range** — a zero-amplification stableswap pool; the cheapest option
-* **Fees** are a `uint64` binary fraction of `2^64` (e.g. 0.3% = `55340232221128654`). See [Price representation](price-representation.md) for fee and price encodings.
+* **Fees** are a `uint64` binary fraction of `2^64` (e.g. 0.3% = `55340232221128654`). See [Price representation](../../concepts/price-representation.md) for fee and price encodings.
 * **Extensions** customize pool behavior at eight lifecycle call points. On EVM, an extension's call points are **encoded in the top byte of its own address** (extensions are deployed by mining an address with the right bits).
 * **Periphery** (Positions, Orders, Router, Incentives, ...) is where protocol fees are applied — Core itself takes no fees. The canonical Positions deployment applies a 10% protocol fee to collected swap fees (for the Ekubo DAO) and no withdrawal fee.
 
@@ -42,7 +42,7 @@ These contracts are deployed at the **same address on every supported chain** (E
 
 | Contract | Address (every chain) | Description |
 | --- | --- | --- |
-| [CoreDataFetcher](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/lens/CoreDataFetcher.sol) | `0xF68F25CA6C817733b7B15a42191AE72A34d56a2B` | Pool state, [prices](reading-pool-price.md), positions, saved balances |
+| [CoreDataFetcher](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/lens/CoreDataFetcher.sol) | `0xF68F25CA6C817733b7B15a42191AE72A34d56a2B` | Pool state, [prices](../../integration-guides/reading-pool-price.md), positions, saved balances |
 | [QuoteDataFetcher](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/lens/QuoteDataFetcher.sol) | `0x5a3F0F1dA4Ac0c4b937d5685f330704c8e8303f1` | Batched data for computing swap quotes |
 | [TWAMMDataFetcher](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/lens/TWAMMDataFetcher.sol) | `0xDEFe25E56a7891CC4c0E1401879f3dC81F1Cc4A6` | DCA order and TWAMM state |
 | [IncentivesDataFetcher](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/lens/IncentivesDataFetcher.sol) | `0x69F9eCfa84CF0C41bE9F68b557b07b6b89d71eD0` | Incentive campaign state |
@@ -70,4 +70,4 @@ Contracts added or reworked in `v3.2.0` are configuration-specific and have no u
 * [Auctions](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/Auctions.sol) — on-chain auctions ([whitepaper](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/auctions-whitepaper.md))
 * [MintableERC20](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/MintableERC20.sol) — owner-mintable token used by deployments that need one (e.g. a Ve33 stake token)
 
-Audit reports for the EVM contracts are linked on the [Audits](audits.md) page.
+Audit reports for the EVM contracts are linked on the [Audits](../audits.md) page.

@@ -4,18 +4,18 @@ description: How to interpret pool data from the on-chain methods
 
 # Reading pool price
 
-How to read a pool's current price on-chain and convert it to a human-readable number. For how prices are encoded (fixed point on Starknet, the compact `SqrtRatio` float type on EVM), see [Price representation](price-representation.md).
+How to read a pool's current price on-chain and convert it to a human-readable number. For how prices are encoded (fixed point on Starknet, the compact `SqrtRatio` float type on EVM), see [Price representation](../concepts/price-representation.md).
 
 ## EVM (V3)
 
-The simplest way to read a pool price on EVM chains is the `CoreDataFetcher` lens contract (deployed at the same address on every chain — see [EVM Contracts (V3)](evm-contracts-v3.md)):
+The simplest way to read a pool price on EVM chains is the `CoreDataFetcher` lens contract (deployed at the same address on every chain — see [EVM Contracts (V3)](../reference/contracts/evm-v3.md)):
 
 ```solidity
 // returns the sqrt ratio expanded to 64.128 fixed point, plus the current tick
 (uint256 sqrtRatioFixed, int32 tick) = coreDataFetcher.poolPrice(poolKey);
 ```
 
-The returned value is a 64.128 fixed-point number — identical semantics to Starknet's `sqrt_ratio` below, so the conversion to a human-readable price is the same: divide by `2**128`, square, and adjust for token decimals. (If you read Core's packed pool state directly instead, the price is a 96-bit `SqrtRatio`; call `toFixed()` on it or see [Price representation](price-representation.md) for the bit layout.)
+The returned value is a 64.128 fixed-point number — identical semantics to Starknet's `sqrt_ratio` below, so the conversion to a human-readable price is the same: divide by `2**128`, square, and adjust for token decimals. (If you read Core's packed pool state directly instead, the price is a 96-bit `SqrtRatio`; call `toFixed()` on it or see [Price representation](../concepts/price-representation.md) for the bit layout.)
 
 Note that on EVM, native ETH is represented as `address(0)`, so ETH is always `token0` of any pool it is in.
 
@@ -38,7 +38,7 @@ https://app.ekubo.org/positions/new?baseCurrency=ETH&quoteCurrency=USDC&fee=1701
 
 The second easiest way is to compute the value. Fee is a 0.128 fixed point number, so to compute the fee, we can do [`floor(0.05% * 2**128)`](https://www.wolframalpha.com/input?i=floor%280.05%25*2**128%29). The result is `170141183460469235273462165868118016`.  The tick spacing of `0.01%` is represented as an exponent of `1.000001`, so it can be computed as [`log base 1.000001 of 1.001`](https://www.wolframalpha.com/input?i=log+base+1.000001+of+1.001), which is roughly equal to `1000`. The extension is `0` because it is not used for this pool.
 
-Input the values into the [Core](contract-addresses.md) contract on Voyager to read the pool price. If you're following along, you'll get a value that looks like this:
+Input the values into the [Core](../reference/contracts/evm-v2.md) contract on Voyager to read the pool price. If you're following along, you'll get a value that looks like this:
 
 ```json
 {

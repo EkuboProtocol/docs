@@ -2,7 +2,7 @@
 description: How to become a liquidity provider on Ekubo
 ---
 
-# 🌊 Add liquidity
+# Add liquidity
 
 To add liquidity to Ekubo and start earning fees from user swaps, you must [create a position](https://ekubo.org/evm/positions/new).
 

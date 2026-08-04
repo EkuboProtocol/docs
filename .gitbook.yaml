@@ -1,0 +1,23 @@
+root: ./
+
+structure:
+  readme: README.md
+  summary: SUMMARY.md
+
+redirects:
+  integration-guides/till-pattern: concepts/till-pattern.md
+  integration-guides/extensions: concepts/extensions.md
+  integration-guides/integrating-ekubo: integration-guides/README.md
+  integration-guides/reference: reference/contracts/README.md
+  integration-guides/reference/key-concepts: concepts/key-concepts.md
+  integration-guides/reference/math-1-pager: concepts/pool-math.md
+  integration-guides/reference/price-representation: concepts/price-representation.md
+  integration-guides/reference/reading-pool-price: integration-guides/reading-pool-price.md
+  integration-guides/reference/evm-contracts-v3: reference/contracts/evm-v3.md
+  integration-guides/reference/contract-addresses: reference/contracts/evm-v2.md
+  integration-guides/reference/starknet-contracts: reference/contracts/starknet.md
+  integration-guides/reference/governance-contracts: reference/contracts/governance.md
+  integration-guides/reference/ekubo-api: reference/ekubo-api/README.md
+  integration-guides/reference/ekubo-api/endpoints: reference/ekubo-api/endpoints.md
+  integration-guides/reference/quoter-api: reference/quoter-api.md
+  integration-guides/reference/audits: reference/audits.md

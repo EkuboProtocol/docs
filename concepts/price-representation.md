@@ -12,7 +12,7 @@ $$
 sqrt\_ratio = \sqrt{token1/token0}
 $$
 
-Working with the square root of the price (rather than the price itself) makes the concentrated liquidity math cheaper and more precise — see the [Math 1-pager](math-1-pager.md) for why. Prices are supported over the enormous range `[2^-128, 2^128]`, so the sqrt ratio always lies in `[2^-64, 2^64]`.
+Working with the square root of the price (rather than the price itself) makes the concentrated liquidity math cheaper and more precise — see the [Math 1-pager](pool-math.md) for why. Prices are supported over the enormous range `[2^-128, 2^128]`, so the sqrt ratio always lies in `[2^-64, 2^64]`.
 
 Ticks are the same on every deployment: tick `i` corresponds to the sqrt ratio `sqrt(1.000001^i)`, i.e. each tick is **1/100th of a basis point** of price. The valid tick range is roughly ±88.72 million (`±88,722,835` on EVM, `±88,722,883` on Starknet — the EVM range is very slightly narrower).
 
@@ -25,7 +25,7 @@ On Starknet, `sqrt_ratio` is a `u256` interpreted as a binary fixed-point number
 * `MIN_SQRT_RATIO = 18446748437148339061` (≈ `2^-64 · 2^128`)
 * `MAX_SQRT_RATIO = 6277100250585753475930931601400621808602321654880405518632` (≈ `2^64 · 2^128`)
 
-To convert to a price: divide by `2^128`, then square. See [Reading pool price](reading-pool-price.md) for a worked example.
+To convert to a price: divide by `2^128`, then square. See [Reading pool price](../integration-guides/reading-pool-price.md) for a worked example.
 
 ## EVM (V3): the floating-point `SqrtRatio` type
 
@@ -81,7 +81,7 @@ function toFixed(SqrtRatio sqrtRatio) pure returns (uint256);
 function toSqrtRatio(uint256 sqrtRatioFixed, bool roundUp) pure returns (SqrtRatio);
 ```
 
-Both directions round-trip losslessly for any valid `SqrtRatio`. To compute a human-readable price from the 64.128 value: divide by `2^128`, square, and adjust for the two tokens' decimals (worked example in [Reading pool price](reading-pool-price.md)).
+Both directions round-trip losslessly for any valid `SqrtRatio`. To compute a human-readable price from the 64.128 value: divide by `2^128`, square, and adjust for the two tokens' decimals (worked example in [Reading pool price](../integration-guides/reading-pool-price.md)).
 
 ### Where you'll encounter it
 

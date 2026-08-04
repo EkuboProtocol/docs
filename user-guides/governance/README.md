@@ -2,7 +2,7 @@
 description: Understand how governance of Ekubo Protocol is designed
 ---
 
-# 🏩 Governance
+# Governance
 
 ## Introduction
 
