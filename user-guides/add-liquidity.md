@@ -22,7 +22,7 @@ Any position you create is tied to a specific pool. Pools are a combination of t
 
 The 2 tokens you select, also known as the "pair," is the market you wish to make. For example, if you want to market-make ETH to dollars, you can choose ETH as the base token and USDC or DAI as the quote token. In this context, quote token means the numerator of the prices you'll see in the following pages. You can swap the two tokens, but it still refers to the same pair--it's only used for price display.
 
-The fee you select is how much swappers are charged to trade against your liquidity, as well as how much you pay on your principal to withdraw your liquidity.
+The fee you select is how much swappers are charged to trade against your liquidity. A fixed protocol fee is deducted from the swap fees you collect (currently 20% on Starknet and 10% on EVM chains, applied by the Positions contract when fees are collected) — there is no fee on your principal when you withdraw liquidity.
 
 Tick spacing typically should be set to about twice the fee. Tick spacing will affect how small your price range can be, i.e. how much leverage you can get.
 
@@ -30,7 +30,7 @@ Tick spacing typically should be set to about twice the fee. Tick spacing will a
 
 Once you've selected a pool, you must select the range of prices in which you would like to market make. If the price leaves this selected price range, your position will become "out of range," meaning it is no longer actively earning fees. If the market price reaches the upper price boundary, you will hold entirely the quote token, and at the lower price the base token.
 
-You should choose your price range to maximize capital efficiency while also limiting the expected number of withdrawals, since each withdrawal incurs a fee on principal.
+You should choose your price range to maximize capital efficiency: a narrower range earns more fees per dollar of principal while the price stays inside it, but requires more active management.
 
 ### Specifying an amount
 

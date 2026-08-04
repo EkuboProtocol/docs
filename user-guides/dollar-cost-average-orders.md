@@ -40,10 +40,7 @@ Note that the price you receive on your DCA orders is heavily dependent on the l
 
 The ability to place DCA orders is available in the interface [here](https://app.ekubo.org/evm/dca).
 
-DCA orders pay fees in 2 ways:
-
-* When you stop the order, you pay a fee to the liquidity providers of the pool on which you placed the order equal to the swap fee times the remaining sell amount
-* When the orders are imbalanced, you pay swap fees to liquidity providers of the pool on which you placed the order to swap your tokens, depending on how one-sided the orders are
+DCA orders pay fees when the orders are imbalanced: you pay swap fees to liquidity providers of the pool on which you placed the order to swap your tokens, depending on how one-sided the orders are. Volume that nets directly against opposing orders pays no swap fee. Stopping or decreasing an order is free.
 
 {% hint style="info" %}
 The contracts allow durations between `1` second and `2**32` seconds, but the specified start and end time for an order must follow specific rules to be valid.
@@ -63,12 +60,4 @@ Much like the NFT you receive when you create a position: you should **never sel
 
 All fees from the DCA orders are directed towards liquidity providers of the pool on which the order is placed.
 
-DCA orders incur _fees_ when stopped, or when there is no volume on the other side of the trade and the order must be executed against the liquidity pool.&#x20;
-
-The fees paid to liquidity providers when orders are executed against the pool are like regular swap fees.
-
-In the case of stopping an order, the fee is paid to liquidity providers at the time the order is stopped from the remaining amount to be sold. This serves two purposes:
-
-* Incentivizes providing liquidity where there is already a lot of TWAMM volume
-  * Helps with fragmentation of TWAMM liquidity
-* Prevents spoofing of large orders
+DCA orders incur _fees_ only when there is no volume on the other side of the trade and the order must be executed against the liquidity pool. The fees paid to liquidity providers when orders are executed against the pool are like regular swap fees. Order volume that nets against opposing orders pays no fee, and stopping an order early is free.

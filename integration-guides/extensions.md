@@ -24,10 +24,10 @@ Because an extension can re-enter the core Ekubo contract to perform its own act
 
 ### Immutability
 
-Extensions are specified as part of the pool key. The specified extension is an immutable configuration of a pool. When the pool is initialized, an extension is always called before the initialization, and at this point the extension returns the pool lifecycle events where it should be called in the future.&#x20;
+Extensions are specified as part of the pool key. The specified extension is an immutable configuration of a pool. Before a pool can be initialized with an extension, the extension must be registered with Core along with the set of pool lifecycle events ("call points") at which it should be called.
 
 {% hint style="info" %}
-The set of "call points" never changes for the pool, so you should specify all the places you might need to respond to pool actions.
+The set of "call points" never changes for the pool, so you should specify all the places you might need to respond to pool actions. How call points are declared differs by deployment: on Starknet, the extension registers them with Core via `set_call_points`; on EVM (V3), the call points are encoded in the top byte of the extension's own address — extension addresses are mined so the address itself declares the hooks.
 {% endhint %}
 
 The full list of call points is:

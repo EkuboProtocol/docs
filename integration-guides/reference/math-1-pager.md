@@ -1,13 +1,12 @@
 ---
 description: A practical guide to Ekubo's internal math
-hidden: true
 ---
 
 # Math 1-pager
 
 Ekubo represents the current state of each pool with two values: `sqrt_ratio` and `liquidity`. The `sqrt_ratio` is the square root of the current price in terms of  `token1 / token0`, and the `liquidity` is a measure of how much of the two tokens is available for trading at the current price.
 
-Ekubo supports pair prices between `2**-128` and `2**128`, which means the square root of the price can be anywhere between `2**-64` and `2**64`. We use a [fixed point number](https://en.wikipedia.org/wiki/Fixed-point_arithmetic) type for storing the price with 128 bits after the radix. For example, `sqrt_ratio` for the price `1` is represented as `1<<128`.
+Ekubo supports pair prices between `2**-128` and `2**128`, which means the square root of the price can be anywhere between `2**-64` and `2**64`. On Starknet, the sqrt ratio is a [fixed point number](https://en.wikipedia.org/wiki/Fixed-point_arithmetic) with 128 bits after the radix — `sqrt_ratio` for the price `1` is represented as `1<<128`. On EVM chains, Ekubo V3 stores the same value in a compact 96-bit floating-point-style type invented for Ekubo; see [Price representation](price-representation.md) for the encoding details of both.
 
 $$
 sqrt\_ratio = \sqrt{y/x}
@@ -61,6 +60,6 @@ const sqrt_ratio_x128 =
 ```
 {% endcode %}
 
-The inverse can be computed (`tick` from `sqrt_ratio`), by doing taking the logarithm of `sqrt_ratio` in base `1.000001`. To get the _exact_ fixed point 64.128 number used by Ekubo to represent a tick's price, you can use one of our open source SDKs ([TypeScript](https://github.com/EkuboProtocol/starknet-typescript-sdk), [Rust](https://github.com/EkuboProtocol/starknet-rust-sdk)).
+The inverse can be computed (`tick` from `sqrt_ratio`) by taking the logarithm of `sqrt_ratio` in base `sqrt(1.000001)`. To get the _exact_ fixed point number used by Ekubo to represent a tick's price, you can use one of our SDKs — [`@ekubo/sdk`](https://www.npmjs.com/package/@ekubo/sdk) for TypeScript or the [Rust SDK](https://github.com/EkuboProtocol/rust-sdk) — both of which cover Starknet and EVM.
 
 Once you've broken up the price range into pieces, positions are just a combination of an amount of liquidity and lower/upper tick boundaries. Users update positions by updating the liquidity that goes in/out of range at these prices, and swappers move the price across position boundaries.

@@ -15,6 +15,7 @@
 
 ## Integration Guides
 
+* [🧩 Integrating Ekubo](integration-guides/integrating-ekubo.md)
 * [🔒 "Till" pattern](integration-guides/till-pattern.md)
 * [🔄 Swapping](integration-guides/swapping.md)
 * [🧭 Aggregators](integration-guides/aggregators.md)
@@ -22,6 +23,7 @@
 * [📚 Reference](integration-guides/reference/README.md)
   * [Key concepts](integration-guides/reference/key-concepts.md)
   * [Math 1-pager](integration-guides/reference/math-1-pager.md)
+  * [Price representation](integration-guides/reference/price-representation.md)
   * [Reading pool price](integration-guides/reference/reading-pool-price.md)
   * [EVM Contracts (V3)](integration-guides/reference/evm-contracts-v3.md)
   * [EVM Contracts (V2)](integration-guides/reference/contract-addresses.md)
