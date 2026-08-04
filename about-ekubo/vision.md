@@ -10,4 +10,4 @@ At the heart of Ekubo Core is a high-precision, concentrated-liquidity AMM engin
 
 By unifying liquidity, tooling, and integrations under one canonical implementation, Ekubo creates strong network effects across the DeFi ecosystem. Traders benefit from deeper pools and lower costs; liquidity providers earn more consistent fees; and builders can focus on user experience instead of re-implementing AMMs. Ekubo turns the AMM layer into open, composable infrastructure — a foundation for many brands, products, and communities to thrive together.
 
-Read more [here](https://hackmd.io/@moodysalem/ekubo-v3-whitepaper).
+Read the full [V3 whitepaper](v3-whitepaper.md).

@@ -5,6 +5,7 @@
 * [👋 Introduction](README.md)
 * [🔮 Vision](about-ekubo/vision.md)
 * [🔑 Features](about-ekubo/features.md)
+* [📄 V3 Whitepaper](about-ekubo/v3-whitepaper.md)
 
 ## User Guides
 
@@ -12,6 +13,7 @@
 * [⌛ Dollar-cost average orders](user-guides/dollar-cost-average-orders.md)
 * [🏩 Governance](user-guides/governance/README.md)
   * [EKUBO token](user-guides/governance/ekubo-token.md)
+  * [Ekubo, Inc. and the DAO](user-guides/governance/ekubo-inc.md)
 
 ## Integration Guides
 
