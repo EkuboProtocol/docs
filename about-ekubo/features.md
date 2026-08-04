@@ -6,7 +6,7 @@ description: What sets Ekubo Protocol apart from other AMM protocols
 
 ### Free by default
 
-The core contracts are ownerless and permissionless. They are deployed to the same address on every chain using a script that anyone can run. There is no protocol fee collection built into the Core contracts or any of the extensions — all generated fees go directly to users. Protocol fees, where they exist, are collected at the periphery (for example by the Positions contract). This is the key design decision that allows Ekubo V3 to serve many different [licensees](v3-whitepaper.md) on one shared liquidity layer.
+The core contracts are ownerless and permissionless. They are deployed to the same address on every chain using a script that anyone can run. Core itself collects no protocol fee — swap fees accrue entirely to the pool. Protocol fees, where they exist, are applied at the periphery, for example by the Positions contract when a provider collects their fees. This is the key design decision that allows Ekubo V3 to serve many different [licensees](v3-whitepaper.md) on one shared liquidity layer.
 
 ### Gas efficiency
 
