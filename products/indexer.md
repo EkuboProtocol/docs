@@ -36,7 +36,7 @@ Once restored, start the indexer and it will catch up from the dump's head to th
 
 ## Running it
 
-A prebuilt image is published to the GitHub Container Registry for every commit:
+A prebuilt image is published to the GitHub Container Registry for every commit to `main`:
 
 ```bash
 docker pull ghcr.io/ekuboprotocol/indexer:<git-sha>
@@ -52,7 +52,7 @@ docker run --rm -e NETWORK=mainnet ekubo-indexer bun src/evm.ts        # EVM cha
 Point it at Postgres with `PG_CONNECTION_STRING`, and apply the schema first:
 
 ```bash
-docker run --rm --env-file .env ekubo-indexer scripts/migrate.ts
+docker run --rm --env-file .env ekubo-indexer bun scripts/migrate.ts
 ```
 
 Migrations live under `migrations/` and run in order. Apply them **before** rolling out new workers.

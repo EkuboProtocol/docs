@@ -18,7 +18,7 @@ A campaign defines what is being rewarded and for how long: a chain, a reward to
 GET https://prod-api.ekubo.org/campaigns?chainId={chainId}
 ```
 
-Each campaign reports, per pair, the depth currently measured and the amounts `scheduled` and already `distributed`, plus the `nextDropTime` — when the next drop is scheduled to land.
+Each campaign reports, per pair, the depth currently measured and the amounts `scheduled` and already `distributed`, along with a campaign-level `nextDropTime` — when the next drop is scheduled to land.
 
 To see what a specific position has earned over a period:
 

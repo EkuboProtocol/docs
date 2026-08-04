@@ -11,7 +11,7 @@ TWAMM, or "time-weighted average market maker," is an Ekubo extension that power
 DCA-enabled pools are liquidity pools that use the extension to support these orders by providing liquidity for the buy/sell side when DCA orders are imbalanced. In practice, orders are split into per-second pieces and netted against each other; whenever the ratio of buy to sell orders does not exactly match the current pool price, the difference is swapped against the pool. That ratio rarely matches the pool price exactly, which is why this liquidity is necessary for DCA orders to price well.
 
 {% hint style="info" %}
-In practice, execution of orders happens up to once per block. On Starknet, blocks are created once every few seconds, so DCA orders are best suited for trades that happen over longer time periods. As block times decrease, orders will be split into more pieces and thus orders can be placed with greater size or shorter duration given the same amount of liquidity.
+In practice, virtual orders execute at most once per block. DCA orders are therefore best suited to trades that play out over longer periods than the chain's block time. The shorter the block time, the more pieces an order is split into, so the same liquidity supports larger or shorter-duration orders.
 {% endhint %}
 
 Orders on both sides of a DCA-enabled pool are netted against each other, and the difference is swapped on the pool to compute the resulting price for the orders.
@@ -38,19 +38,19 @@ Note that the price you receive on your DCA orders is heavily dependent on the l
 
 ### Creating DCA orders
 
-The ability to place DCA orders is available in the interface [here](https://app.ekubo.org/evm/dca).
+You can place DCA orders in the [interface](https://app.ekubo.org/dca).
 
 DCA orders pay fees when the orders are imbalanced: you pay swap fees to liquidity providers of the pool on which you placed the order to swap your tokens, depending on how one-sided the orders are. Volume that nets directly against opposing orders pays no swap fee. Stopping or decreasing an order is free.
 
 {% hint style="info" %}
-The contracts allow durations between `1` second and `2**32` seconds, but the specified start and end time for an order must follow specific rules to be valid.
+An order's start and end times must each be a multiple of a step size that grows the further in the future they are. The smallest step is 256 seconds on EVM chains (16 on Starknet), so the shortest possible order is 256 seconds; the longest is just under `2**32` seconds.
 {% endhint %}
 
 ### Adding liquidity to DCA pools
 
-Creating a DCA-enabled pool for a pair provides the backstop liquidity that orders on that pair execute against, and that liquidity has exclusive rights to the pair's TWAMM volume. Orders cannot be placed between two tokens until at least one direct DCA-enabled pool exists.
+Creating a DCA-enabled pool provides the backstop liquidity that orders on it execute against, and that liquidity has exclusive rights to that pool's TWAMM volume. Orders cannot be placed between two tokens until at least one direct DCA-enabled pool exists.
 
-Splitting an order into per-second pieces minimizes its price impact. You only specify an amount; Ekubo finds the best pools to split it across, just as it does for an ordinary swap. Your order is also netted against volume flowing the other way, and any volume that never reaches the backstop pool pays no fee at all. Placing an order mints an NFT representing your ownership of it.
+Splitting an order into per-second pieces minimizes its price impact. You choose the DCA-enabled pool the order runs against and specify an amount; the order is then netted against volume flowing the other way, and any volume that never reaches the backstop pool pays no fee at all. Placing an order mints an NFT representing your ownership of it.
 
 {% hint style="warning" %}
 As with the NFT you receive when you create a position, you should **never sell this NFT** — selling it gives up the right to the capital behind the order.

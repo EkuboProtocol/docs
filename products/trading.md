@@ -41,7 +41,7 @@ Trading from your own contract on either chain follows the same lock-and-callbac
 ## Trade types beyond spot
 
 * **[DCA orders](../user-guides/dollar-cost-average-orders.md)** — sell a token gradually over a period, netted against opposing orders, using the TWAMM extension
-* **Limit orders** — one-tick positions that execute at a chosen price and are pulled automatically once filled
+* **Limit orders** (Starknet) — narrow positions one tick spacing wide (128 ticks) that execute at a chosen price and are pulled automatically once filled
 * **[Signed exclusive swaps](../integration-guides/signed-exclusive-swaps.md)** — RFQ-style pools where a market maker signs each quote off-chain with its own fee and bounds
 
 ## MEV capture

@@ -4,7 +4,7 @@ description: How to become a liquidity provider on Ekubo
 
 # Add liquidity
 
-To add liquidity to Ekubo and start earning fees from user swaps, you must [create a position](https://ekubo.org/evm/positions/new).
+To add liquidity to Ekubo and start earning fees from swaps, [create a position](https://app.ekubo.org/positions/new).
 
 {% hint style="info" %}
 Bookmark the app and beware of signing transactions from other websites claiming to be Ekubo that are not hosted on ekubo.org. [Read more](https://en.wikipedia.org/wiki/Phishing) about phishing scams.
@@ -22,7 +22,7 @@ Every position is tied to a specific pool, and a pool is a combination of token 
 
 The two tokens you select — the "pair" — are the market you want to make. To market-make ETH against dollars, for example, choose ETH as the base token and USDC or DAI as the quote token. Here, the quote token is the numerator of the prices shown on the following pages. Swapping which token is which does not change the pair; it only changes how prices are displayed.
 
-The fee you select is how much swappers are charged to trade against your liquidity. A fixed protocol fee is deducted from the swap fees you collect (currently 20% on Starknet and 10% on EVM chains, applied by the Positions contract when fees are collected) — there is no fee on your principal when you withdraw liquidity.
+The fee you select is how much swappers are charged to trade against your liquidity. A fixed protocol fee is deducted from the swap fees you collect (currently 20% on Starknet and 10% on EVM chains, applied by the Positions contract when fees are collected). The canonical deployments take no fee on your principal when you withdraw.
 
 Tick spacing should typically be about twice the fee. It determines how narrow your price range can be, and therefore how much leverage you can take.
 

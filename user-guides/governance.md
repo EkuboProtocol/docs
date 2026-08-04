@@ -16,7 +16,7 @@ Use the [Delegate page](https://app.ekubo.org/governance/simple-delegate) in the
 | --- | --- |
 | `stake(delegate)` | Stakes your full approved balance to a delegate |
 | `stake_amount(delegate, amount)` | Stakes a specific amount |
-| `withdraw` / `withdraw_amount` | Withdraws staked tokens |
+| `withdraw(delegate, recipient)` / `withdraw_amount(delegate, recipient, amount)` | Withdraws staked tokens |
 
 There is **no lockup and no penalty** for withdrawing at any time.
 
@@ -26,7 +26,7 @@ Your voting weight is not your staked balance. It is the *average* amount delega
 
 ## 2. Create a proposal
 
-You need voting weight above the proposal creation threshold (currently 100,000 EKUBO) and no other active proposal of your own.
+You need voting weight at or above the proposal creation threshold (currently 100,000 EKUBO) and no other active proposal of your own.
 
 Create one from the [proposal page](https://app.ekubo.org/governance/create-proposal), or on-chain:
 
