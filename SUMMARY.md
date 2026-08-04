@@ -10,7 +10,7 @@
 ## Concepts
 
 * [🧠 Key concepts](concepts/key-concepts.md)
-* [🔒 "Till" pattern](concepts/till-pattern.md)
+* [🏛️ Protocol architecture](concepts/architecture.md)
 * [🧮 Pool math](concepts/pool-math.md)
 * [💹 Price representation](concepts/price-representation.md)
 * [🔌 Extensions](concepts/extensions.md)
@@ -27,9 +27,11 @@
 ## Integration Guides
 
 * [🧩 Integrating Ekubo](integration-guides/README.md)
+* [📦 SDKs](integration-guides/sdks.md)
 * [🔄 Swapping](integration-guides/swapping.md)
 * [⚡ Yul Router](integration-guides/yul-router.md)
 * [🧭 Aggregators](integration-guides/aggregators.md)
+* [✍️ Signed exclusive swaps](integration-guides/signed-exclusive-swaps.md)
 * [📖 Reading pool price](integration-guides/reading-pool-price.md)
 
 ## Reference

@@ -8,7 +8,7 @@ Ekubo Protocol V3 is the open-source EVM deployment of Ekubo. The source code li
 
 ## Architecture
 
-* **Core** is an ownerless, permissionless singleton holding all pools and tokens, using [flash accounting](../../concepts/key-concepts.md#flash-accounting) and the ["till" pattern](../../concepts/till-pattern.md). All interactions start with `lock()`; Core calls back into your contract, which performs swaps and position updates and settles net balances at the end. Native ETH is supported directly as `address(0)` (so ETH is always `token0`).
+* **Core** is an ownerless, permissionless singleton holding all pools and tokens, using [flash accounting](../../concepts/key-concepts.md#flash-accounting) and the ["till" pattern](../../concepts/architecture.md). All interactions start with `lock()`; Core calls back into your contract, which performs swaps and position updates and settles net balances at the end. Native ETH is supported directly as `address(0)` (so ETH is always `token0`).
 * **Pool types** — a pool's configuration is packed into a single word (`PoolConfig`: extension, fee, and pool-type parameters):
   * **Concentrated liquidity** — tick-spacing-parameterized, as on Starknet
   * **Stableswap** — liquidity concentrated around a configurable center tick with an amplification factor

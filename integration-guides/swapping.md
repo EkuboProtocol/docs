@@ -12,7 +12,7 @@ It is your responsibility to find the best list of pools for executing a trade. 
 
 ### Executing swaps on-chain
 
-Every interaction with Ekubo starts with `ICore#lock` (see the ["till" pattern](../concepts/till-pattern.md)). Core calls back into your contract via `IYourContract#locked`; inside the callback you execute the swap(s), pay the input, and withdraw the output tokens, in any order. You typically call `swap` several times in a single `locked` callback so that you only settle the net differences.
+Every interaction with Ekubo starts with `ICore#lock` (see the ["till" pattern](../concepts/architecture.md)). Core calls back into your contract via `IYourContract#locked`; inside the callback you execute the swap(s), pay the input, and withdraw the output tokens, in any order. You typically call `swap` several times in a single `locked` callback so that you only settle the net differences.
 
 ### Swapping on EVM chains
 
