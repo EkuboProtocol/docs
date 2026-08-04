@@ -4,9 +4,24 @@ description: How to interpret pool data from the on-chain methods
 
 # Reading pool price
 
-## Computing the price of a pool
+How to read a pool's current price on-chain and convert it to a human-readable number. For how prices are encoded (fixed point on Starknet, the compact `SqrtRatio` float type on EVM), see [Price representation](price-representation.md).
 
-Let's say you wanted to determine the human-readable price of the ETH-USDC pool on mainnet.
+## EVM (V3)
+
+The simplest way to read a pool price on EVM chains is the `CoreDataFetcher` lens contract (deployed at the same address on every chain — see [EVM Contracts (V3)](evm-contracts-v3.md)):
+
+```solidity
+// returns the sqrt ratio expanded to 64.128 fixed point, plus the current tick
+(uint256 sqrtRatioFixed, int32 tick) = coreDataFetcher.poolPrice(poolKey);
+```
+
+The returned value is a 64.128 fixed-point number — identical semantics to Starknet's `sqrt_ratio` below, so the conversion to a human-readable price is the same: divide by `2**128`, square, and adjust for token decimals. (If you read Core's packed pool state directly instead, the price is a 96-bit `SqrtRatio`; call `toFixed()` on it or see [Price representation](price-representation.md) for the bit layout.)
+
+Note that on EVM, native ETH is represented as `address(0)`, so ETH is always `token0` of any pool it is in.
+
+## Starknet
+
+Let's say you wanted to determine the human-readable price of the ETH-USDC pool on Starknet mainnet.
 
 These two tokens are:
 

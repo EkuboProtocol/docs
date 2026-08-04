@@ -6,7 +6,7 @@ description: Useful concepts and technologies on which Ekubo is built
 
 ## Ethereum
 
-[Ethereum](https://ethereum.org/en/) is a blockchain that allows for "smart contracts": autonomous programs that anyone can deploy and use.
+[Ethereum](https://ethereum.org/en/) is a blockchain that allows for "smart contracts": autonomous programs that anyone can deploy and use. Ekubo Protocol V3 is deployed to Ethereum mainnet and many EVM-compatible networks (L2s such as Arbitrum, Base and Optimism, among others) — at the same contract addresses on every chain.
 
 ## Layer 2
 
@@ -20,7 +20,7 @@ ZK stands for "zero knowledge," and is the technology used by [Starknet](key-con
 
 Starknet is a layer 2 network that uses a type of zero-knowledge proof called STARKs built by [Starkware](https://starkware.co/) to allow users to transact at a much lower cost.
 
-Because Starknet is built on top of a language called [Cairo](https://www.cairo-lang.org/), your usual Ethereum wallets are not yet compatible with Starknet. Wallets such as [Argent X](https://www.argent.xyz/argent-x/) and [Braavos](https://braavos.app/) work exclusively with Starknet.
+Because Starknet is built on top of a language called [Cairo](https://www.cairo-lang.org/), your usual Ethereum wallets are not compatible with Starknet. Wallets such as [Ready](https://www.ready.co/) (formerly Argent) and [Braavos](https://braavos.app/) work with Starknet. Ekubo's original deployment is on Starknet, written in Cairo.
 
 ## Automated Market Maker (AMM)
 
