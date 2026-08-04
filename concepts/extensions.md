@@ -4,7 +4,7 @@ description: Customize pool behavior by writing extension contracts
 
 # Extensions
 
-Extensions allow you to insert custom logic at certain pool lifecycle events. Extensions can also re-enter core contracts (as can any other contract) in order to place their own swaps, updates, etc. before or after the external contract interacts with a pool. This enables third party developers to leverage the efficient and secure core AMM protocol of Ekubo, including concentrated liquidity, without implementing any of the maths. With this simple interface, you can build oracles, new order types, trading strategies, privacy solutions: you're limited only to your own imagination!
+Extensions let you insert custom logic at defined points in a pool's lifecycle. Like any other contract, an extension can also re-enter Core to place its own swaps or position updates before or after the calling contract interacts with a pool. This lets third-party developers build on Ekubo's efficient, audited AMM — concentrated liquidity included — without reimplementing any of the math. From this small interface you can build oracles, new order types, trading strategies, and privacy solutions.
 
 {% hint style="info" %}
 Each pool has its own separate state, meaning the capital deposited into each pool with an extension is isolated from all other pools, including other pools with the same extension.
@@ -18,7 +18,7 @@ Ekubo aims to solve this problem by reducing the cost of fragmentation to near-z
 
 ### Flexibility
 
-Extensions are useful for using Ekubo in interesting ways. But you might want to use a completely different algorithm for trading, perhaps use a different curve. Don't fret: you can build pretty much any curve just by overlapping several `x*y=k` positions, which means Ekubo's core components can be used for many different AMM use cases. In the extreme case where you want to quote each trade individually, you can use Ekubo as an order book with its extremely small ticks by just placing one-tick orders at the prices your extension determines, e.g. from an oracle or based on time.
+You may want a different trading algorithm entirely — a different curve. You can approximate almost any curve by overlapping several `x*y=k` positions, so Ekubo's core components serve a wide range of AMM designs. At the extreme, where you want to quote every trade individually, Ekubo's very small ticks let you use it as an order book: place one-tick orders at whatever prices your extension decides, whether from an oracle or as a function of time.
 
 Because an extension can re-enter the core Ekubo contract to perform its own actions within these lifecycle events, the simple interface allows for a huge amount of customization of pool behavior. For example, you could front-run a swap by adding your own liquidity, providing price improvement; or you could read the pool price at the beginning of the block to provide an oracle.
 
@@ -41,14 +41,14 @@ The full list of call points is:
 * Before a swap
 * After a swap
 
-Because extensions can have their own state like any other contract, you can use your own contract state to implement new kinds of orders. For example, limit orders can be created by:
+Because an extension holds its own state like any other contract, you can use that state to implement new kinds of orders. Limit orders, for example, work like this:
 
-* Add functions that allow users to create limit orders via your extension
-* Immediately add liquidity to the pool for new limit orders
-* After swaps, remove any limit orders from the pool that were fully executed
+* Expose functions that let users create limit orders through your extension
+* Immediately add liquidity to the pool for each new order
+* After each swap, remove any orders that were fully executed
 
 {% hint style="info" %}
-Extensions are immutable for a pool, so you must either make them upgradeable, or make them so simple they never need to be upgraded. We recommend making extensions immutable and deploying new versions when necessary.
+An extension is immutable for a given pool, so either make the extension itself upgradeable or keep it simple enough that it never needs upgrading. We recommend immutable extensions, deploying a new version when one is needed.
 {% endhint %}
 
 ## Available extensions

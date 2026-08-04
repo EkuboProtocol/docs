@@ -17,17 +17,17 @@ Every interaction with Ekubo starts with `ICore#lock`. In order to interact with
 ```rust
 #[starknet::interface]
 trait ICore<TStorage> {
-    // ... 
-    
+    // ...
+
     // Main entrypoint for any actions, which must be called before any other pool functions can be called.
-    // Other functions must be called within the callback to lock. The ILocker#locked function is called with the input data, 
+    // Other functions must be called within the callback to lock. The ILocker#locked function is called with the input data,
     // and the returned array is passed through to the caller.
     fn lock(ref self: TStorage, data: Array<felt252>) -> Array<felt252>;
-    
+
     // Make a swap against a pool.
     // You must call this within a lock callback.
     fn swap(ref self: TStorage, pool_key: PoolKey, params: SwapParameters) -> Delta;
-    
+
     // ...
 }
 
@@ -58,7 +58,7 @@ mod Example {
   struct SwapData {
      // the list of pools that you'd like to swap against, etc.
   }
-  
+
   #[derive(Copy, Drop, Serde)]
   struct SwapResult {
      // the result of the swap
@@ -90,10 +90,10 @@ mod Example {
       let mut swap_data_span = data.span();
       let mut swap_data: SwapData = Serde::<SwapData>::deserialize(ref swap_data_span)
           .expect('DESERIALIZE_FAILED');
-      
+
       // Do your swaps here! e.g.:
       // let delta = ICoreDispatcher { contract_address: ekubo }.swap(pool_key, params);
-      
+
       // Each swap generates a "delta", but does not trigger any token transfers.
       // A negative delta indicates you are owed tokens. A positive delta indicates core owes you tokens.
       // To take a negative delta out of core, do (assuming token0):
@@ -106,7 +106,7 @@ mod Example {
       //   ICoreDispatcher { contract_address: ekubo }.deposit(token) == delta.amount1.mag,
       //   'DEPOSIT_FAILED'
       // );
-      
+
 
       let mut arr: Array<felt252> = ArrayTrait::new();
       Serde::<SwapResult>::serialize(@result, ref arr);
@@ -132,7 +132,7 @@ use array::{ArrayTrait};
 use option::{OptionTrait};
 
 fn call_core_with_callback<
-    TInput, impl TSerdeInput: Serde<TInput>, TOutput, impl TSerdeOutput: Serde<TOutput>, 
+    TInput, impl TSerdeInput: Serde<TInput>, TOutput, impl TSerdeOutput: Serde<TOutput>,
 >(
     core: ICoreDispatcher, input: @TInput
 ) -> TOutput {
@@ -147,11 +147,11 @@ fn call_core_with_callback<
 
 ### Note on extensions
 
-Extensions are third party code that can change the result of swapping against a pool, mainly by updating liquidity positions before the swap, but it's also possible that an extension front-runs a swap with their own.
+Extensions are third-party code that can change the result of swapping against a pool, usually by updating liquidity positions before the swap — though an extension may also front-run a swap with one of its own.
 
-Thus, there are 2 ways to integrate extensions:
+There are two ways to handle extensions:
 
 * read the code for the extension and support it by off-chain simulation
 * use the quoter to simulate swaps across pools, which always includes extension behavior
 
-With the latter approach, you will always be susceptible to per-block changes in behavior of the extension, however this is no different from exposure to other front runners. You should always check the resulting output amount against some expected slippage tolerance to protect the user from misbehaving extensions, in the same way you would protect against front running.
+With the latter approach you remain exposed to per-block changes in an extension's behavior, but this is no different from exposure to any other front-runner. Always check the resulting output amount against an expected slippage tolerance, protecting users from a misbehaving extension exactly as you would from front-running.
