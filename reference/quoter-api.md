@@ -20,12 +20,22 @@ The API is self-described by an OpenAPI 3.1 document at [https://prod-api-quoter
 
 ### Endpoints
 
-| Endpoint | Description |
-| --- | --- |
-| `GET /` | Discover the quoter service |
-| `GET /openapi.json` | Fetch the OpenAPI document |
-| `GET /{chainId}/health` | Read the indexed chain head |
-| `GET /{chainId}/{amount}/{specifiedToken}/{otherToken}` | Get an exact-input or exact-output swap route quote |
+Each operation below is rendered from the OpenAPI specification — expand one
+for its full request/response schemas, or use **Test it** to send a request to
+the live API directly from this page. (`GET /openapi.json` serves the
+specification itself.)
+
+{% openapi src="https://prod-api-quoter.ekubo.org/openapi.json" path="/{chainId}/{amount}/{specifiedToken}/{otherToken}" method="get" %}
+[openapi.json](https://prod-api-quoter.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api-quoter.ekubo.org/openapi.json" path="/{chainId}/health" method="get" %}
+[openapi.json](https://prod-api-quoter.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api-quoter.ekubo.org/openapi.json" path="/" method="get" %}
+[openapi.json](https://prod-api-quoter.ekubo.org/openapi.json)
+{% endopenapi %}
 
 Notes:
 

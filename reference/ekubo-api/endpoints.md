@@ -8,134 +8,253 @@ description: >-
 
 The canonical, always-current reference is the OpenAPI 3.1 document served by
 the API itself: [https://prod-api.ekubo.org/openapi.json](https://prod-api.ekubo.org/openapi.json).
-You can load it into any REST explorer (e.g. [Swagger UI](https://petstore3.swagger.io/?url=https://prod-api.ekubo.org/openapi.json)
-or Postman) for full request/response schemas.
+It also loads into any REST explorer (e.g. [Swagger UI](https://petstore3.swagger.io/?url=https://prod-api.ekubo.org/openapi.json)
+or Postman).
 
 All endpoints take a `chainId` (path or query parameter) identifying the
 network — the API serves every chain Ekubo is deployed to and indexes.
 
-The summary below is generated from the OpenAPI specification.
+Each operation below is rendered from the OpenAPI specification — expand one
+for its full request/response schemas, or use **Test it** to send a request to
+the live API directly from this page.
 
 ### Tokens
 
-| Endpoint | Description |
-| --- | --- |
-| `GET /tokens` | List tokens |
-| `GET /tokens/batch` | Batch tokens |
-| `GET /tokens/{chainId}/{tokenAddress}` | Get token |
-| `GET /tokens/{chainId}/{tokenAddress}/price-history` | Get token USD price history |
-| `GET /tokens/{chainId}/{tokenA}/{tokenB}/events` | Get pair events |
-| `GET /tokens/{chainId}/{tokenA}/{tokenB}/liquidity` | Get pair liquidity |
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/tokens" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/tokens/batch" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/tokens/{chainId}/{tokenAddress}" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/tokens/{chainId}/{tokenAddress}/price-history" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/tokens/{chainId}/{tokenA}/{tokenB}/events" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/tokens/{chainId}/{tokenA}/{tokenB}/liquidity" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
 
 ### Prices
 
-| Endpoint | Description |
-| --- | --- |
-| `GET /price/{chainId}/{baseToken}/{quoteToken}/history` | Get price history |
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/price/{chainId}/{baseToken}/{quoteToken}/history" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
 
 ### Pools
 
-| Endpoint | Description |
-| --- | --- |
-| `GET /pools/{chainId}/{coreAddress}/{poolId}/key` | Get pool key |
-| `GET /pools/{chainId}/{coreAddress}/{poolId}/liquidity` | Get pool liquidity |
-| `GET /pools/{chainId}/{coreAddress}/{poolId}/positions` | Get top positions for pool |
-| `GET /pools/{chainId}/{coreAddress}/{poolId}/price/history` | Get pool price history |
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/pools/{chainId}/{coreAddress}/{poolId}/key" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/pools/{chainId}/{coreAddress}/{poolId}/liquidity" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/pools/{chainId}/{coreAddress}/{poolId}/positions" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/pools/{chainId}/{coreAddress}/{poolId}/price/history" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
 
 ### Pairs
 
-| Endpoint | Description |
-| --- | --- |
-| `GET /pair/{chainId}/{tokenA}/{tokenB}/pools` | Get pools of pair |
-| `GET /pair/{chainId}/{tokenA}/{tokenB}/positions` | Get top positions for pair |
-| `GET /pair/{chainId}/{tokenA}/{tokenB}/tvl` | Get pair TVL |
-| `GET /pair/{chainId}/{tokenA}/{tokenB}/volume` | Get pair volume |
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/pair/{chainId}/{tokenA}/{tokenB}/pools" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/pair/{chainId}/{tokenA}/{tokenB}/positions" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/pair/{chainId}/{tokenA}/{tokenB}/tvl" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/pair/{chainId}/{tokenA}/{tokenB}/volume" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
 
 ### Positions
 
-| Endpoint | Description |
-| --- | --- |
-| `GET /positions/batch` | Batch list positions |
-| `GET /positions/{address}` | List positions |
-| `GET /positions/{chainId}/events` | List position events |
-| `GET /positions/{chainId}/{lockerAddress}/{id}/history` | List position history |
-| `GET /positions/{chainId}/{nftAddress}/{id}` | Get NFT Metadata |
-| `GET /positions/{chainId}/{nftAddress}/{id}/image.svg` | Get NFT Image |
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/positions/batch" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/positions/{address}" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/positions/{chainId}/events" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/positions/{chainId}/{lockerAddress}/{id}/history" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/positions/{chainId}/{nftAddress}/{id}" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/positions/{chainId}/{nftAddress}/{id}/image.svg" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
 
 ### Protocol overview
 
-| Endpoint | Description |
-| --- | --- |
-| `GET /overview/boosted-fees-pools` | Get boosted fees pools |
-| `GET /overview/pairs` | Get pairs |
-| `GET /overview/revenue` | Get revenue |
-| `GET /overview/tvl` | Get TVL |
-| `GET /overview/volume` | Get volume |
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/overview/boosted-fees-pools" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/overview/pairs" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/overview/revenue" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/overview/tvl" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/overview/volume" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
 
 ### Blocks
 
-| Endpoint | Description |
-| --- | --- |
-| `GET /blocks/{chainId}/closest` | Get the block closest to a given timestamp |
-| `GET /blocks/{chainId}/{blockTag}` | Get block |
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/blocks/{chainId}/closest" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/blocks/{chainId}/{blockTag}" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
 
 ### DCA orders
 
-| Endpoint | Description |
-| --- | --- |
-| `GET /orders/{chainId}/{nftAddress}/{id}` | Get NFT Metadata |
-| `GET /orders/{chainId}/{nftAddress}/{id}/image.svg` | Get NFT Image |
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/orders/{chainId}/{nftAddress}/{id}" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/orders/{chainId}/{nftAddress}/{id}/image.svg" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
 
 ### Limit orders
 
-| Endpoint | Description |
-| --- | --- |
-| `GET /limit-orders/orders/{address}` | List limit orders |
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/limit-orders/orders/{address}" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
 
 ### Auctions
 
-| Endpoint | Description |
-| --- | --- |
-| `GET /auctions` | List auction keys |
-| `GET /auctions/{chainId}/{nftAddress}/{id}` | Get auction NFT metadata |
-| `GET /auctions/{chainId}/{nftAddress}/{id}/image.svg` | Get auction NFT image |
-| `GET /auctions/{chainId}/{nftAddress}/{id}/state` | Get auction NFT state |
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/auctions" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/auctions/{chainId}/{nftAddress}/{id}" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/auctions/{chainId}/{nftAddress}/{id}/image.svg" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/auctions/{chainId}/{nftAddress}/{id}/state" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
 
 ### NFT metadata
 
-| Endpoint | Description |
-| --- | --- |
-| `GET /nft/{chainId}/{nftAddress}/{id}` | Get NFT Metadata |
-| `GET /nft/{chainId}/{nftAddress}/{id}/image.svg` | Get NFT Image |
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/nft/{chainId}/{nftAddress}/{id}" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/nft/{chainId}/{nftAddress}/{id}/image.svg" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
 
 ### Governance
 
-| Endpoint | Description |
-| --- | --- |
-| `GET /governance/{chainId}/delegates` | List Top Delegates |
-| `GET /governance/{chainId}/delegates/{address}` | Get Staker Info |
-| `GET /governance/{chainId}/proposals` | List Proposals |
-| `GET /governance/{chainId}/proposals/{proposalId}/voters` | List Voters |
-| `GET /governance/{chainId}/proposals/{proposalId}/votes` | List Votes |
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/governance/{chainId}/delegates" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/governance/{chainId}/delegates/{address}" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/governance/{chainId}/proposals" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/governance/{chainId}/proposals/{proposalId}/voters" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/governance/{chainId}/proposals/{proposalId}/votes" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
 
 ### Campaigns & rewards
 
-| Endpoint | Description |
-| --- | --- |
-| `GET /campaigns` | List campaigns |
-| `GET /claims/{address}` | List available claims |
-| `GET /rewards/{chainId}/{locker}/{salt}` | Get position rewards |
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/campaigns" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/claims/{address}" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/rewards/{chainId}/{locker}/{salt}" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
 
 ### Misc
 
-| Endpoint | Description |
-| --- | --- |
-| `GET /country` | Get request country |
-| `GET /twap/orders/batch` | Batch list TWAP orders |
-| `GET /twap/orders/{address}` | List TWAP orders |
-| `GET /twap/pair/{chainId}/{tokenA}/{tokenB}` | Get TWAP pair |
-| `GET /twap/pools/{chainId}/{coreAddress}/{poolId}` | Get TWAP pool by pool id |
-| `GET /twap/pools/{chainId}/{coreAddress}/{tokenA}/{tokenB}/{fee}` | Get TWAP pool |
-| `GET /ve33/{ve33Address}/pools` | List ve33 pools |
-| `GET /ve33/{veTokenAddress}/{address}` | List ve33 tokens |
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/country" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/twap/orders/batch" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/twap/orders/{address}" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/twap/pair/{chainId}/{tokenA}/{tokenB}" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/twap/pools/{chainId}/{coreAddress}/{poolId}" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/twap/pools/{chainId}/{coreAddress}/{tokenA}/{tokenB}/{fee}" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/ve33/{ve33Address}/pools" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
+
+{% openapi src="https://prod-api.ekubo.org/openapi.json" path="/ve33/{veTokenAddress}/{address}" method="get" %}
+[openapi.json](https://prod-api.ekubo.org/openapi.json)
+{% endopenapi %}
 
