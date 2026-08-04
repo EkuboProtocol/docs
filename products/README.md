@@ -26,6 +26,10 @@ Liquidity incentive campaigns that measure real, useful liquidity and distribute
 
 The open source indexer that turns Ekubo's on-chain events into a queryable Postgres database — the same code behind the public API. Nightly database dumps let you bootstrap a node in minutes instead of days.
 
+### [MCP server](mcp-server.md)
+
+A public Model Context Protocol server at `mcp.ekubo.org` that lets AI agents quote swaps, read pools and positions, and build unsigned transactions — non-custodially, with signing left to the user's wallet.
+
 ### [Governance](governance.md)
 
 The EKUBO token, the Staker and Governor contracts that control the protocol's upgradeable deployments, how protocol revenue flows back to the DAO, and Ekubo, Inc.'s defined role within it.

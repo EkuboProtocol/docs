@@ -20,7 +20,11 @@ To route trades through Ekubo pools you need to simulate swaps off-chain. The ea
 
 The open source [indexer](https://github.com/EkuboProtocol/indexer) ingests Ekubo events on any supported chain into Postgres — it is the same code that powers the [Ekubo API](../reference/ekubo-api/README.md). Run your own instance for low-latency or high-volume needs.
 
-### 4. Provide exclusive, quoted liquidity
+### 4. Connect an AI agent
+
+The public [MCP server](../products/mcp-server.md) at `mcp.ekubo.org` exposes quoting, pool and position data, and unsigned execution plans to any MCP-capable agent.
+
+### 5. Provide exclusive, quoted liquidity
 
 Market makers can run RFQ-style pools where each swap is signed off-chain with its own fee and bounds, while still settling in Ekubo Core — see [Signed exclusive swaps](signed-exclusive-swaps.md).
 

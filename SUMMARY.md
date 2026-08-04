@@ -15,6 +15,7 @@
 * [🗳️ Ve33 and STONX](products/ve33.md)
 * [🎁 Rewards and incentives](products/rewards.md)
 * [🗄️ Indexer](products/indexer.md)
+* [🤖 MCP server](products/mcp-server.md)
 * [🏩 Governance](products/governance.md)
 
 ## Concepts
