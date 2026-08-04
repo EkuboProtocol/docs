@@ -51,4 +51,4 @@ Because extensions can have their own state like any other contract, you can use
 Extensions are immutable for a pool, so you must either make them upgradeable, or make them so simple they never need to be upgraded. We recommend making extensions immutable and deploying new versions when necessary.
 {% endhint %}
 
-Examples of extensions can be found [here (EVM)](https://github.com/EkuboProtocol/evm-contracts/tree/main/src/extensions) or [here (Starknet)](https://github.com/EkuboProtocol/starknet-contracts/tree/main/src/extensions)
+Examples of extensions can be found [here (EVM)](https://github.com/EkuboProtocol/evm-contracts/tree/main/src/extensions) or [here (Starknet)](https://github.com/EkuboProtocol/starknet-contracts/tree/main/src/extensions). Deployed extensions include the Oracle, TWAMM (powering [DCA orders](../user-guides/dollar-cost-average-orders.md)), limit orders, MEVCapture, and [Ve33](../user-guides/ve33.md).

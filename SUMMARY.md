@@ -11,6 +11,7 @@
 
 * [🌊 Add liquidity](user-guides/add-liquidity.md)
 * [⌛ Dollar-cost average orders](user-guides/dollar-cost-average-orders.md)
+* [🗳️ Ve33](user-guides/ve33.md)
 * [🏩 Governance](user-guides/governance/README.md)
   * [EKUBO token](user-guides/governance/ekubo-token.md)
   * [Ekubo, Inc. and the DAO](user-guides/governance/ekubo-inc.md)
