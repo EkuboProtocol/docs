@@ -40,7 +40,7 @@ Extensions attach behavior to a pool without moving liquidity out of Core:
 
 ## Positions are NFTs
 
-A liquidity position is an ERC-721 token minted by the Positions contract, so it can be held, transferred, or used as collateral like any other NFT. Position metadata and images are rendered on-chain.
+A liquidity position is an ERC-721 token minted by the Positions contract, so it can be held, transferred, or used as collateral like any other NFT. Its `tokenURI` resolves to the [Ekubo API](../reference/ekubo-api/README.md), which serves the position's metadata and a rendered SVG image.
 
 {% hint style="warning" %}
 Never sell the NFT representing a position or an order — it *is* the claim on the underlying capital.
