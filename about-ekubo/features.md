@@ -6,19 +6,19 @@ description: What sets Ekubo Protocol apart from other AMM protocols
 
 ### Free by default
 
-The core contracts are ownerless and permissionless. They are deployed to the same address on every chain using a script that anyone can run. There is no protocol fee collection built into the Core contracts or any of the extensions — all generated fees go directly to users. Protocol fees, where they exist, are collected at the periphery (for example by the Positions contract). This is the key design decision that allows Ekubo V3 to serve many different [licensees](v3-whitepaper.md) on one shared liquidity layer.
+The core contracts are ownerless and permissionless. They are deployed to the same address on every chain using a script that anyone can run. Core itself collects no protocol fee — swap fees accrue entirely to the pool. Protocol fees, where they exist, are applied at the periphery, for example by the Positions contract when a provider collects their fees. This is the key design decision that allows Ekubo V3 to serve many different [licensees](v3-whitepaper.md) on one shared liquidity layer.
 
 ### Gas efficiency
 
 Ekubo uses the ["till" pattern](../concepts/architecture.md) and a singleton design to provide the cheapest trades across many pools. All pools live in a single contract, and token transfers are deferred until the end of the transaction. Advanced users don't have to transfer tokens at all: balances can be saved inside Ekubo for later use, avoiding repeated token transfers entirely.
 
-The result is that you can execute many actions across many pools and only make the minimum number of required token transfers. Combined with contracts optimized down to the storage-slot and calldata level (see [Price representation](../reference/price-representation.md)), Ekubo provides the best execution net of gas.
+The result is that you can execute many actions across many pools while making only the minimum number of token transfers. Combined with contracts optimized down to the storage-slot and calldata level (see [Price representation](../reference/price-representation.md)), this keeps the gas cost of a trade low, which matters most for routes that touch several pools.
 
 ### Concentrated liquidity
 
-Concentrated liquidity allows market makers to [provide liquidity](../user-guides/add-liquidity.md) within a specified price range. Each liquidity provider chooses the exact parameters of their position, but all positions in a pool are aggregated from a swapper's perspective: swappers get better pricing because liquidity providers can leverage up within a price range, or earn yield on unused capital elsewhere.
+Concentrated liquidity allows market makers to [provide liquidity](../user-guides/add-liquidity.md) within a specified price range. Each liquidity provider chooses the exact parameters of their position, but from a swapper's perspective all positions in a pool are aggregated into a single curve. Concentrating liquidity near the market price deepens the book where trades actually happen, so swappers see less price impact — and providers are free to deploy the capital they did not have to post elsewhere.
 
-Ekubo's ticks are 1/100th of a basis point — 100x finer than most concentrated-liquidity AMMs. Finer ticks mean tighter ranges are possible, so the same capital can be concentrated where it is actually needed and achieve far greater capital efficiency than on coarser-tick AMMs.
+Ekubo's ticks are 1/100th of a basis point — 100 times finer than the usual concentrated-liquidity convention. Finer ticks make narrower ranges expressible, so a position can be placed precisely where the provider wants it. A narrower range concentrates the same capital into less price space, which raises the fees earned per dollar of principal *while the price stays in range* — and equally raises the rate at which the position converts into the losing asset when the price moves against it, and the frequency with which it goes out of range entirely.
 
 ### Multiple pool types
 

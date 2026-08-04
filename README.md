@@ -7,7 +7,7 @@ description: >-
 
 Ekubo Protocol is AMM infrastructure featuring super-concentrated liquidity, a singleton architecture with flash accounting, and extensions. It is deployed on [Starknet](reference/contracts/starknet.md) and, with Ekubo V3, on [EVM chains](reference/contracts/evm-v3.md) — Ethereum, Base, Arbitrum, Robinhood Chain, and more — at the same contract addresses on every chain.
 
-The contracts are open source under the [Ekubo DAO Shared Revenue License](https://ekubo-license-v1.eth.link/) and relentlessly optimized to provide the most capital-efficient liquidity at the lowest cost.
+The contracts are open source under the [Ekubo DAO Shared Revenue License](https://ekubo-license-v1.eth.link/), and are heavily optimized for gas and for precise control over where liquidity sits.
 
 ### Where to go
 

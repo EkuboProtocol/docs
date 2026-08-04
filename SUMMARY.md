@@ -58,6 +58,5 @@
 ## Links
 
 * [Home](https://ekubo.org)
-* [Discord](https://discord.gg/RFbSXxtqUG)
-* [Twitter](https://twitter.com/EkuboProtocol)
-* [Telegram](https://t.me/Ekubo_Protocol)
+* [Discord](https://discord.ekubo.org)
+* [X (Twitter)](https://x.com/EkuboProtocol)

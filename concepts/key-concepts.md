@@ -16,9 +16,9 @@ The `x*y=k` formula that forms the basis of most AMMs, where `x` is the amount o
 
 ### Concentrated liquidity
 
-The main feature that allows Ekubo to provide better pricing than other AMMs. In simple constant-product AMMs, deposited capital backs trading at every possible price — including unrealistic ones — so most of it sits unused. Concentrated liquidity lets you choose the price range each position trades in. If you think ETH will only trade between 1,800 and 2,200 USDC, you can provide liquidity in just that range and deploy the rest of your capital elsewhere — or leverage up within the range to earn more fees (which also amplifies losses from price divergence).
+The main feature that allows Ekubo to provide better pricing than other AMMs. In simple constant-product AMMs, deposited capital backs trading at every possible price — including unrealistic ones — so most of it sits unused. Concentrated liquidity lets you choose the price range each position trades in. If you think ETH will only trade between 1,800 and 2,200 USDC, you can provide liquidity in just that range and deploy the rest of your capital elsewhere — or concentrate more capital into the range. Concentration cuts both ways: it raises fees earned per dollar while the price is in range, and equally amplifies divergence loss when the price moves. It does not make providing liquidity more profitable on its own.
 
-**Capital efficiency** measures this leverage: how much more capital a full-range position would need to earn the same fees as a concentrated one.
+**Capital efficiency** measures this concentration: how much more capital a full-range position would need to match a concentrated position's depth at the current price. It describes how the same exposure is expressed with less principal — not a higher expected return.
 
 ### Ticks
 

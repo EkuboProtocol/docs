@@ -1,65 +1,60 @@
 ---
-description: A practical guide to Ekubo's internal math
+description: >-
+  Where to learn the concentrated-liquidity math Ekubo uses, and the parameters
+  that are specific to Ekubo
 ---
 
 # Pool math
 
-Ekubo represents the current state of each pool with two values: `sqrt_ratio` and `liquidity`. The `sqrt_ratio` is the square root of the current price in terms of  `token1 / token0`, and the `liquidity` is a measure of how much of the two tokens is available for trading at the current price.
+Ekubo's concentrated liquidity pools use the same underlying math as other concentrated-liquidity AMMs: a constant-product curve where each position is active only within a price range, pool state tracked as a square-root price and a liquidity value, and swaps executed piecewise across regions of constant liquidity.
 
-Ekubo supports pair prices between `2**-128` and `2**128`, which means the square root of the price can be anywhere between `2**-64` and `2**64`. On Starknet, the sqrt ratio is a [fixed point number](https://en.wikipedia.org/wiki/Fixed-point_arithmetic) with 128 bits after the radix — `sqrt_ratio` for the price `1` is represented as `1<<128`. On EVM chains, Ekubo V3 stores the same value in a compact 96-bit floating-point-style type invented for Ekubo; see [Price representation](price-representation.md) for the encoding details of both.
+That math is well documented elsewhere, and the derivations are identical, so this page does not restate them. What it does cover is **the parameters that are specific to Ekubo** — the numbers you need to get right when implementing against it.
 
-$$
-sqrt\_ratio = \sqrt{y/x}
-$$
+## Learn the math
 
-$$
-liquidity = \sqrt{x*y}
-$$
+| Reference | Best for |
+| --- | --- |
+| [Uniswap v3 whitepaper](https://app.uniswap.org/whitepaper-v3.pdf) | The canonical statement of the model — sections 6.1–6.3 cover ticks, swapping within a tick, and crossing ticks |
+| [Liquidity Math in Uniswap v3](https://atiselsts.github.io/pdfs/uniswap-v3-liquidity-math.pdf), Atis Elsts | The clearest derivation of the position and amount formulas, worked step by step |
+| [Uniswap v3 Development Book](https://uniswapv3book.com/) | A build-it-yourself walkthrough, if you learn best from implementation |
+| [Concentrated liquidity](https://docs.uniswap.org/concepts/protocol/concentrated-liquidity) | A short conceptual introduction |
 
-The value `sqrt_ratio` is defined as `sqrt(y/x)` and `liquidity` is defined as `sqrt(x*y)`. This is a different method of tracking `x` and `y` in `x * y = k` that is much easier to think about when we introduce the concept of concentrated liquidity: the act of swapping only changes the price, and adding and removing `x` and `y` only updates the liquidity. With these two values defined as such, all other formulae can be derived from it (e.g.: the amount of `x` in the pool, the differences in `x`/`y` between prices, etc.)
+For the concepts in plain language without the formulas, see [Key concepts](../concepts/key-concepts.md).
 
-{% hint style="info" %}
-Ekubo does not consider token decimals in any of its calculations. If `token0` and `token1` have different decimals, that just means the price of `1` is actually `10**token1_decimals / 10**token0_decimals.`
-{% endhint %}
+## What Ekubo does differently
 
-Given sqrt\_ratio and liquidity, we can compute the equivalent amount of `x` and `y` reserves.
+### Tick base
 
-$$
-x = liquidity \div sqrt\_ratio
-$$
+Ekubo's tick base is **`1.000001`**, not `1.0001`. Tick `i` corresponds to the price `1.000001^i`, so one tick is 1/100th of a basis point — 100 times finer than the more common convention. Every tick-to-price conversion you take from an external reference must use this base.
 
-$$
-y = liquidity \times sqrt\_ratio
-$$
+The tick range is correspondingly wider:
 
-A constant-liquidity AMM such as Uniswap V2 can be trivially implemented using these representations instead of `x` and `y`, and Ekubo with full range liquidity is a more efficient version of the usual AMM implementation that tracks `x` and `y` without support for concentrated liquidity.
+| | EVM (V3) | Starknet |
+| --- | --- | --- |
+| Min / max tick | ±88,722,835 | ±88,722,883 |
+| Max tick spacing | 698,605 | 354,892 |
 
-When the price moves due to swapping, positions are entered and exited, and Ekubo adjusts the liquidity mid-trade. Thus, trades must be executed iteratively: a user's swap is broken up into pieces trading through areas of the curve with constant liquidity, a la constant-liquidity AMMs. Each time we cross a position boundary, we update the current liquidity. How do we define position boundaries? That's where ticks come in.
+### Price and sqrt-ratio range
 
-Ticks divide the entire price range into discrete regions. They can be defined however an AMM designer wishes, but in Ekubo prices are divided up logarithmically so that each tick is equidistant from one another. The base of the log for Ekubo's ticks (i.e. tick size) is set to `1.000001`. You can compute the `sqrt_ratio` corresponding to ticks using decimal math libraries, for example in TypeScript:
+Ekubo supports prices from `2^-128` to `2^128`, so the square root of the price ranges from `2^-64` to `2^64`.
 
-{% code title="tick_to_sqrt_ratio.ts" %}
-```typescript
-import {Decimal} from 'decimal.js-light';
+### Representation
 
-const tick = 1234;
+The square-root price is stored differently on each deployment: a 128-bit fixed-point number on Starknet, and a compact 96-bit floating-point-style type on EVM. Fees are encoded as binary fractions, with a different denominator on each chain. Both are documented in [Price representation](price-representation.md) — read that before implementing any conversion.
 
-// A fixed point .128 number has at most 128 bits after the decimal,
-// which translates to about 10**38.5 in decimal.
-// That means ~78 decimals of precision should be able to represent
-// any price with full precision.
-// Note there can be loss of precision for intermediate calculations,
-// but this should be sufficient for just computing the price.
-Decimal.set({ precision: 78 });
+### Token decimals
 
-const sqrt_ratio_x128 =
-    new Decimal('1.000001')
-        .sqrt()
-        .pow(tick)
-        .mul(new Decimal(2).pow(128));
-```
-{% endcode %}
+Ekubo performs no decimal adjustment anywhere in its math. If `token0` and `token1` have different decimals, a raw price of `1` corresponds to a human-readable price of `10**token1_decimals / 10**token0_decimals`. See [Reading pool price](../integration-guides/reading-pool-price.md) for a worked conversion.
 
-The inverse can be computed (`tick` from `sqrt_ratio`) by taking the logarithm of `sqrt_ratio` in base `sqrt(1.000001)`. To get the _exact_ fixed point number used by Ekubo to represent a tick's price, you can use one of our SDKs — [`@ekubo/sdk`](https://www.npmjs.com/package/@ekubo/sdk) for TypeScript or the [Rust SDK](https://github.com/EkuboProtocol/rust-sdk) — both of which cover Starknet and EVM.
+### Other pool types
 
-Once you've broken up the price range into pieces, positions are just a combination of an amount of liquidity and lower/upper tick boundaries. Users update positions by updating the liquidity that goes in/out of range at these prices, and swappers move the price across position boundaries.
+Concentrated liquidity is one of three pool types. **Stableswap** pools concentrate liquidity around a configurable center tick with an amplification factor, and **full-range** pools span the entire price range — the cheapest configuration, and equivalent to a constant-product AMM. See [Providing liquidity](../products/liquidity.md).
+
+## Reference implementations
+
+Rather than reimplementing the conversions, use an SDK — both handle Starknet and EVM, and both produce exactly the values the contracts use:
+
+* [`ekubo_sdk`](https://crates.io/crates/ekubo_sdk) (Rust) — full quoting across every pool type and extension
+* [`@ekubo/sdk`](https://www.npmjs.com/package/@ekubo/sdk) (TypeScript) — tick, price, liquidity, and swap math
+
+See [SDKs](../integration-guides/sdks.md).

@@ -14,7 +14,7 @@ For the step-by-step version in the app, see [Add liquidity](../user-guides/add-
 
 | Type | Liquidity shape | Suits |
 | --- | --- | --- |
-| **Concentrated** | Provider-chosen price range, with tick spacing controlling how tight ranges can be | Most pairs; maximum capital efficiency |
+| **Concentrated** | Provider-chosen price range, with tick spacing controlling how narrow ranges can be | Most pairs; precise control over where capital sits |
 | **Stableswap** | Concentrated around a configurable center price, with an amplification factor | Correlated assets that trade near a fixed ratio |
 | **Full range** | The entire price range | Long-tail pairs and the simplest possible position |
 
@@ -46,6 +46,10 @@ A liquidity position is an ERC-721 token minted by the Positions contract, so it
 Never sell the NFT representing a position or an order — it *is* the claim on the underlying capital.
 {% endhint %}
 
-## Earning more on the same liquidity
+## Rewards beyond swap fees
 
-Beyond swap fees, liquidity can earn from [incentive campaigns](rewards.md), which measure the depth your position actually provides near the market price and distribute reward tokens through periodic drops.
+Liquidity can also earn from [incentive campaigns](rewards.md), which measure the depth your position provides near the market price and distribute reward tokens through periodic drops.
+
+## Risk
+
+Providing liquidity is not a yield product. A position earns fees from the volume that trades against it, and simultaneously accrues divergence loss as the price moves — ending up holding more of whichever asset fell in relative value. Narrowing a range concentrates both effects at once: more fees per dollar while the price is in range, and faster conversion into the losing asset when it moves. Whether a position is profitable depends on the volume it captures relative to that divergence, which is a property of the market, not of the protocol.

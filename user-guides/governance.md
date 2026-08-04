@@ -21,7 +21,7 @@ Use the [Delegate page](https://app.ekubo.org/governance/simple-delegate) in the
 There is **no lockup and no penalty** for withdrawing at any time.
 
 {% hint style="info" %}
-Your voting weight is not your staked balance. It is the *average* amount delegated to you over the voting weight smoothing duration ending when voting opens — currently 1 day. Stake before a proposal's voting period begins, not during it.
+Your voting weight is not your staked balance. It is the *average* amount delegated to you over the voting weight smoothing duration ending when voting opens — currently 1 day. Because the voting start delay is only 1 hour, stake well before a proposal you care about is created, not after.
 {% endhint %}
 
 ## 2. Create a proposal
@@ -36,13 +36,13 @@ Create one from the [proposal page](https://app.ekubo.org/governance/create-prop
 
 A proposal commits to its calls by hash. The **same calls must be supplied again at execution**, so keep them.
 
-Voting opens after the voting start delay (currently 1 day). Discuss proposals in the [Discord](https://discord.ekubo.org) before submitting — the delay exists so problems can be caught early.
+Voting opens after the voting start delay (currently 1 hour). Discuss proposals in the [Discord](https://discord.ekubo.org) before submitting — the delay exists so problems can be caught early.
 
 ## 3. Vote
 
-Call `vote(proposalId, yea)` with `true` for yea or `false` for nay, or vote in the app. One vote per address, only during the voting period (currently 7 days).
+Call `vote(proposalId, yea)` with `true` for yea or `false` for nay, or vote in the app. One vote per address, only during the voting period (currently 4 days).
 
-A proposal passes if it reaches quorum (currently 3,500,000 EKUBO in yea votes) **and** receives strictly more yea than nay. A tie fails.
+A proposal passes if it reaches quorum (currently 3,250,000 EKUBO in yea votes) **and** receives strictly more yea than nay. A tie fails.
 
 ## 4. Cancel, if needed
 
@@ -50,7 +50,7 @@ A proposal passes if it reaches quorum (currently 3,500,000 EKUBO in yea votes) 
 
 ## 5. Execute
 
-After a proposal passes and the execution delay elapses (currently 1 day), anyone can call `execute(proposalId, calls)` with the original calls. Execution must happen within the execution window (currently 30 days) or the proposal expires.
+After a proposal passes and the execution delay elapses (currently 1 hour), anyone can call `execute(proposalId, calls)` with the original calls. Execution must happen within the execution window (currently 30 days) or the proposal expires.
 
 Execution is atomic: all calls succeed or none do. A proposal that reverts can be retried within the window.
 

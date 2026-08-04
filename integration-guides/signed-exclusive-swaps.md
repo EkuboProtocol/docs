@@ -52,7 +52,7 @@ With [`@ekubo/yul-router-sdk`](yul-router.md), `encodeSignedSwapMeta({ deadline,
 4. The extension calls `Core.swap(...)`.
 5. The signed `fee` is applied to the result — charged on the output for exact-in swaps, on the required input for exact-out.
 6. The resulting balance update is checked component-wise against `minBalanceUpdate`.
-7. The charged fee is stored in Core saved balances under the extension owner.
+7. The charged fee is held in the extension's own Core saved balances, to be donated to the pool's liquidity providers on the next block touch (below).
 
 ## Why `minBalanceUpdate` matters
 

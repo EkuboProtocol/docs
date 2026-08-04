@@ -32,15 +32,15 @@ Current configuration:
 
 | Parameter | Value |
 | --- | --- |
-| Voting start delay | 1 day |
-| Voting period | 7 days |
+| Voting start delay | 1 hour |
+| Voting period | 4 days |
 | Voting weight smoothing duration | 1 day |
-| Quorum | 3,500,000 EKUBO |
+| Quorum | 3,250,000 EKUBO |
 | Proposal creation threshold | 100,000 EKUBO |
-| Execution delay | 1 day |
+| Execution delay | 1 hour |
 | Execution window | 30 days |
 
-These are themselves governance-configurable; each proposal is versioned against the configuration in effect when it was created.
+These are themselves governance-configurable, and each proposal is versioned against the configuration in effect when it was created — so a proposal created before a reconfiguration still runs under the old parameters. Read the current values directly from the Governor's `get_config` entrypoint.
 
 Additional rules worth knowing: a proposer may have only one active proposal at a time, and a proposal can be cancelled only by its proposer and only before voting opens — the delay period exists so mistakes can be corrected. Execution is atomic and happens once; if a call reverts, the whole proposal can be retried within the execution window.
 
