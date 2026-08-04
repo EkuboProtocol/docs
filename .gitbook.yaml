@@ -11,8 +11,6 @@ redirects:
   integration-guides/integrating-ekubo: integration-guides/README.md
   integration-guides/reference: reference/contracts/README.md
   integration-guides/reference/key-concepts: concepts/key-concepts.md
-  integration-guides/reference/math-1-pager: concepts/pool-math.md
-  integration-guides/reference/price-representation: concepts/price-representation.md
   integration-guides/reference/reading-pool-price: integration-guides/reading-pool-price.md
   integration-guides/reference/evm-contracts-v3: reference/contracts/evm-v3.md
   integration-guides/reference/contract-addresses: reference/contracts/evm-v2.md
@@ -22,3 +20,12 @@ redirects:
   integration-guides/reference/ekubo-api/endpoints: reference/ekubo-api/endpoints.md
   integration-guides/reference/quoter-api: reference/quoter-api.md
   integration-guides/reference/audits: reference/audits.md
+  concepts/pool-math: reference/pool-math.md
+  concepts/price-representation: reference/price-representation.md
+  integration-guides/reference/math-1-pager: reference/pool-math.md
+  integration-guides/reference/price-representation: reference/price-representation.md
+  user-guides/ve33: products/ve33.md
+  user-guides/governance/README: user-guides/governance.md
+  user-guides/governance: user-guides/governance.md
+  user-guides/governance/ekubo-token: user-guides/ekubo-token.md
+  user-guides/governance/ekubo-inc: products/governance.md

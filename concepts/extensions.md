@@ -62,7 +62,7 @@ These extensions are already built and deployed. Each one is a pool type you can
 | **Limit orders** | One-tick positions that are pulled automatically once fully executed |
 | **MEV capture** | Charges additional fees on swaps that move the price significantly, directing that value back to liquidity providers |
 | **Boosted fees** | Streams externally funded fee rewards to a pool's liquidity providers |
-| **[Ve33](../user-guides/ve33.md)** | Token-governed liquidity: stakers vote to direct emissions and set pool fees, and earn the fees of the pools they support |
+| **[Ve33](../products/ve33.md)** | Token-governed liquidity: stakers vote to direct emissions and set pool fees, and earn the fees of the pools they support |
 | **[Signed exclusive swaps](../integration-guides/signed-exclusive-swaps.md)** | RFQ-style pools where a controller signs each swap off-chain with its own fee and bounds |
 
 Source code: [EVM extensions](https://github.com/EkuboProtocol/evm-contracts/tree/main/src/extensions) and [Starknet extensions](https://github.com/EkuboProtocol/starknet-contracts/tree/main/src/extensions).

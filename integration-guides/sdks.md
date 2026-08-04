@@ -50,7 +50,7 @@ npm install @ekubo/sdk
 
 Shared math and protocol encoding utilities, with **no runtime dependencies**. It covers the pieces most integrations need in a browser or Node environment:
 
-* **Tick and price math** — conversions between ticks, sqrt ratios, and prices for both chains (see [Price representation](../concepts/price-representation.md))
+* **Tick and price math** — conversions between ticks, sqrt ratios, and prices for both chains (see [Price representation](../reference/price-representation.md))
 * **Liquidity math** — `maxLiquidityForTokenAmounts`, `liquidityToAmountBase` / `liquidityToAmountQuote`, `amountsFromSpecifiedAmount`, and the `amount0Delta` / `amount1Delta` primitives for sizing positions
 * **Swap math** — `computeStep`, `computeFee`, `amountBeforeFee`, `nextSqrtRatioFromAmount0` / `nextSqrtRatioFromAmount1`
 * **TWAMM math** — `calculateNextSqrtRatio` for [DCA](../user-guides/dollar-cost-average-orders.md) pools
