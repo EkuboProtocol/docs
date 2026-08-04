@@ -22,7 +22,7 @@ Partially redacted version of the report
 
 ### TWAMM Extension
 
-The TWAMM extension, powering [DCA-enabled pools and DCA orders](../../user-guides/dollar-cost-average-orders.md), has been audited.
+The TWAMM extension, powering [DCA-enabled pools and DCA orders](../user-guides/dollar-cost-average-orders.md), has been audited.
 
 {% file src="../../.gitbook/assets/NM0205_EKUBO_TWAMM.pdf" %}
 

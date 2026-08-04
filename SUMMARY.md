@@ -3,9 +3,17 @@
 ## About Ekubo
 
 * [👋 Introduction](README.md)
-* [🔮 Vision](about-ekubo/vision.md)
 * [🔑 Features](about-ekubo/features.md)
+* [🔮 Vision](about-ekubo/vision.md)
 * [📄 V3 Whitepaper](about-ekubo/v3-whitepaper.md)
+
+## Concepts
+
+* [🧠 Key concepts](concepts/key-concepts.md)
+* [🔒 "Till" pattern](concepts/till-pattern.md)
+* [🧮 Pool math](concepts/pool-math.md)
+* [💹 Price representation](concepts/price-representation.md)
+* [🔌 Extensions](concepts/extensions.md)
 
 ## User Guides
 
@@ -18,24 +26,23 @@
 
 ## Integration Guides
 
-* [🧩 Integrating Ekubo](integration-guides/integrating-ekubo.md)
-* [🔒 "Till" pattern](integration-guides/till-pattern.md)
+* [🧩 Integrating Ekubo](integration-guides/README.md)
 * [🔄 Swapping](integration-guides/swapping.md)
+* [⚡ Yul Router](integration-guides/yul-router.md)
 * [🧭 Aggregators](integration-guides/aggregators.md)
-* [🔌 Extensions](integration-guides/extensions.md)
-* [📚 Reference](integration-guides/reference/README.md)
-  * [Key concepts](integration-guides/reference/key-concepts.md)
-  * [Math 1-pager](integration-guides/reference/math-1-pager.md)
-  * [Price representation](integration-guides/reference/price-representation.md)
-  * [Reading pool price](integration-guides/reference/reading-pool-price.md)
-  * [EVM Contracts (V3)](integration-guides/reference/evm-contracts-v3.md)
-  * [EVM Contracts (V2)](integration-guides/reference/contract-addresses.md)
-  * [Starknet Contracts](integration-guides/reference/starknet-contracts.md)
-  * [Governance Contracts](integration-guides/reference/governance-contracts.md)
-  * [Ekubo API](integration-guides/reference/ekubo-api/README.md)
-    * [Endpoints](integration-guides/reference/ekubo-api/endpoints.md)
-  * [Quoter API](integration-guides/reference/quoter-api.md)
-  * [Audits](integration-guides/reference/audits.md)
+* [📖 Reading pool price](integration-guides/reading-pool-price.md)
+
+## Reference
+
+* [📜 Contract addresses](reference/contracts/README.md)
+  * [EVM (V3)](reference/contracts/evm-v3.md)
+  * [Starknet](reference/contracts/starknet.md)
+  * [Governance](reference/contracts/governance.md)
+  * [EVM (V2, deprecated)](reference/contracts/evm-v2.md)
+* [🌐 Ekubo API](reference/ekubo-api/README.md)
+  * [Endpoints](reference/ekubo-api/endpoints.md)
+* [🧮 Quoter API](reference/quoter-api.md)
+* [🛡️ Audits](reference/audits.md)
 
 ## Links
 

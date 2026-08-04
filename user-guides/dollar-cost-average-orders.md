@@ -4,7 +4,7 @@ description: >-
   positions more efficiently or even programmatically
 ---
 
-# ⌛ Dollar-cost average orders
+# Dollar-cost average orders
 
 TWAMM, or "time-weighted average market maker," is an Ekubo extension which is enables a feature in the [interface](https://app.ekubo.org) called "DCA" orders and "DCA-enabled" pools. DCA orders are orders to sell a token at a specified rate between a start and end time. The mechanism involved in executing Ekubo's DCA orders is best described by [Paradigm](https://www.paradigm.xyz/2021/07/twamm).&#x20;
 
@@ -16,7 +16,7 @@ In practice, execution of orders happens up to once per block. On Starknet, bloc
 
 Orders on both sides of a DCA-enabled pool are netted against each other, and the difference is swapped on the pool to compute the resulting price for the orders.
 
-Ekubo's TWAMM implementation is integrated into the core protocol via [extensions.md](../integration-guides/extensions.md "mention"). There are two features in the user interface:
+Ekubo's TWAMM implementation is integrated into the core protocol via [extensions](../concepts/extensions.md). There are two features in the user interface:
 
 * **DCA-enabled pools:** liquidity pools that use the TWAMM extension
   * Provide liquidity to these pools to earn fees from DCA orders as well as regular swap volume

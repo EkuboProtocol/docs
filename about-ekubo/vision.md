@@ -2,7 +2,7 @@
 description: Shared Liquidity as a Public Good
 ---
 
-# 🔮 Vision
+# Vision
 
 Ekubo is a next-generation AMM protocol built around a **singleton Core contract** that all deployments share. Instead of fragmenting liquidity across countless forks and versions, every licensee — each with its own branding, economics, and frontend — settles directly in the same Core. This design transforms liquidity itself into a **public good**, eliminating redundant work, consolidating integrations, and maximizing on-chain efficiency.
 
