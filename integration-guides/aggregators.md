@@ -4,6 +4,10 @@ description: Take advantage of liquidity in Ekubo pools to provide better pricin
 
 # Aggregators
 
+{% hint style="info" %}
+The code samples on this page are written in Cairo for the Starknet deployment. The same lock/callback flow applies on EVM chains — see [Swapping](swapping.md) and the [EVM contracts repository](https://github.com/EkuboProtocol/evm-contracts) for Solidity equivalents.
+{% endhint %}
+
 ### Summary
 
 Ekubo is a singleton AMM that utilizes the "till" pattern. The till pattern was publicly introduced at EthCC\[5] and is also described [here](https://github.com/OpenZeppelin/openzeppelin-contracts/issues/4361#issuecomment-1595095135).

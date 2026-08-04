@@ -12,7 +12,7 @@ It is your responsibility to find the best list of pools for executing a trade. 
 
 #### Executing swaps on chain
 
-To swap on Ekubo, you must called `ICore#lock`. Ekubo's core contract will call back into your contract with the data you pass, via `IYourContract#locked`. In your lock callback, you execute the swap(s), pay the input, and withdraw the output tokens in no particular order.&#x20;
+To swap on Ekubo, you must call `ICore#lock`. Ekubo's core contract will call back into your contract with the data you pass, via `IYourContract#locked`. In your lock callback, you execute the swap(s), pay the input, and withdraw the output tokens in no particular order.&#x20;
 
 Note you typically call swap multiple times in a single `locked` callback so you only have to pay the differences.
 
