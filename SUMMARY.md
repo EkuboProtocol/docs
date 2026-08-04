@@ -34,6 +34,7 @@
   * [Governance Contracts](integration-guides/reference/governance-contracts.md)
   * [Ekubo API](integration-guides/reference/ekubo-api/README.md)
     * [Endpoints](integration-guides/reference/ekubo-api/endpoints.md)
+  * [Quoter API](integration-guides/reference/quoter-api.md)
   * [Audits](integration-guides/reference/audits.md)
 
 ## Links

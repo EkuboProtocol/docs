@@ -10,11 +10,11 @@ There are three common ways to integrate Ekubo, depending on what you're buildin
 
 ### 1. Swap on-chain from a smart contract
 
-Every interaction with Ekubo goes through the Core singleton's [`lock` callback pattern](till-pattern.md): call `lock`, receive a callback, perform swaps and settle net token amounts at the end. See [Swapping](swapping.md) for the flow and the Router contracts ([Starknet](https://github.com/EkuboProtocol/starknet-contracts/blob/main/src/router.cairo), [EVM](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/Router.sol)) for reference implementations.
+Every interaction with Ekubo goes through the Core singleton's [`lock` callback pattern](till-pattern.md): call `lock`, receive a callback, perform swaps and settle net token amounts at the end. See [Swapping](swapping.md) for the flow. On EVM, production swaps go through the gas-optimized [Yul Router](https://github.com/EkuboProtocol/yul-router) with routes encoded by [`@ekubo/yul-router-sdk`](https://www.npmjs.com/package/@ekubo/yul-router-sdk); the Router contracts ([Starknet](https://github.com/EkuboProtocol/starknet-contracts/blob/main/src/router.cairo), [EVM](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/Router.sol)) are reference implementations for building your own.
 
 ### 2. Quote Ekubo liquidity off-chain (aggregators, solvers)
 
-To route trades through Ekubo pools you need to simulate swaps off-chain. You can implement the pool math yourself (see [Price representation](reference/price-representation.md) and the [Math 1-pager](reference/math-1-pager.md)), use our SDKs, or lean on an existing integration below. Remember that pools with [extensions](extensions.md) can modify swap behavior — see the [Aggregators guide](aggregators.md) for how to handle them safely.
+To route trades through Ekubo pools you need to simulate swaps off-chain. The easiest path is the [Quoter API](reference/quoter-api.md), which returns block-pinned split routes ready to execute. Alternatively, implement the pool math yourself (see [Price representation](reference/price-representation.md) and the [Math 1-pager](reference/math-1-pager.md)), use our SDKs, or lean on an existing integration below. Remember that pools with [extensions](extensions.md) can modify swap behavior — see the [Aggregators guide](aggregators.md) for how to handle them safely.
 
 ### 3. Index Ekubo data
 
