@@ -16,6 +16,14 @@ Liquidity fragmentation is inevitable. In the absence of extensions, others will
 
 Ekubo aims to solve this problem by reducing the cost of fragmentation to near-zero. This is the purpose of the [singleton design and the till pattern](architecture.md). Ekubo is a platform for an ecosystem of different types of pools that are all aggregated with every aggregator and arbitrageur, so markets can operate as efficiently as possible. This ecosystem of different kinds of liquidity also has the benefit of providing traders the best possible execution.
 
+### What belongs in an extension
+
+Extensibility is for creating new *pool functionality*: behavior that plugs into the [flash accounting system](architecture.md#flash-accounting) and works as if it had been part of the original design. A TWAMM pool, an oracle pool, a vote-governed ve(3,3) pool — each changes what a pool *is*, and every router, aggregator, and arbitrageur settles against it through the same lock as any other pool.
+
+What an extension is not is a place to add third-party dependencies. An extension is an immutable part of its pools' keys and sits in the hot path of every interaction with them, so coupling one to an external protocol welds that protocol's risks, upgrades, and failure modes into the pool itself — permanently, for every LP and trader in it.
+
+The line is easy to draw in practice. Consider providing liquidity in a tight range while depositing the rest of your capital in a money market, rebalancing between the two as the price moves. Nothing about that changes how the pool works: it is a *strategy* — a decision about where capital goes — and it belongs on top of the AMM, not inside it. There are many ways to execute a strategy on top. Vaults in the style of Yearn run strategies autonomously as contract code, earning additional yield but requiring a new audited contract per strategy. Hedge funds run them with people, who also earn additional yield but take a share of the profits and make mistakes. The most forward-looking way is to give the strategy to an AI agent and let it run autonomously — which is precisely what the [MCP server](../products/mcp-server.md) is for: an agent gets the same tokens, quotes, position data, and execution plans the interface uses, so a strategy lives in the agent's instructions rather than in anyone's pool.
+
 ### Flexibility
 
 You may want a different trading algorithm entirely — a different curve. You can approximate almost any curve by overlapping several `x*y=k` positions, so Ekubo's core components serve a wide range of AMM designs. At the extreme, where you want to quote every trade individually, Ekubo's very small ticks let you use it as an order book: place one-tick orders at whatever prices your extension decides, whether from an oracle or as a function of time.
