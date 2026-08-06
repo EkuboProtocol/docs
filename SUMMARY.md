@@ -23,7 +23,7 @@
 * [🧠 Key concepts](concepts/key-concepts.md)
 * [🏛️ Protocol architecture](concepts/architecture.md)
 * [🔌 Extensions](concepts/extensions.md)
-* [⚖️ Extensions vs. Uniswap v4 hooks](concepts/extensions-vs-v4-hooks.md)
+  * [⚖️ Compared to Uniswap v4 hooks](concepts/extensions-vs-v4-hooks.md)
 
 ## User Guides
 
