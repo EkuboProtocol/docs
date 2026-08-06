@@ -60,7 +60,7 @@ Uniswap built [a TWAMM hook of its own](https://github.com/Uniswap/v4-periphery/
 
 [TokenWrapper](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/TokenWrapper.sol) and [SavedBalancesWrapper](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/SavedBalancesWrapper.sol) attach to no pool, register no call points, and are not extensions at all — they simply receive forwarded lock contexts to wrap tokens or tokenize saved balances mid-lock. `forward` is a general composition primitive of the settlement layer, not a pool feature; in v4 there is no analogue, because hooks exist only as pool configuration.
 
-Routing over all of this stays uniform: the production [Router](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/Router.sol) needs one branch — if a pool's extension takes over swaps, `forward` to it, otherwise call `swap` directly — and either way the route composes inside one lock with one net settlement.
+Routing over all of this stays uniform. In the production [Yul router](../integration-guides/yul-router.md), each hop in a route's calldata begins with a caller-specified hop type followed by hop-type-specific data: a direct `Core.swap`, a swap forwarded to the pool's extension (MEVCapture, Ve33), a controller-signed swap on a SignedExclusiveSwap pool, or a wrap/unwrap through a token wrapper. Whatever the mix, the hops compose inside one lock with one aggregate slippage check and one net settlement.
 
 ## Case study: "aggregator hooks"
 
