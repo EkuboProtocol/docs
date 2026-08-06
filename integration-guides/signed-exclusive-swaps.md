@@ -10,7 +10,7 @@ description: >-
 
 The extension is forward-only: direct swaps against the pool revert. Every swap must arrive through `Core.forward(...)` carrying a valid signature.
 
-Source: [`SignedExclusiveSwap.sol`](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/extensions/SignedExclusiveSwap.sol) · [integration guide](https://github.com/EkuboProtocol/evm-contracts/blob/main/signed-exclusive-swap-extension.md) · [scoped review](https://github.com/EkuboProtocol/evm-contracts/blob/main/audits/SignedExclusiveSwap-Extension-Audit.md)
+Source: [`SignedExclusiveSwap.sol`](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/extensions/SignedExclusiveSwap.sol) · [integration guide](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/signed-exclusive-swap-extension.md) · [scoped review](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/audits/SignedExclusiveSwap-Extension-Audit.md)
 
 ## What the extension enforces
 

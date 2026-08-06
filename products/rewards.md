@@ -42,7 +42,7 @@ The [app](https://app.ekubo.org/rewards) turns these into one-click claims, but 
 
 ### The Incentives contract
 
-On EVM chains, drops are handled by a single [`Incentives`](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/Incentives.sol) contract — a singleton that hosts many independent airdrops at the deterministic address `0xC52D2656cb8C634263E6A15469588beB9C3Bb738` on every chain.
+On EVM chains, drops are handled by a single [`Incentives`](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/Incentives.sol) contract — a singleton that hosts many independent airdrops at the deterministic address `0xC52D2656cb8C634263E6A15469588beB9C3Bb738` on every chain.
 
 A drop is identified by its **drop key**: the owner, the reward token, and the merkle root. That means a drop is fully described by what it pays and who it pays — no registry, no per-drop deployment.
 

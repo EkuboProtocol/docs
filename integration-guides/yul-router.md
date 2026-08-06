@@ -37,7 +37,7 @@ Excluded by design, as a security posture:
 * No routing through `Core.forward(router, ...)` — the forward callback reverts
 * No protocol or integration fee collection and no fee claiming
 
-The router has been [audited](https://github.com/EkuboProtocol/yul-router/blob/main/audits/codex-audit-2026-07-06.md), and CI continuously verifies it against production: live mainnet quotes from the Quoter API are converted to calldata with the SDK and executed against canonical Core on a mainnet fork, covering ETH↔ERC20, ERC20↔ERC20, and exact-output swaps.
+The router has been [audited](https://github.com/EkuboProtocol/yul-router/blob/v0.6.0/audits/codex-audit-2026-07-06.md), and CI continuously verifies it against production: live mainnet quotes from the Quoter API are converted to calldata with the SDK and executed against canonical Core on a mainnet fork, covering ETH↔ERC20, ERC20↔ERC20, and exact-output swaps.
 
 ## The SDK: `@ekubo/yul-router-sdk`
 
