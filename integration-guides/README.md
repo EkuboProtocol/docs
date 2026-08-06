@@ -10,7 +10,7 @@ There are several ways to integrate Ekubo, depending on what you're building.
 
 ### 1. Swap on-chain from a smart contract
 
-Every interaction with Ekubo goes through the Core singleton's [`lock` callback pattern](../concepts/architecture.md): call `lock`, receive a callback, perform swaps and settle net token amounts at the end. See [Swapping](swapping.md) for the flow. On EVM, production swaps go through the gas-optimized [Yul Router](https://github.com/EkuboProtocol/yul-router) with routes encoded by [`@ekubo/yul-router-sdk`](https://www.npmjs.com/package/@ekubo/yul-router-sdk); the Router contracts ([Starknet](https://github.com/EkuboProtocol/starknet-contracts/blob/main/src/router.cairo), [EVM](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/Router.sol)) are reference implementations for building your own.
+Every interaction with Ekubo goes through the Core singleton's [`lock` callback pattern](../concepts/architecture.md): call `lock`, receive a callback, perform swaps and settle net token amounts at the end. See [Swapping](swapping.md) for the flow. On EVM, production swaps go through the gas-optimized [Yul Router](https://github.com/EkuboProtocol/yul-router) with routes encoded by [`@ekubo/yul-router-sdk`](https://www.npmjs.com/package/@ekubo/yul-router-sdk); the Router contracts ([Starknet](https://github.com/EkuboProtocol/starknet-contracts/blob/v5.0.3/src/router.cairo), [EVM](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/Router.sol)) are reference implementations for building your own.
 
 ### 2. Quote Ekubo liquidity off-chain (aggregators, solvers)
 

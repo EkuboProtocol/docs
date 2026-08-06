@@ -65,4 +65,6 @@ These extensions are already built and deployed. Each one is a pool type you can
 | **[Ve33](../products/ve33.md)** | EVM | Token-governed liquidity: stakers vote to direct emissions and set pool fees, and earn the fees of the pools they support |
 | **[Signed exclusive swaps](../integration-guides/signed-exclusive-swaps.md)** | EVM | RFQ-style pools where a controller signs each swap off-chain with its own fee and bounds |
 
-Source code: [EVM extensions](https://github.com/EkuboProtocol/evm-contracts/tree/main/src/extensions) and [Starknet extensions](https://github.com/EkuboProtocol/starknet-contracts/tree/main/src/extensions).
+Source code: [EVM extensions](https://github.com/EkuboProtocol/evm-contracts/tree/v3.2.0/src/extensions) and [Starknet extensions](https://github.com/EkuboProtocol/starknet-contracts/tree/v5.0.3/src/extensions).
+
+For how this design compares to Uniswap v4 hooks — and why the `forward` primitive replaces v4's custom-accounting machinery — see [Extensions vs. Uniswap v4 hooks](extensions-vs-v4-hooks.md).

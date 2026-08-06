@@ -20,4 +20,4 @@ Production swaps go through the [Yul Router](yul-router.md) — a gas-optimized 
 
 ### Reference routers
 
-To execute swaps from your own contract, see the reference Router implementations on [Starknet](https://github.com/EkuboProtocol/starknet-contracts/blob/main/src/router.cairo) and [EVM](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/Router.sol).
+To execute swaps from your own contract, see the reference Router implementations on [Starknet](https://github.com/EkuboProtocol/starknet-contracts/blob/v5.0.3/src/router.cairo) and [EVM](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/Router.sol).
