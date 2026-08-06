@@ -28,7 +28,7 @@ The open source indexer that turns Ekubo's on-chain events into a queryable Post
 
 ### [MCP server](mcp-server.md)
 
-A public Model Context Protocol server at `mcp.ekubo.org` that lets AI agents quote swaps, read pools and positions, and build unsigned transactions — non-custodially, with signing left to the user's wallet.
+A public Model Context Protocol server at `mcp.ekubo.org` that lets AI agents quote swaps, read pools and positions, and prepare unsigned execution plans — non-custodially, with signing left to the user's wallet.
 
 ### [Governance](governance.md)
 
