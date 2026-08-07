@@ -6,7 +6,7 @@ description: >-
 
 # Dollar-cost average orders
 
-TWAMM, or "time-weighted average market maker," is an Ekubo extension that powers the "DCA orders" and "DCA-enabled pools" features in the [interface](https://app.ekubo.org). DCA orders are orders to sell a token at a specified rate between a start and end time. The mechanism involved in executing Ekubo's DCA orders is best described by [Paradigm](https://www.paradigm.xyz/2021/07/twamm).
+TWAMM, or "time-weighted average market maker," is an Ekubo extension that powers the "DCA orders" and "DCA-enabled pools" features in the [interface](https://ekubo.org). DCA orders are orders to sell a token at a specified rate between a start and end time. The mechanism involved in executing Ekubo's DCA orders is best described by [Paradigm](https://www.paradigm.xyz/2021/07/twamm).
 
 DCA-enabled pools are liquidity pools that use the extension to support these orders by providing liquidity for the buy/sell side when DCA orders are imbalanced. In practice, orders are split into per-second pieces and netted against each other; whenever the ratio of buy to sell orders does not exactly match the current pool price, the difference is swapped against the pool. That ratio rarely matches the pool price exactly, which is why this liquidity is necessary for DCA orders to price well.
 
@@ -38,7 +38,7 @@ Note that the price you receive on your DCA orders is heavily dependent on the l
 
 ### Creating DCA orders
 
-You can place DCA orders in the [interface](https://app.ekubo.org/dca).
+You can place DCA orders in the [interface](https://ekubo.org/dca).
 
 DCA orders pay fees when the orders are imbalanced: you pay swap fees to liquidity providers of the pool on which you placed the order to swap your tokens, depending on how one-sided the orders are. Volume that nets directly against opposing orders pays no swap fee. Stopping or decreasing an order is free.
 

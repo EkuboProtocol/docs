@@ -32,7 +32,7 @@ A CSV containing the entirety of the merkle tree for the EKUBO airdrop
 
 #### Claiming your airdrop
 
-You may claim your airdrop from the [app](https://app.ekubo.org/rewards), or use this guide to claim it directly from a block explorer.
+You may claim your airdrop from the [app](https://ekubo.org/rewards), or use this guide to claim it directly from a block explorer.
 
 {% stepper %}
 {% step %}
@@ -70,13 +70,13 @@ When you click transact, the transaction should simulate successfully, and if yo
 
 The DCA orders executed over 2 months, starting 5/24/24, 2:48 AM UTC and ending 7/23/24, 7:09 PM. The proceeds of the DCA order were owned by the [Governor ](https://voyager.online/contract/0x053499f7aa2706395060fe72d00388803fb2dcc111429891ad7b2d9dcea29acd), a.k.a. the DAO.
 
-The following pools were used: [EKUBO/ETH 5%](https://app.ekubo.org/positions/new?poolType=twamm\&quoteCurrency=ETH\&baseCurrency=EKUBO\&fee=17014118346046923173168730371588410570\&poolOnly=true), [EKUBO/STRK 5%](https://app.ekubo.org/positions/new?poolType=twamm\&quoteCurrency=STRK\&baseCurrency=EKUBO\&fee=17014118346046923173168730371588410570\&poolOnly=true), and [EKUBO/USDC 5%](https://app.ekubo.org/positions/new?poolType=twamm\&quoteCurrency=USDC\&baseCurrency=EKUBO\&fee=17014118346046923173168730371588410570\&poolOnly=true).
+The following pools were used: [EKUBO/ETH 5%](https://ekubo.org/positions/new?poolType=twamm\&quoteCurrency=ETH\&baseCurrency=EKUBO\&fee=17014118346046923173168730371588410570\&poolOnly=true), [EKUBO/STRK 5%](https://ekubo.org/positions/new?poolType=twamm\&quoteCurrency=STRK\&baseCurrency=EKUBO\&fee=17014118346046923173168730371588410570\&poolOnly=true), and [EKUBO/USDC 5%](https://ekubo.org/positions/new?poolType=twamm\&quoteCurrency=USDC\&baseCurrency=EKUBO\&fee=17014118346046923173168730371588410570\&poolOnly=true).
 
 Approximately `3,269,920` EKUBO was sold for `343.675` ETH, `1,204,770` USDC, and `1,549,920` STRK.
 
 ### Team
 
-The company Ekubo, Inc., a service provider to the DAO, holds one-third of the total supply. There is no vesting schedule for these tokens. The team has come to an agreement with the DAO to hold these tokens indefinitely via [governance proposal](https://app.ekubo.org/governance/proposals/0x1bfc2ccdd2f9a718c45a9aa3a88770435f5272fbfeeb38ca2b3ad54c51c81e9) to fund the company's provision of services to the DAO.
+The company Ekubo, Inc., a service provider to the DAO, holds one-third of the total supply. There is no vesting schedule for these tokens. The team has come to an agreement with the DAO to hold these tokens indefinitely via [governance proposal](https://ekubo.org/governance/proposals/0x1bfc2ccdd2f9a718c45a9aa3a88770435f5272fbfeeb38ca2b3ad54c51c81e9) to fund the company's provision of services to the DAO.
 
 ## Value accrual
 
@@ -86,7 +86,7 @@ It is the right and responsibility of the DAO to decide what to do with the reve
 
 As of  August 2025, the position of Ekubo, Inc. is that the revenue should be directed towards growth of the protocol, and we will vote accordingly until the protocol achieves sustainable revenue, i.e. the revenue earned by the protocol exceeds the total costs to keep the protocol running.
 
-The team allocation of EKUBO tokens is entirely held by Ekubo, Inc., and the company is committed to maintaining its share of Ekubo Protocol. The end-goal is for Ekubo, Inc. to be sustained by protocol revenue that is directed towards token holders. This aligns the equity holders with the interests of the protocol. The vision is further described in the [alignment proposal](https://app.ekubo.org/governance/proposals/0x1bfc2ccdd2f9a718c45a9aa3a88770435f5272fbfeeb38ca2b3ad54c51c81e9).
+The team allocation of EKUBO tokens is entirely held by Ekubo, Inc., and the company is committed to maintaining its share of Ekubo Protocol. The end-goal is for Ekubo, Inc. to be sustained by protocol revenue that is directed towards token holders. This aligns the equity holders with the interests of the protocol. The vision is further described in the [alignment proposal](https://ekubo.org/governance/proposals/0x1bfc2ccdd2f9a718c45a9aa3a88770435f5272fbfeeb38ca2b3ad54c51c81e9).
 
 ## Governance contracts
 

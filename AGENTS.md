@@ -54,7 +54,7 @@ These are **not public** — never link to them or describe their internals: `ap
 | the `api` repo | `https://prod-api.ekubo.org` and its OpenAPI document |
 | the `quoter-service` repo | `https://prod-api-quoter.ekubo.org` and its OpenAPI document |
 | the `typescript-sdk` repo | the `@ekubo/sdk` npm package |
-| the `interface` repo | `https://app.ekubo.org` |
+| the `interface` repo | `https://ekubo.org` |
 
 Before pushing, confirm every referenced repository is public:
 

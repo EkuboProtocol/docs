@@ -14,7 +14,7 @@ The Quoter API is hosted at:
 https://prod-api-quoter.ekubo.org
 ```
 
-It returns **block-pinned split routes** for exact-input and exact-output Ekubo Protocol swaps — the same routes the [interface](https://app.ekubo.org) executes through the [Yul Router](../integration-guides/swapping.md#evm-the-yul-router). Because quotes simulate actual pool state (including [extension](../concepts/extensions.md) behavior), the quoter is the easiest way for aggregators and integrators to price Ekubo liquidity without implementing the pool math.
+It returns **block-pinned split routes** for exact-input and exact-output Ekubo Protocol swaps — the same routes the [interface](https://ekubo.org) executes through the [Yul Router](../integration-guides/swapping.md#evm-the-yul-router). Because quotes simulate actual pool state (including [extension](../concepts/extensions.md) behavior), the quoter is the easiest way for aggregators and integrators to price Ekubo liquidity without implementing the pool math.
 
 The API is self-described by an OpenAPI 3.1 document at [https://prod-api-quoter.ekubo.org/openapi.json](https://prod-api-quoter.ekubo.org/openapi.json), usable with any REST explorer.
 

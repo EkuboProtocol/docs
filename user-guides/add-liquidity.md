@@ -4,7 +4,7 @@ description: How to become a liquidity provider on Ekubo
 
 # Add liquidity
 
-To add liquidity to Ekubo and start earning fees from swaps, [create a position](https://app.ekubo.org/positions/new).
+To add liquidity to Ekubo and start earning fees from swaps, [create a position](https://ekubo.org/positions/new).
 
 {% hint style="info" %}
 Bookmark the app and beware of signing transactions from other websites claiming to be Ekubo that are not hosted on ekubo.org. [Read more](https://en.wikipedia.org/wiki/Phishing) about phishing scams.

@@ -6,7 +6,7 @@ description: >-
 
 # Yul Router
 
-The [Yul Router](https://github.com/EkuboProtocol/yul-router) is a gas-focused router written in Yul that executes Ekubo swaps on EVM chains. It is how swaps are executed in production today: the [interface](https://app.ekubo.org) encodes routes from [Quoter API](../reference/quoter-api.md) results and sends them to the router.
+The [Yul Router](https://github.com/EkuboProtocol/yul-router) is a gas-focused router written in Yul that executes Ekubo swaps on EVM chains. It is how swaps are executed in production today: the [interface](https://ekubo.org) encodes routes from [Quoter API](../reference/quoter-api.md) results and sends them to the router.
 
 The router is deployed deterministically at the same address on every supported network (currently Ethereum, Base, Arbitrum, and Robinhood Chain, plus their testnets):
 
