@@ -10,7 +10,7 @@ This guide covers the practical steps. For how the system is designed — what g
 
 Voting power comes from staked [EKUBO](ekubo-token.md), delegated to an address. Delegate to yourself to vote directly, or to someone else to have them vote on your behalf.
 
-Use the [Delegate page](https://app.ekubo.org/governance/simple-delegate) in the app, or call the Staker contract directly:
+Use the [Delegate page](https://ekubo.org/governance/simple-delegate) in the app, or call the Staker contract directly:
 
 | Function | Effect |
 | --- | --- |
@@ -28,7 +28,7 @@ Your voting weight is not your staked balance. It is the *average* amount delega
 
 You need voting weight at or above the proposal creation threshold (currently 100,000 EKUBO) and no other active proposal of your own.
 
-Create one from the [proposal page](https://app.ekubo.org/governance/create-proposal), or on-chain:
+Create one from the [proposal page](https://ekubo.org/governance/create-proposal), or on-chain:
 
 * `propose(calls)` — submit the calls the proposal will execute
 * `describe(proposalId, description)` — attach a description

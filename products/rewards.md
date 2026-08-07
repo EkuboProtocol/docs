@@ -38,7 +38,7 @@ To find what an address can claim right now:
 GET https://prod-api.ekubo.org/claims/{address}?chainId={chainId}
 ```
 
-The [app](https://app.ekubo.org/rewards) turns these into one-click claims, but the claim is an ordinary on-chain call — nothing gates it.
+The [app](https://ekubo.org/rewards) turns these into one-click claims, but the claim is an ordinary on-chain call — nothing gates it.
 
 ### The Incentives contract
 
