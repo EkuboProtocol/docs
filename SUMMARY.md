@@ -61,3 +61,5 @@
 * [Home](https://ekubo.org)
 * [Discord](https://discord.ekubo.org)
 * [X (Twitter)](https://x.com/EkuboProtocol)
+* [Terms of use](https://ekubo.org/terms-of-use.pdf)
+* [Privacy policy](https://ekubo.org/privacy-policy.pdf)
