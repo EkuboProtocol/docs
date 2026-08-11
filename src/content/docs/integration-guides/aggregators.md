@@ -7,6 +7,46 @@ title: "Aggregators"
 The code samples on this page are written in Cairo for the Starknet deployment. The same lock/callback flow applies on EVM chains — see [Swapping](/integration-guides/swapping/) and the [EVM contracts repository](https://github.com/EkuboProtocol/evm-contracts) for Solidity equivalents.
 :::
 
+## Reference implementations
+
+Several production aggregators publish their Ekubo V3 integrations. They all need the same three capabilities — discover pools, keep pool state current, and turn a route into executable calldata — but divide the work differently.
+
+| Implementation                                                                                      | State acquisition                                                         | Quoting                                                                   | Execution                                                                     |
+| --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| [Tycho](https://github.com/propeller-heads/tycho)                                                   | Substreams produce protocol components and per-block state deltas         | Rust simulators reconstruct each supported pool type                      | A Rust encoder targets a dedicated Solidity executor                          |
+| [ParaSwap](https://github.com/VeloraDEX/paraswap-dex-lib/tree/master/src/dex/ekubo-v3)              | A subgraph bootstrap transitions to event-driven pool state               | TypeScript pool models quote exact-input and exact-output amounts locally | The adapter encodes a call to Ekubo's router                                  |
+| [KyberSwap](https://github.com/KyberNetwork/kyberswap-dex-lib/tree/main/pkg/liquidity-source/ekubo) | Indexed pool discovery plus log application, with an RPC refresh fallback | Go pool simulators quote and update cloned route state locally            | The simulator returns the pool key and swap metadata to Kyber's routing layer |
+
+### Tycho
+
+Tycho separates the integration into independent ingestion, simulation, and execution layers:
+
+- The [`ethereum-ekubo-v3` Substreams package](https://github.com/propeller-heads/tycho/tree/main/protocols/substreams/ethereum-ekubo-v3) maps initialization and swap-related events into protocol components, balances, active ticks, liquidity, and extension-specific rate changes.
+- The [`ekubo_v3` simulation module](https://github.com/propeller-heads/tycho/tree/main/crates/tycho-simulation/src/evm/protocol/ekubo_v3) decodes those components and simulates concentrated, full-range, stableswap, oracle, TWAMM, MEV-capture, and boosted-fees pools. Its default filter excludes pools whose extensions cannot be simulated safely; signed-exclusive swaps have an explicit opt-in path because they require off-chain user data.
+- The [`EkuboV3SwapEncoder`](https://github.com/propeller-heads/tycho/blob/main/crates/tycho-execution/src/encoding/evm/swap_encoder/ekubo_v3.rs) converts a selected pool and amount into compact calldata for [`EkuboV3Executor.sol`](https://github.com/propeller-heads/tycho/blob/main/crates/tycho-execution/contracts/src/executors/EkuboV3Executor.sol), including the optional signed-swap payload.
+
+This architecture is useful when an indexer serves many routing clients: normalized state changes can be streamed once, while each client maintains a local simulator and the execution service remains a separate concern.
+
+### ParaSwap
+
+ParaSwap keeps the integration together in its TypeScript DEX adapter:
+
+- [`EkuboV3PoolManager`](https://github.com/VeloraDEX/paraswap-dex-lib/blob/master/src/dex/ekubo-v3/ekubo-v3-pool-manager.ts) pages through pool initializations from the subgraph, verifies the handoff against the canonical chain, subscribes before that handoff to avoid a gap, and then forwards Core and extension logs to the relevant in-memory pool.
+- The [`pools` directory](https://github.com/VeloraDEX/paraswap-dex-lib/tree/master/src/dex/ekubo-v3/pools) implements pool-specific state transitions and math. The adapter's [`getPricesVolume`](https://github.com/VeloraDEX/paraswap-dex-lib/blob/master/src/dex/ekubo-v3/ekubo-v3.ts) quotes each requested size locally, rejects pools that cannot consume the complete amount, and returns gas estimates and `skipAhead` hints to the route search.
+- Once a route is chosen, `getDexParam` in the same adapter encodes `swapAllowPartialFill` against Ekubo's router with the pool key, signed amount, direction, skip-ahead value, and recipient.
+
+The notable pattern is the guarded transition from indexed history to live logs. If you bootstrap from a subgraph and then follow RPC events, you need an equivalent continuity and reorg strategy or your local state can silently miss a block.
+
+### KyberSwap
+
+KyberSwap uses a Go liquidity-source package with explicit discovery, tracking, and simulation stages:
+
+- [`pools_list_updater.go`](https://github.com/KyberNetwork/kyberswap-dex-lib/blob/main/pkg/liquidity-source/ekubo/v3/pools_list_updater.go) pages through indexed pool initializations, recognizes supported pool and extension configurations, and fetches the initial on-chain state in batches.
+- [`pool_tracker.go`](https://github.com/KyberNetwork/kyberswap-dex-lib/blob/main/pkg/liquidity-source/ekubo/v3/pool_tracker.go) applies ordered Core, TWAMM, boosted-fees, and ve33 logs to the stored pool. A removed log, missing log batch, or failed state transition triggers a full refresh through the data fetchers.
+- [`pool_simulator.go`](https://github.com/KyberNetwork/kyberswap-dex-lib/blob/main/pkg/liquidity-source/ekubo/v3/pool_simulator.go) supports exact-input and exact-output quotes, reports consumed amount, fees and gas, clones mutable swap state for route exploration, and updates balances after a simulated hop.
+
+This design makes recovery behavior especially explicit: event application is the fast path, while authoritative on-chain reads are the correctness fallback.
+
 ## Summary
 
 Ekubo is a singleton AMM that utilizes the "till" pattern. The till pattern was publicly introduced at EthCC\[5] and is also described [here](https://github.com/OpenZeppelin/openzeppelin-contracts/issues/4361#issuecomment-1595095135).

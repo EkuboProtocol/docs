@@ -32,6 +32,26 @@ export default defineConfig({
         {
           tag: "link",
           attrs: {
+            rel: "preload",
+            href: "/fonts/suisse-intl-400.f6cfafea4909.woff2",
+            as: "font",
+            type: "font/woff2",
+            crossorigin: "anonymous",
+          },
+        },
+        {
+          tag: "link",
+          attrs: {
+            rel: "preload",
+            href: "/fonts/suisse-intl-600.480cfa8f0417.woff2",
+            as: "font",
+            type: "font/woff2",
+            crossorigin: "anonymous",
+          },
+        },
+        {
+          tag: "link",
+          attrs: {
             rel: "alternate",
             type: "text/plain",
             href: "/llms.txt",
@@ -132,35 +152,35 @@ export default defineConfig({
         {
           label: "About Ekubo",
           items: [
-            { label: "👋 Introduction", slug: "index" },
-            { label: "🔑 Features", slug: "about-ekubo/features" },
-            { label: "🔮 Vision", slug: "about-ekubo/vision" },
-            { label: "📄 V3 Whitepaper", slug: "about-ekubo/v3-whitepaper" },
+            { label: "Introduction", slug: "index" },
+            { label: "Features", slug: "about-ekubo/features" },
+            { label: "Vision", slug: "about-ekubo/vision" },
+            { label: "V3 Whitepaper", slug: "about-ekubo/v3-whitepaper" },
           ],
         },
         {
           label: "Products",
           items: [
-            { label: "✨ Overview", slug: "products" },
-            { label: "🔄 Trading", slug: "products/trading" },
-            { label: "🌊 Providing liquidity", slug: "products/liquidity" },
-            { label: "🗳️ Ve33 and STONX", slug: "products/ve33" },
-            { label: "🎁 Rewards and incentives", slug: "products/rewards" },
-            { label: "🗄️ Indexer", slug: "products/indexer" },
-            { label: "🤖 MCP server", slug: "products/mcp-server" },
-            { label: "🏩 Governance", slug: "products/governance" },
+            { label: "Overview", slug: "products" },
+            { label: "Trading", slug: "products/trading" },
+            { label: "Providing liquidity", slug: "products/liquidity" },
+            { label: "Ve33 and STONX", slug: "products/ve33" },
+            { label: "Rewards and incentives", slug: "products/rewards" },
+            { label: "Indexer", slug: "products/indexer" },
+            { label: "MCP server", slug: "products/mcp-server" },
+            { label: "Governance", slug: "products/governance" },
           ],
         },
         {
           label: "Concepts",
           items: [
-            { label: "🧠 Key concepts", slug: "concepts/key-concepts" },
+            { label: "Key concepts", slug: "concepts/key-concepts" },
             {
-              label: "🏛️ Protocol architecture",
+              label: "Protocol architecture",
               slug: "concepts/architecture",
             },
             {
-              label: "🔌 Extensions",
+              label: "Extensions",
               slug: "concepts/extensions",
               items: [
                 {
@@ -174,14 +194,14 @@ export default defineConfig({
         {
           label: "User Guides",
           items: [
-            { label: "🌊 Add liquidity", slug: "user-guides/add-liquidity" },
+            { label: "Add liquidity", slug: "user-guides/add-liquidity" },
             {
-              label: "⌛ Dollar-cost average orders",
+              label: "Dollar-cost average orders",
               slug: "user-guides/dollar-cost-average-orders",
             },
-            { label: "🪙 EKUBO token", slug: "user-guides/ekubo-token" },
+            { label: "EKUBO token", slug: "user-guides/ekubo-token" },
             {
-              label: "🏛️ Participate in governance",
+              label: "Participate in governance",
               slug: "user-guides/governance",
             },
           ],
@@ -189,17 +209,17 @@ export default defineConfig({
         {
           label: "Integration Guides",
           items: [
-            { label: "🧩 Integrating Ekubo", slug: "integration-guides" },
-            { label: "📦 SDKs", slug: "integration-guides/sdks" },
-            { label: "🔄 Swapping", slug: "integration-guides/swapping" },
-            { label: "⚡ Yul Router", slug: "integration-guides/yul-router" },
-            { label: "🧭 Aggregators", slug: "integration-guides/aggregators" },
+            { label: "Integrating Ekubo", slug: "integration-guides" },
+            { label: "SDKs", slug: "integration-guides/sdks" },
+            { label: "Swapping", slug: "integration-guides/swapping" },
+            { label: "Yul Router", slug: "integration-guides/yul-router" },
+            { label: "Aggregators", slug: "integration-guides/aggregators" },
             {
-              label: "✍️ Signed exclusive swaps",
+              label: "Signed exclusive swaps",
               slug: "integration-guides/signed-exclusive-swaps",
             },
             {
-              label: "📖 Reading pool price",
+              label: "Reading pool price",
               slug: "integration-guides/reading-pool-price",
             },
           ],
@@ -207,13 +227,13 @@ export default defineConfig({
         {
           label: "Reference",
           items: [
-            { label: "🧮 Pool math", slug: "reference/pool-math" },
+            { label: "Pool math", slug: "reference/pool-math" },
             {
-              label: "💹 Price representation",
+              label: "Price representation",
               slug: "reference/price-representation",
             },
             {
-              label: "📜 Contract addresses",
+              label: "Contract addresses",
               slug: "reference/contracts",
               items: [
                 { label: "EVM (V3)", slug: "reference/contracts/evm-v3" },
@@ -225,13 +245,13 @@ export default defineConfig({
                 },
               ],
             },
-            { label: "🌐 Ekubo API", slug: "reference/ekubo-api" },
-            { label: "🧮 Quoter API", slug: "reference/quoter-api" },
+            { label: "Ekubo API", slug: "reference/ekubo-api" },
+            { label: "Quoter API", slug: "reference/quoter-api" },
             {
-              label: "🧪 Interactive API reference",
+              label: "Interactive API reference",
               link: "/api/",
             },
-            { label: "🛡️ Audits", slug: "reference/audits" },
+            { label: "Audits", slug: "reference/audits" },
           ],
         },
       ],

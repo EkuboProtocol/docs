@@ -6,34 +6,34 @@
 
 @font-face {
   font-family: "Suisse Intl";
-  src: url("/fonts/suisse-intl-400.woff2") format("woff2");
+  src: url("/fonts/suisse-intl-400.f6cfafea4909.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 @font-face {
   font-family: "Suisse Intl";
-  src: url("/fonts/suisse-intl-500.woff2") format("woff2");
+  src: url("/fonts/suisse-intl-500.ab9b74e775b5.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 @font-face {
   font-family: "Suisse Intl";
-  src: url("/fonts/suisse-intl-600.woff2") format("woff2");
+  src: url("/fonts/suisse-intl-600.480cfa8f0417.woff2") format("woff2");
   font-weight: 600;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 @font-face {
   font-family: "Suisse Intl Mono";
-  src: url("/fonts/suisse-intl-mono-400.woff2") format("woff2");
+  src: url("/fonts/suisse-intl-mono-400.c4afd40b2fde.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 @font-face {

@@ -7,13 +7,7 @@ title: "Yul Router"
 
 The [Yul Router](https://github.com/EkuboProtocol/yul-router) is a gas-focused router written in Yul that executes Ekubo swaps on EVM chains. It is how swaps are executed in production today: the [interface](https://ekubo.org) encodes routes from [Quoter API](/reference/quoter-api/) results and sends them to the router.
 
-The router is deployed deterministically at the same address on every supported network (currently Ethereum, Base, Arbitrum, and Robinhood Chain, plus their testnets):
-
-```
-0x00000000D542a1Afa7A01ECB16254F7A0F8ceB61
-```
-
-The address is also exported by the SDK as `YUL_ROUTER_ADDRESS`.
+The router is deployed deterministically on every supported network. Always use `YUL_ROUTER_ADDRESS` exported by the same installed version of `@ekubo/yul-router-sdk` that you use to encode calldata. This keeps the router destination compatible with that version's encoding; do not copy or hard-code an address from documentation.
 
 ## Design
 
@@ -86,7 +80,7 @@ For `signedExclusiveSwap` hops, `encodeSignedSwapMeta({ deadline, fee, nonce, au
 
 ### Other exports
 
-- `YUL_ROUTER_ADDRESS` — the deterministic router address
+- `YUL_ROUTER_ADDRESS` — the router compatible with this SDK version's encoding
 - `MIN_SQRT_RATIO` / `MAX_SQRT_RATIO` — bounds for `sqrtRatioLimit` on hops (see [Price representation](/reference/price-representation/))
 - `PoolKey`, `Hop`, `MultiHop`, and parameter types for TypeScript consumers
 - `calldataSize(data)` — helper for estimating calldata cost

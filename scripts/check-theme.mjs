@@ -1,4 +1,5 @@
 import { chromium } from "playwright";
+import sharp from "sharp";
 
 const base = process.argv[2] ?? "http://127.0.0.1:4321";
 const browser = await chromium.launch();
@@ -54,6 +55,71 @@ for (const scheme of ["light", "dark"]) {
   await context.close();
 }
 
+// Simulate a cold connection and verify that fallback glyphs are never
+// painted while the preloaded brand face is still downloading.
+const coldContext = await browser.newContext({ colorScheme: "light" });
+const coldPage = await coldContext.newPage();
+await coldPage.route("**/fonts/*.woff2", async (route) => {
+  await new Promise((resolve) => setTimeout(resolve, 800));
+  await route.continue();
+});
+await coldPage.goto(`${base}/`, { waitUntil: "domcontentloaded" });
+await coldPage.waitForTimeout(100);
+
+const preloadHrefs = await coldPage
+  .locator('link[rel="preload"][as="font"]')
+  .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+for (const weight of ["400", "600"]) {
+  if (!preloadHrefs.some((href) => href?.includes(`-${weight}.`))) {
+    failures.push(`cold load: ${weight} font is not preloaded`);
+  }
+}
+
+if (
+  await coldPage.evaluate(() => document.fonts.check('600 32px "Suisse Intl"'))
+) {
+  failures.push("cold load: delayed Suisse Intl unexpectedly loaded early");
+} else {
+  const heading = coldPage.locator("h1");
+  const box = await heading.boundingBox();
+  if (!box) {
+    failures.push("cold load: heading has no layout box");
+  } else {
+    const cdp = await coldContext.newCDPSession(coldPage);
+    const capture = await cdp.send("Page.captureScreenshot", {
+      format: "png",
+      clip: { ...box, scale: 1 },
+    });
+    const before = Buffer.from(capture.data, "base64");
+    await coldPage.evaluate(() => document.fonts.ready);
+    const after = await heading.screenshot();
+    const paintedPixels = async (image) => {
+      const { data, info } = await sharp(image)
+        .removeAlpha()
+        .raw()
+        .toBuffer({ resolveWithObject: true });
+      const background = [data[0], data[1], data[2]];
+      let painted = 0;
+      for (let offset = 0; offset < data.length; offset += info.channels) {
+        if (
+          data[offset] !== background[0] ||
+          data[offset + 1] !== background[1] ||
+          data[offset + 2] !== background[2]
+        ) {
+          painted++;
+        }
+      }
+      return painted;
+    };
+    if ((await paintedPixels(before)) !== 0)
+      failures.push("cold load: fallback heading glyphs were painted");
+    if ((await paintedPixels(after)) === 0)
+      failures.push("cold load: brand heading glyphs did not render");
+  }
+}
+
+await coldContext.close();
+
 await browser.close();
 
 if (failures.length) {
@@ -62,5 +128,5 @@ if (failures.length) {
 }
 
 console.log(
-  "System-default theme, toggle persistence, Ekubo fonts, and footer links passed in both color schemes.",
+  "System-default theme, toggle persistence, cold-load font rendering, Ekubo fonts, and footer links passed.",
 );
