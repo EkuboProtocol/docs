@@ -8,7 +8,7 @@ Ekubo Protocol is AMM infrastructure featuring super-concentrated liquidity, a s
 
 The contracts are open source under the [Ekubo DAO Shared Revenue License](https://ekubo-license-v1.eth.link/), and are heavily optimized for gas and for precise control over where liquidity sits.
 
-### Where to go
+## Where to go
 
 - **New to Ekubo?** Start with [Features](/about-ekubo/features/), then browse the [products](/products/).
 - **Trading or providing liquidity?** See [Trading](/products/trading/), [Providing liquidity](/products/liquidity/), and the [user guides](/user-guides/add-liquidity/).
