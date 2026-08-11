@@ -1,0 +1,32 @@
+:root {
+  --sl-color-accent-low: #3b1715;
+  --sl-color-accent: #ff665c;
+  --sl-color-accent-high: #ffd7d2;
+  --sl-font: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+:root[data-theme="light"] {
+  --sl-color-accent-low: #ffe6e2;
+  --sl-color-accent: #c8251b;
+  --sl-color-accent-high: #54130f;
+}
+
+.site-title img {
+  height: 1.7rem;
+  width: 1.7rem;
+}
+
+.content-panel img {
+  border-radius: 0.5rem;
+}
+
+code {
+  overflow-wrap: anywhere;
+}
+
+/* The OpenAPI plugin's example blocks use a mid-gray border color as their
+   background. Use Starlight's page background so syntax colors retain AA
+   contrast in both themes. */
+.sl-openapi-example .expressive-code pre {
+  background-color: var(--sl-color-bg) !important;
+}

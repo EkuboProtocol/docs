@@ -1,0 +1,535 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Ekubo Quoter API",
+    "version": "3.4.1",
+    "description": "Returns block-pinned split routes for exact-input and exact-output Ekubo Protocol swaps. Resolve token addresses and decimals through the Ekubo API token list before requesting a quote. All token amounts are base-unit decimal strings.",
+    "contact": {
+      "url": "https://ekubo.org",
+      "email": "eng@ekubo.org"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://prod-api-quoter.ekubo.org",
+      "description": "Production"
+    }
+  ],
+  "externalDocs": {
+    "url": "https://docs.ekubo.org/integration-guides/swapping",
+    "description": "Ekubo swapping documentation"
+  },
+  "security": [],
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "getServiceMetadata",
+        "summary": "Discover the quoter service",
+        "responses": {
+          "200": {
+            "description": "Service metadata and canonical integration URLs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceMetadata"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/openapi.json": {
+      "get": {
+        "operationId": "getOpenApiDocument",
+        "summary": "Fetch the OpenAPI document",
+        "responses": {
+          "200": {
+            "description": "OpenAPI 3.1 document",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/{chainId}/health": {
+      "get": {
+        "operationId": "getQuoterHealth",
+        "summary": "Read the indexed chain head",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ChainId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Latest block indexed by this quoter instance",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/{chainId}/{amount}/{specifiedToken}/{otherToken}": {
+      "get": {
+        "operationId": "getSwapQuote",
+        "summary": "Get an exact-input or exact-output swap route quote",
+        "description": "All amounts are base-unit decimal strings. For an exact-input swap X to Y, amount is positive, specifiedToken is X, and otherToken is Y. For an exact-output swap X to Y, amount is the negative desired output, specifiedToken is Y, and otherToken is X. The response preserves the signed amounts consumed by Ekubo router SDKs.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ChainId"
+          },
+          {
+            "name": "amount",
+            "in": "path",
+            "required": true,
+            "description": "Positive exact-input amount or negative exact-output amount, denominated in specifiedToken",
+            "schema": {
+              "type": "string",
+              "pattern": "^-?[0-9]*[1-9][0-9]*$"
+            },
+            "examples": {
+              "exactInput": {
+                "summary": "Exact input",
+                "value": "100000000000000000"
+              },
+              "exactOutput": {
+                "summary": "Exact output",
+                "value": "-100000000000000000"
+              }
+            }
+          },
+          {
+            "name": "specifiedToken",
+            "in": "path",
+            "required": true,
+            "description": "Input token for exact input; output token for exact output",
+            "schema": {
+              "$ref": "#/components/schemas/Address"
+            },
+            "example": "0x0000000000000000000000000000000000000000"
+          },
+          {
+            "name": "otherToken",
+            "in": "path",
+            "required": true,
+            "description": "Output token for exact input; input token for exact output",
+            "schema": {
+              "$ref": "#/components/schemas/Address"
+            },
+            "example": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A block-pinned executable split-route quote",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "ChainId": {
+        "name": "chainId",
+        "in": "path",
+        "required": true,
+        "description": "Decimal chain identifier used by the Ekubo token list and quoter gateway",
+        "schema": {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        },
+        "example": "1"
+      }
+    },
+    "responses": {
+      "Error": {
+        "description": "Request failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Address": {
+        "type": "string",
+        "pattern": "^0x[0-9a-fA-F]+$",
+        "description": "EVM or Starknet token address encoded as hexadecimal"
+      },
+      "QuoteResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/QuoteRoute"
+          },
+          {
+            "type": "object",
+            "required": [
+              "total_calculated"
+            ],
+            "properties": {
+              "total_calculated": {
+                "type": "string",
+                "pattern": "^-?[0-9]+$",
+                "description": "Total output for exact input or total input for exact output. Exact-output values are negative."
+              }
+            }
+          }
+        ]
+      },
+      "QuoteRoute": {
+        "type": "object",
+        "required": [
+          "block_number",
+          "block_hash",
+          "estimated_gas_cost",
+          "price_impact",
+          "splits"
+        ],
+        "properties": {
+          "block_number": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "block_hash": {
+            "type": "string",
+            "pattern": "^0x[0-9a-fA-F]+$"
+          },
+          "estimated_gas_cost": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Routing execution-resource estimate. Transaction preparation should separately estimate the complete transaction."
+          },
+          "price_impact": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Estimated fractional price impact. null means a reverse quote could not be produced and should be treated as a risk warning."
+          },
+          "splits": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/QuoteSplit"
+            }
+          }
+        }
+      },
+      "QuoteSplit": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "amount_specified",
+          "amount_calculated",
+          "route"
+        ],
+        "properties": {
+          "amount_specified": {
+            "type": "string",
+            "pattern": "^-?[0-9]+$"
+          },
+          "amount_calculated": {
+            "type": "string",
+            "pattern": "^-?[0-9]+$"
+          },
+          "route": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/EvmSwapRouteNode"
+                },
+                {
+                  "$ref": "#/components/schemas/EvmWrappedTokenRouteNode"
+                },
+                {
+                  "$ref": "#/components/schemas/StarknetSwapRouteNode"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "EvmPoolKey": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "token0",
+          "token1",
+          "config"
+        ],
+        "properties": {
+          "token0": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "token1": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "config": {
+            "type": "string",
+            "pattern": "^0x[0-9a-fA-F]{64}$"
+          }
+        }
+      },
+      "EvmSwapRouteNode": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "swap"
+        ],
+        "properties": {
+          "swap": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "pool_key",
+              "sqrt_ratio_limit",
+              "skip_ahead"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "core",
+                  "forwarded"
+                ]
+              },
+              "pool_key": {
+                "$ref": "#/components/schemas/EvmPoolKey"
+              },
+              "sqrt_ratio_limit": {
+                "type": "string",
+                "pattern": "^0x[0-9a-fA-F]+$"
+              },
+              "skip_ahead": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 255
+              }
+            }
+          }
+        }
+      },
+      "EvmWrappedTokenRouteNode": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "wrapped_token"
+        ],
+        "properties": {
+          "wrapped_token": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "underlying",
+              "wrapped"
+            ],
+            "properties": {
+              "underlying": {
+                "$ref": "#/components/schemas/Address"
+              },
+              "wrapped": {
+                "$ref": "#/components/schemas/Address"
+              }
+            }
+          }
+        }
+      },
+      "StarknetPoolKey": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "token0",
+          "token1",
+          "fee",
+          "tick_spacing",
+          "extension"
+        ],
+        "properties": {
+          "token0": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "token1": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "fee": {
+            "type": "string"
+          },
+          "tick_spacing": {
+            "type": "integer"
+          },
+          "extension": {
+            "$ref": "#/components/schemas/Address"
+          }
+        }
+      },
+      "StarknetSwapRouteNode": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "pool_key",
+          "sqrt_ratio_limit",
+          "skip_ahead"
+        ],
+        "properties": {
+          "pool_key": {
+            "$ref": "#/components/schemas/StarknetPoolKey"
+          },
+          "sqrt_ratio_limit": {
+            "type": "string"
+          },
+          "skip_ahead": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255
+          }
+        }
+      },
+      "HealthResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "block_number",
+          "block_hash",
+          "latest_block_timestamp",
+          "last_event_id",
+          "base_fee_per_gas"
+        ],
+        "properties": {
+          "block_number": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "block_hash": {
+            "type": "string"
+          },
+          "latest_block_timestamp": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "last_event_id": {
+            "type": "string"
+          },
+          "base_fee_per_gas": {
+            "type": "string"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "error"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "examples": [
+              "invalid_argument",
+              "insufficient_liquidity"
+            ]
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "ServiceMetadata": {
+        "type": "object",
+        "required": [
+          "name",
+          "description",
+          "version",
+          "openapi_url",
+          "token_list_url",
+          "router_sdk_url",
+          "quote_url",
+          "health_url",
+          "capabilities"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "openapi_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "token_list_url": {
+            "type": "string",
+            "format": "uri-template"
+          },
+          "router_sdk_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "quote_url": {
+            "type": "string",
+            "format": "uri-template"
+          },
+          "health_url": {
+            "type": "string",
+            "format": "uri-template"
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

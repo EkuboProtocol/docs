@@ -1,0 +1,8 @@
+dist/
+.astro/
+node_modules/
+public/_headers
+public/_redirects
+public/assets/
+public/openapi/
+schemas/
