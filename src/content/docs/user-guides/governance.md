@@ -5,7 +5,7 @@ title: "Participate in governance"
 
 This guide covers the practical steps. For how the system is designed — what governance controls, the contracts involved, and Ekubo, Inc.'s role — see [Governance](/products/governance/).
 
-## 1. Stake and delegate
+## Stake and delegate
 
 Voting power comes from staked [EKUBO](/user-guides/ekubo-token/), delegated to an address. Delegate to yourself to vote directly, or to someone else to have them vote on your behalf.
 
@@ -23,7 +23,7 @@ There is **no lockup and no penalty** for withdrawing at any time.
 Your voting weight is not your staked balance. It is the _average_ amount delegated to you over the voting weight smoothing duration ending when voting opens — currently 1 day. Because the voting start delay is only 1 hour, stake well before a proposal you care about is created, not after.
 :::
 
-## 2. Create a proposal
+## Create a proposal
 
 You need voting weight at or above the proposal creation threshold (currently 100,000 EKUBO) and no other active proposal of your own.
 
@@ -37,17 +37,17 @@ A proposal commits to its calls by hash. The **same calls must be supplied again
 
 Voting opens after the voting start delay (currently 1 hour). Discuss proposals in the [Discord](https://discord.ekubo.org) before submitting — the delay exists so problems can be caught early.
 
-## 3. Vote
+## Vote
 
 Call `vote(proposalId, yea)` with `true` for yea or `false` for nay, or vote in the app. One vote per address, only during the voting period (currently 4 days).
 
 A proposal passes if it reaches quorum (currently 3,250,000 EKUBO in yea votes) **and** receives strictly more yea than nay. A tie fails.
 
-## 4. Cancel, if needed
+## Cancel, if needed
 
 `cancel(proposalId)` — available to the proposer only, and only before voting opens. This is the correction window for a mistake in a submitted proposal.
 
-## 5. Execute
+## Execute
 
 After a proposal passes and the execution delay elapses (currently 1 hour), anyone can call `execute(proposalId, calls)` with the original calls. Execution must happen within the execution window (currently 30 days) or the proposal expires.
 

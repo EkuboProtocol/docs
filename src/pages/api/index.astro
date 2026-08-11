@@ -188,10 +188,6 @@ import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
     overflow: clip;
   }
 
-  .main-pane:has(#scalar-reference) {
-    isolation: auto;
-  }
-
   .api-spec-anchor {
     display: block;
     scroll-margin-top: calc(var(--sl-nav-height) + 1rem);
@@ -202,6 +198,7 @@ import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
   }
 
   #scalar-reference > div > .scalar-api-reference {
+    --scalar-custom-header-height: var(--sl-nav-height);
     --scalar-font:
       "Suisse Intl", "Suisse Intl Fallback", ui-sans-serif, system-ui,
       sans-serif;
@@ -263,6 +260,11 @@ import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
 
   #scalar-reference .scalar-container.scalar-client--open {
     background: var(--scalar-background-1);
+  }
+
+  body:has(#scalar-reference .scalar-client--open) > .page > .header {
+    pointer-events: none;
+    visibility: hidden;
   }
 
   #scalar-reference a.endpoint {

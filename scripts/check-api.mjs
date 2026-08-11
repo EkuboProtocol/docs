@@ -46,6 +46,56 @@ for (const scheme of ["light", "dark"]) {
       failures.push(`${scheme}: endpoint testing panel is not interactive`);
     }
 
+    await page.evaluate(() => window.scrollTo(0, 1_800));
+    await page.waitForTimeout(100);
+
+    const sharedHeader = page.locator("body > .page > .header");
+    const endpointSearch = page.getByRole("button", { name: /Open Search/ });
+    const [headerBox, endpointSearchBox] = await Promise.all([
+      sharedHeader.boundingBox(),
+      endpointSearch.boundingBox(),
+    ]);
+    if (
+      !headerBox ||
+      !endpointSearchBox ||
+      endpointSearchBox.y < headerBox.y + headerBox.height
+    ) {
+      failures.push(`${scheme}: endpoint search overlaps the shared header`);
+    }
+
+    try {
+      await endpointSearch.click({ timeout: 5_000 });
+      const endpointSearchDialog = page.getByRole("dialog", { name: "Search" });
+      await endpointSearchDialog
+        .getByRole("combobox", { name: "Enter search query" })
+        .fill("revenue");
+      await endpointSearchDialog
+        .getByRole("option", { name: /Get revenue/ })
+        .first()
+        .waitFor({ timeout: 5_000 });
+      await page.keyboard.press("Escape");
+      await endpointSearchDialog.waitFor({ state: "hidden", timeout: 5_000 });
+    } catch {
+      failures.push(`${scheme}: endpoint search is not usable`);
+    }
+
+    try {
+      const docsSearch = sharedHeader.getByRole("button", { name: /Search/ });
+      await docsSearch.click({ timeout: 5_000 });
+      const docsSearchDialog = page.getByRole("dialog", { name: "Search" });
+      await docsSearchDialog
+        .getByRole("textbox", { name: "Search" })
+        .fill("governance");
+      await docsSearchDialog
+        .getByRole("link", { name: "Participate in governance", exact: true })
+        .first()
+        .waitFor({ timeout: 5_000 });
+      await page.keyboard.press("Escape");
+      await docsSearchDialog.waitFor({ state: "hidden", timeout: 5_000 });
+    } catch {
+      failures.push(`${scheme}: docs search is not usable`);
+    }
+
     const sourceButton = page.getByRole("button", {
       name: "Ekubo API",
       exact: true,
@@ -120,5 +170,5 @@ if (failures.length) {
 }
 
 console.log(
-  "Embedded API reference rendered in the docs shell, scrolled, and switched specs with real pointer input in both themes.",
+  "Embedded API reference rendered in the docs shell, kept both searches usable while scrolled, opened its test panel, and switched specs with real pointer input in both themes.",
 );

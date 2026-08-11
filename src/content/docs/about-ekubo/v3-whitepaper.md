@@ -3,7 +3,7 @@ description: "Ekubo V3: Shared Liquidity as a Public Good — the whitepaper for
 title: "Ekubo V3: Shared Liquidity as a Public Good"
 ---
 
-## 1. Motivation
+## Motivation
 
 Most AMMs today follow the same pattern:
 
@@ -25,7 +25,7 @@ The objectives are:
 - **Shared tooling and integrations.** Indexers, risk engines, analytics, and aggregators only need to integrate once.
 - **Gas efficiency across licensees.** When everything settles in one Core, you can avoid ERC‑20 transfers even when moving value between different licensees.
 
-## 2. The AMM Encoded in Core
+## The AMM Encoded in Core
 
 Ekubo Core encodes a concrete AMM design:
 
@@ -40,7 +40,7 @@ Core also supports additional pool configurations, such as stableswap‑style cu
 
 This keeps the “hard part” – the AMM's correctness and efficiency – in one place that is audited for correctness, while still allowing many different products to be built on top of it.
 
-## 3. Engineering for Gas Efficiency
+## Engineering for Gas Efficiency
 
 Ekubo Core is engineered under the assumption that **gas is the scarcest resource**. A central design objective was to make it extremely difficult to build a meaningfully more gas‑efficient AMM without sacrificing safety, features or developer experience.
 
@@ -61,7 +61,7 @@ Taken together, these choices mean that:
 - The marginal gas cost of a swap or liquidity update is dominated by **economic necessities** (price discovery, fee accounting), not by avoidable overhead.
 - Competing designs that simply “re‑implement the same thing” are very likely to be more expensive on‑chain, because all of the possible optimizations have already been exhausted in Ekubo Core.
 
-## 4. Licensees and White‑Labeled AMMs
+## Licensees and White‑Labeled AMMs
 
 Under the Ekubo DAO Shared Revenue License, multiple independent teams can become **licensees** of the Core implementation. Each licensee can:
 
@@ -92,7 +92,7 @@ From a user's point of view:
 - Different licensees can feel like different “venues” or “frontends” with their own economic models and features.
 - At a low level, they are all trading against one shared set of pools in the same Core contract, which directly results in better pricing.
 
-## 5. Extensions: Shared Protocol Features
+## Extensions: Shared Protocol Features
 
 Extensions are **separate contracts** that integrate with Core to add reusable features. They are not new AMMs and they are not tied one‑to‑one with licensees. Instead, they provide functionality that **any** licensee can use.
 
@@ -114,11 +114,11 @@ Conceptually:
 - **Extensions** are shared feature modules that any licensee can call.
 - **Licensees** are off‑chain entities and/or contracts that choose how to assemble Core and extensions into a user‑facing product.
 
-## 6. Network Effects From a Singleton Core
+## Network Effects From a Singleton Core
 
 Having many licensees share a single Core contract creates several reinforcing network effects.
 
-### 6.1 Tooling and Analytics
+### Tooling and Analytics
 
 Because Core is the canonical place where all swaps and liquidity changes happen:
 
@@ -128,7 +128,7 @@ Because Core is the canonical place where all swaps and liquidity changes happen
 
 This is similar to the way a common L2 or common DEX becomes a focal point for tooling: once the infrastructure exists, new frontends and business models are cheap to add.
 
-### 6.2 Integrations and Routing
+### Integrations and Routing
 
 Aggregators, market makers, and other protocols only need to target Core's interface:
 
@@ -137,7 +137,7 @@ Aggregators, market makers, and other protocols only need to target Core's inter
 
 This reduces both engineering and operational complexity, and makes Ekubo a more attractive target for sophisticated routing logic.
 
-### 6.3 Gas Efficiency Across Licensees
+### Gas Efficiency Across Licensees
 
 When users create trades that execute swaps on multiple AMM protocols, moving tokens between them requires at least one additional transfer, but often in practice incurs multiple additional token transfers:
 
@@ -154,7 +154,7 @@ When two Ekubo Protocol licensees use the same Core contract:
 
 From the protocol's point of view, that means **one swap instead of two**: a trader routed through multiple licensees still interacts with a single Core pool, and each licensee settles its own economics off the back of that shared swap. This is the key network effect on gas: once tokens are in Core, all licensees can work with them without additional transfers between one another or redundant AMM hops.
 
-## 7. Flash Accounting as a Supporting Feature
+## Flash Accounting as a Supporting Feature
 
 Ekubo Core also uses **flash accounting**: instead of transferring tokens in and out for every action, it keeps track of what each caller owes or is owed, and settles based on the net result.
 
@@ -170,7 +170,7 @@ Flash accounting is therefore best understood as **one of several mechanisms** t
 
 It is important, but not the central conceptual novelty; the more fundamental idea is that many licensees share a single AMM implementation and liquidity layer.
 
-## 8. Permissionless, Ownerless, and Fee‑Externalized
+## Permissionless, Ownerless, and Fee‑Externalized
 
 Ekubo Core is designed to be:
 
@@ -193,15 +193,15 @@ Crucially, the notion of a **“protocol fee”** is **externalized** from Core 
 
 This separation lets Core focus on being a neutral, efficient, and durable AMM implementation, while economic policies live at the edges and are governed by license terms rather than on‑chain privileges. In this sense, the Core contracts function as **public infrastructure** for AMMs: a shared, well‑engineered base layer that anyone can deploy, integrate, and build on, so long as they respect the simple revenue‑sharing rules of the license.
 
-## 9. How It Feels to Use Ekubo
+## How It Feels to Use Ekubo
 
-### 9.1 For Traders
+### For Traders
 
 - You interact with a frontend (often tied to a specific licensee) and trade as usual.
 - Under the hood, your trades settle against the same shared pools inside Core that other licensees use.
 - You benefit from deeper liquidity and, over time, lower gas overhead per unit of volume as more activity concentrates in the singleton.
 
-### 9.2 For Liquidity Providers
+### For Liquidity Providers
 
 - You provide liquidity once into a Core pool.
 - That liquidity can serve order flow from many different licensees.
@@ -209,13 +209,13 @@ This separation lets Core focus on being a neutral, efficient, and durable AMM i
 
 As more licensees launch on Ekubo, the same positions can see more order flow, without any extra management overhead from LPs.
 
-### 9.3 For Licensees and Builders
+### For Licensees and Builders
 
 - You focus on product, UX, and economics rather than re‑implementing AMM internals.
 - You inherit existing liquidity, tooling, and integrations by plugging into Core.
 - You can differentiate on fees, governance, curation, and user experience, while sharing a common, battle‑tested AMM engine.
 
-## 10. Summary
+## Summary
 
 Ekubo Core is a **singleton AMM implementation** that multiple licensees share—a public good for concentrated‑liquidity markets:
 
