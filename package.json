@@ -12,6 +12,7 @@
     "check:browser": "node scripts/check-browser.mjs",
     "preview": "astro preview",
     "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "deploy": "wrangler pages deploy dist --project-name ekubo-docs",
     "astro": "astro"
   },
