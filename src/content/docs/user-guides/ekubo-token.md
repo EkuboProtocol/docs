@@ -25,7 +25,7 @@ The airdrop contract is deployed at the address `0x04bfacd0fcf70f444815de9150008
 
 An airdrop can be claimed by using a block explorer to submit a transaction using data found in this spreadsheet:
 
-[A CSV containing the entirety of the merkle tree for the EKUBO airdrop](/assets/airdrop_data.csv.zip)
+[A CSV containing the entirety of the merkle tree for the EKUBO airdrop](https://raw.githubusercontent.com/EkuboProtocol/gitbook/main/.gitbook/assets/airdrop_data.csv.zip)
 
 #### Claiming your airdrop
 
