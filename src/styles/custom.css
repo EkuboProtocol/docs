@@ -1,14 +1,36 @@
 :root {
-  --sl-color-accent-low: #3b1715;
-  --sl-color-accent: #ff665c;
-  --sl-color-accent-high: #ffd7d2;
-  --sl-font: Inter, ui-sans-serif, system-ui, sans-serif;
+  --sl-color-accent-low: #261b34;
+  --sl-color-accent: #b07df5;
+  --sl-color-accent-high: #f3e7fe;
+  --sl-color-text-accent: #b07df5;
+  --sl-color-white: #ffffff;
+  --sl-color-gray-1: #f6f6f9;
+  --sl-color-gray-2: #aaa9a9;
+  --sl-color-gray-3: #9c98a8;
+  --sl-color-gray-4: #5f5f5f;
+  --sl-color-gray-5: #373737;
+  --sl-color-gray-6: #272727;
+  --sl-color-gray-7: #1d1d1d;
+  --sl-color-black: #101010;
+  --sl-font:
+    "Suisse Intl", "Suisse Intl Fallback", ui-sans-serif, system-ui, sans-serif;
+  --sl-font-mono: "Suisse Intl Mono", ui-monospace, monospace;
 }
 
 :root[data-theme="light"] {
-  --sl-color-accent-low: #ffe6e2;
-  --sl-color-accent: #c8251b;
-  --sl-color-accent-high: #54130f;
+  --sl-color-accent-low: #f3e7fe;
+  --sl-color-accent: #661cc4;
+  --sl-color-accent-high: #261b34;
+  --sl-color-text-accent: #661cc4;
+  --sl-color-white: #101010;
+  --sl-color-gray-1: #131216;
+  --sl-color-gray-2: #5f5f5f;
+  --sl-color-gray-3: #737272;
+  --sl-color-gray-4: #878787;
+  --sl-color-gray-5: #e1e1e1;
+  --sl-color-gray-6: #f6f6f9;
+  --sl-color-gray-7: #fafafa;
+  --sl-color-black: #ffffff;
 }
 
 .site-title img {
@@ -24,9 +46,16 @@ code {
   overflow-wrap: anywhere;
 }
 
-/* The OpenAPI plugin's example blocks use a mid-gray border color as their
-   background. Use Starlight's page background so syntax colors retain AA
-   contrast in both themes. */
-.sl-openapi-example .expressive-code pre {
-  background-color: var(--sl-color-bg) !important;
+:root[data-theme="dark"] a[aria-current="page"] {
+  background-color: #261b34;
+  color: #b07df5;
+}
+
+:root[data-theme="dark"] a code {
+  color: #f3e7fe;
+}
+
+:root[data-theme="light"] a[aria-current="page"] {
+  background-color: #f3e7fe;
+  color: #661cc4;
 }

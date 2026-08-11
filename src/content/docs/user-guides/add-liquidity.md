@@ -15,7 +15,7 @@ Adding liquidity takes three steps:
 - Selecting a price range
 - Specifying an amount
 
-### Selecting a pool
+## Selecting a pool
 
 Every position is tied to a specific pool, and a pool is a combination of token pair, fee, tick spacing, and extension.
 
@@ -25,13 +25,13 @@ The fee you select is how much swappers are charged to trade against your liquid
 
 Tick spacing should typically be about twice the fee. It determines how narrow your price range can be, and therefore how much leverage you can take.
 
-### Selecting a price range
+## Selecting a price range
 
 Once you've selected a pool, you must select the range of prices in which you would like to market make. If the price leaves this selected price range, your position will become "out of range," meaning it is no longer actively earning fees. If the market price reaches the upper boundary, your position will hold entirely the quote token; at the lower boundary, entirely the base token.
 
 You should choose your price range to maximize capital efficiency: a narrower range earns more fees per dollar of principal while the price stays inside it, but requires more active management.
 
-### Specifying an amount
+## Specifying an amount
 
 Once you choose the parameters of your position, all that is left is to decide how much capital you wish to deposit. Enter an amount within your balance and confirm to create the position.
 

@@ -7,7 +7,7 @@ title: "Aggregators"
 The code samples on this page are written in Cairo for the Starknet deployment. The same lock/callback flow applies on EVM chains — see [Swapping](/integration-guides/swapping/) and the [EVM contracts repository](https://github.com/EkuboProtocol/evm-contracts) for Solidity equivalents.
 :::
 
-### Summary
+## Summary
 
 Ekubo is a singleton AMM that utilizes the "till" pattern. The till pattern was publicly introduced at EthCC\[5] and is also described [here](https://github.com/OpenZeppelin/openzeppelin-contracts/issues/4361#issuecomment-1595095135).
 
@@ -119,7 +119,7 @@ mod Example {
 Instead of withdrawing a delta, you can also save it for use later using `#save` or load it using `#load`.
 :::
 
-### Locker utility method
+## Locker utility method
 
 You may wish to use this shared code to call core with some calldata and automagically deserialize the result:
 
@@ -144,7 +144,7 @@ fn call_core_with_callback<
 }
 ```
 
-### Note on extensions
+## Note on extensions
 
 Extensions are third-party code that can change the result of swapping against a pool, usually by updating liquidity positions before the swap — though an extension may also front-run a swap with one of its own.
 

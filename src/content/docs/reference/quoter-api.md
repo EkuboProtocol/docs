@@ -17,12 +17,11 @@ It returns **block-pinned split routes** for exact-input and exact-output Ekubo 
 
 The API is self-described by an OpenAPI 3.1 document at [https://prod-api-quoter.ekubo.org/openapi.json](https://prod-api-quoter.ekubo.org/openapi.json), usable with any REST explorer.
 
-### Endpoints
+## Endpoints
 
-The endpoint reference is generated during every documentation build from the live specification.
+The interactive reference is refreshed during every documentation build from the live specification.
 
-- [Browse the static endpoint reference](/api/quoter/)
-- [Test requests in the interactive API Explorer](/api-explorer/quoter/)
+- [Browse, search, and test requests in the API reference](/api/)
 - [Download the build's OpenAPI snapshot](/openapi/quoter.json)
 - [View the canonical live specification](https://prod-api-quoter.ekubo.org/openapi.json)
 

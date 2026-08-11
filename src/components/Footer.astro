@@ -1,0 +1,33 @@
+---
+import DefaultFooter from "@astrojs/starlight/components/Footer.astro";
+---
+
+<DefaultFooter />
+<nav aria-label="Ekubo properties" class="property-links">
+  <a href="https://ekubo.org">Home</a>
+  <a href="https://blog.ekubo.org">Blog</a>
+  <a href="https://discord.ekubo.org">Discord</a>
+  <a href="https://github.com/EkuboProtocol">GitHub</a>
+  <a href="https://x.com/EkuboProtocol">X</a>
+</nav>
+
+<style>
+  .property-links {
+    border-top: 1px solid var(--sl-color-gray-5);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    margin-top: 2rem;
+    padding-block: 1.5rem 2rem;
+  }
+
+  a {
+    color: var(--sl-color-gray-2);
+    font-size: var(--sl-text-sm);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--sl-color-accent);
+  }
+</style>

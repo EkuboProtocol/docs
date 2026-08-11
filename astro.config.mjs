@@ -3,9 +3,6 @@ import sitemap from "@astrojs/sitemap";
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 import starlightLlmsTxt from "starlight-llms-txt";
-import starlightOpenAPI, { createOpenAPISidebarGroup } from "starlight-openapi";
-
-const apiReferenceGroup = createOpenAPISidebarGroup();
 
 export default defineConfig({
   site: "https://docs.ekubo.org",
@@ -22,12 +19,16 @@ export default defineConfig({
         src: "./public/logo.svg",
         replacesTitle: false,
       },
-      customCss: ["./src/styles/custom.css"],
+      customCss: ["./src/styles/fonts.css", "./src/styles/custom.css"],
+      components: {
+        ThemeSelect: "./src/components/ThemeToggle.astro",
+        Footer: "./src/components/Footer.astro",
+      },
       editLink: {
         baseUrl: "https://github.com/EkuboProtocol/docs/edit/main/",
       },
       head: [
-        { tag: "meta", attrs: { name: "theme-color", content: "#f23d30" } },
+        { tag: "meta", attrs: { name: "theme-color", content: "#661cc4" } },
         {
           tag: "link",
           attrs: {
@@ -43,6 +44,45 @@ export default defineConfig({
             for (const element of document.querySelectorAll("pre, table")) {
               if (element.scrollWidth > element.clientWidth) element.tabIndex = 0;
             }
+            const asides = new Map();
+            for (const aside of document.querySelectorAll(".starlight-aside[aria-label]")) {
+              const label = aside.getAttribute("aria-label");
+              if (!label) continue;
+              const group = asides.get(label) ?? [];
+              group.push(aside);
+              asides.set(label, group);
+            }
+            for (const [label, group] of asides) {
+              if (group.length < 2) continue;
+              group.forEach((aside, index) => aside.setAttribute("aria-label", label + " " + (index + 1)));
+            }
+            const regions = new Map();
+            for (const region of document.querySelectorAll('[role="region"]')) {
+              const labelledBy = region.getAttribute("aria-labelledby");
+              const label = region.getAttribute("aria-label") ||
+                (labelledBy && document.getElementById(labelledBy)?.textContent?.trim());
+              if (!label) continue;
+              const group = regions.get(label) ?? [];
+              group.push(region);
+              regions.set(label, group);
+            }
+            for (const [label, group] of regions) {
+              if (group.length < 2) continue;
+              group.forEach((region, index) => {
+                region.setAttribute("aria-label", label + " " + (index + 1));
+                region.removeAttribute("aria-labelledby");
+              });
+            }
+            const labelCodeRegions = () => {
+              document.querySelectorAll("pre").forEach((region, index) => {
+                region.setAttribute("aria-label", "Code example " + (index + 1));
+                region.removeAttribute("aria-labelledby");
+              });
+            };
+            labelCodeRegions();
+            // Expressive Code adds overflow landmarks after DOMContentLoaded.
+            // Label them once its layout work has completed as well.
+            window.setTimeout(labelCodeRegions, 100);
           });`,
         },
       ],
@@ -65,7 +105,7 @@ export default defineConfig({
           description:
             "Documentation for using and integrating Ekubo Protocol.",
           details:
-            "Static endpoint reference pages are generated from the live OpenAPI specifications on every build.",
+            "The interactive API reference is generated from the live OpenAPI specifications on every build.",
           optionalLinks: [
             {
               label: "Ekubo API OpenAPI 3.1",
@@ -80,34 +120,13 @@ export default defineConfig({
                 "Machine-readable snapshot used to generate the quoter reference",
             },
             {
-              label: "Generated API reference",
-              url: "https://docs.ekubo.org/api/ekubo/",
-              description: "Static, indexable endpoint documentation",
+              label: "Interactive API reference",
+              url: "https://docs.ekubo.org/api/",
+              description:
+                "Search both APIs, inspect schemas and examples, and test requests",
             },
           ],
         }),
-        starlightOpenAPI([
-          {
-            base: "api/ekubo",
-            schema: "./schemas/ekubo.json",
-            sidebar: {
-              label: "Ekubo API",
-              group: apiReferenceGroup,
-              collapsed: true,
-              operations: { badges: true, labels: "summary" },
-            },
-          },
-          {
-            base: "api/quoter",
-            schema: "./schemas/quoter.json",
-            sidebar: {
-              label: "Quoter API",
-              group: apiReferenceGroup,
-              collapsed: false,
-              operations: { badges: true, labels: "summary" },
-            },
-          },
-        ]),
       ],
       sidebar: [
         {
@@ -208,23 +227,11 @@ export default defineConfig({
             },
             { label: "🌐 Ekubo API", slug: "reference/ekubo-api" },
             { label: "🧮 Quoter API", slug: "reference/quoter-api" },
-            apiReferenceGroup,
             {
-              label: "🧪 API Explorers",
-              items: [
-                { label: "Ekubo API", link: "/api-explorer/ekubo/" },
-                { label: "Quoter API", link: "/api-explorer/quoter/" },
-              ],
+              label: "🧪 Interactive API reference",
+              link: "/api/",
             },
             { label: "🛡️ Audits", slug: "reference/audits" },
-          ],
-        },
-        {
-          label: "Links",
-          items: [
-            { label: "Home", link: "https://ekubo.org" },
-            { label: "Blog", link: "https://blog.ekubo.org" },
-            { label: "Discord", link: "https://discord.ekubo.org" },
           ],
         },
       ],

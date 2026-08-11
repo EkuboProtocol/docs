@@ -28,7 +28,7 @@ Ekubo's tick base is **`1.000001`**, not `1.0001`. Tick `i` corresponds to the p
 
 The tick range is correspondingly wider:
 
-|                  | EVM (V3)    | Starknet    |
+| Parameter        | EVM (V3)    | Starknet    |
 | ---------------- | ----------- | ----------- |
 | Min / max tick   | ±88,722,835 | ±88,722,883 |
 | Max tick spacing | 698,605     | 354,892     |

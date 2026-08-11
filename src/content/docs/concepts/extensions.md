@@ -9,13 +9,13 @@ Extensions let you insert custom logic at defined points in a pool's lifecycle. 
 Each pool has its own separate state, meaning the capital deposited into each pool with an extension is isolated from all other pools, including other pools with the same extension.
 :::
 
-### Rationale
+## Rationale
 
 Liquidity fragmentation is inevitable. In the absence of extensions, others will make small improvements to the Ekubo design or add new features, and deploy a variant of the core AMM. As a result, users must split their trades across many different sources of liquidity.
 
 Ekubo aims to solve this problem by reducing the cost of fragmentation to near-zero. This is the purpose of the [singleton design and the till pattern](/concepts/architecture/). Ekubo is a platform for an ecosystem of different types of pools that are all aggregated with every aggregator and arbitrageur, so markets can operate as efficiently as possible. This ecosystem of different kinds of liquidity also has the benefit of providing traders the best possible execution.
 
-### What belongs in an extension
+## What belongs in an extension
 
 Extensibility is for creating new _pool functionality_: behavior that plugs into the [flash accounting system](/concepts/architecture/#flash-accounting) and works as if it had been part of the original design. A TWAMM pool, an oracle pool, a vote-governed ve(3,3) pool — each changes what a pool _is_, and every router, aggregator, and arbitrageur settles against it through the same lock as any other pool.
 
@@ -27,13 +27,13 @@ On top is also where an idea like this can be judged and adjusted. A narrower ra
 
 There are many ways to run a strategy on top. Vaults in the style of Yearn run them autonomously as contract code, at the cost of a newly audited contract per strategy. Hedge funds run them with people, who take a share of the profits and make mistakes. The most forward-looking way is to hand the strategy to an AI agent and let it run autonomously — which is precisely what the [MCP server](/products/mcp-server/) is for: an agent gets the same tokens, quotes, position data, and execution plans the interface uses, so the strategy lives in the agent's instructions, where rewriting it costs a sentence, rather than in anyone's pool.
 
-### Flexibility
+## Flexibility
 
 You may want a different trading algorithm entirely — a different curve. You can approximate almost any curve by overlapping several `x*y=k` positions, so Ekubo's core components serve a wide range of AMM designs. At the extreme, where you want to quote every trade individually, Ekubo's very small ticks let you use it as an order book: place one-tick orders at whatever prices your extension decides, whether from an oracle or as a function of time.
 
 Because an extension can re-enter the core Ekubo contract to perform its own actions within these lifecycle events, the simple interface allows for a huge amount of customization of pool behavior. For example, on the before-swap call point you could add your own liquidity ahead of the trade, improving the price the swapper gets; or you could record the pool's price _before_ the trade moves it, which is exactly how the Oracle extension builds its history — it snapshots on before-swap and before-position-update, so every observation is a pre-trade price.
 
-### Immutability
+## Immutability
 
 Extensions are specified as part of the pool key. The specified extension is an immutable configuration of a pool. Before a pool can be initialized with an extension, the extension must be registered with Core along with the set of pool lifecycle events ("call points") at which it should be called.
 

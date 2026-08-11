@@ -3,7 +3,7 @@ description: Addresses of the governance contracts across Starknet and Ethereum
 title: "Governance Contracts"
 ---
 
-### Governance contracts
+## Governance contracts
 
 These contracts are responsible for the management of the core contracts. The source code is [here](https://github.com/EkuboProtocol/governance). Note the EKUBO token used in governance is deployed to Ethereum and bridged to Starknet via Starkgate. The code for the EKUBO token is [here](https://github.com/EkuboProtocol/token).
 

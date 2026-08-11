@@ -6,10 +6,16 @@
     "dev": "astro dev",
     "start": "astro dev",
     "sync:openapi": "node scripts/sync-openapi.mjs",
-    "build": "bun run sync:openapi && astro build",
+    "sync:redirects": "node scripts/sync-redirects.mjs",
+    "build": "bun run sync:openapi && bun run sync:redirects && astro build",
     "check": "bun run sync:openapi && astro check",
     "check:links": "node scripts/check-links.mjs",
-    "check:browser": "node scripts/check-browser.mjs",
+    "check:legacy": "node scripts/check-legacy-routes.mjs",
+    "check:a11y": "node scripts/check-a11y.mjs",
+    "check:overflow": "node scripts/check-overflow.mjs",
+    "check:api": "node scripts/check-api.mjs",
+    "check:theme": "node scripts/check-theme.mjs",
+    "check:browser": "bun run check:a11y && bun run check:overflow && bun run check:theme && bun run check:api",
     "preview": "astro preview",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -21,8 +27,7 @@
     "@astrojs/starlight": "^0.41.7",
     "astro": "^7.1.6",
     "sharp": "^0.35.3",
-    "starlight-llms-txt": "^0.11.0",
-    "starlight-openapi": "^0.26.0"
+    "starlight-llms-txt": "^0.11.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",

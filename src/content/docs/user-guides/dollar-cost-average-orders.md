@@ -35,7 +35,7 @@ Consider using TWAMM in the following cases:
 
 Note that the price you receive on your DCA orders is heavily dependent on the liquidity in the pools and other orders on the pool over the period that the order executes. If you want to ensure good execution, it's best to supply liquidity to the pool on which you want to place the order to limit the price impact of each swap.
 
-### Creating DCA orders
+## Creating DCA orders
 
 You can place DCA orders in the [interface](https://ekubo.org/dca).
 
@@ -45,7 +45,7 @@ DCA orders pay fees when the orders are imbalanced: you pay swap fees to liquidi
 An order's start and end times must each be a multiple of a step size that grows the further in the future they are. The smallest step is 256 seconds on EVM chains (16 on Starknet), so the shortest possible order is 256 seconds; the longest is just under `2**32` seconds.
 :::
 
-### Adding liquidity to DCA pools
+## Adding liquidity to DCA pools
 
 Creating a DCA-enabled pool provides the backstop liquidity that orders on it execute against, and that liquidity has exclusive rights to that pool's TWAMM volume. Orders cannot be placed between two tokens until at least one direct DCA-enabled pool exists.
 
@@ -55,7 +55,7 @@ Splitting an order into per-second pieces minimizes its price impact. You choose
 As with the NFT you receive when you create a position, you should **never sell this NFT** — selling it gives up the right to the capital behind the order.
 :::
 
-### Fees
+## Fees
 
 All fees from the DCA orders are directed towards liquidity providers of the pool on which the order is placed.
 

@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-Static Astro Starlight source for [docs.ekubo.org](https://docs.ekubo.org). Pages are Markdown with YAML front matter; `astro.config.mjs` defines navigation and OpenAPI generation. This source repository is private, but everything built into `dist/` is public.
+Static Astro Starlight source for [docs.ekubo.org](https://docs.ekubo.org). Pages are Markdown with YAML front matter; `astro.config.mjs` defines navigation, and `src/pages/api/index.astro` renders the unified OpenAPI reference. This source repository is private, but everything built into `dist/` is public.
 
 ## The cardinal rule: verify against code, not prose
 
@@ -88,8 +88,9 @@ Do not restate math that has canonical published references. Link the reference 
 
 ## Before you commit
 
-- Every moved or renamed page gets a redirect in `public/_redirects`
+- Every moved or renamed page gets a mapping in `scripts/legacy-routes.mjs`; the build regenerates `public/_redirects`
 - `astro.config.mjs` lists every authored page except the hidden 404 page, and every listed page appears exactly once
 - All relative links and `/assets/` references resolve — note that moving a page changes its directory depth and silently breaks `../` paths
 - `bun run check` and `bun run build` pass, including live OpenAPI synchronization
+- `bun run check:legacy`, `bun run check:a11y`, `bun run check:overflow`, `bun run check:theme`, and `bun run check:api` pass against a local preview
 - No em dashes or entities introduced inside fenced code blocks; shell flags such as `--rm` intact

@@ -1,0 +1,337 @@
+---
+import "../../styles/fonts.css";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta
+      name="description"
+      content="Search, inspect, and test the Ekubo and Quoter APIs from their live OpenAPI specifications."
+    />
+    <meta name="theme-color" content="#101010" />
+    <link rel="canonical" href="https://docs.ekubo.org/api/" />
+    <link rel="icon" href="/favicon.svg" />
+    <title>API Reference | Ekubo Docs</title>
+  </head>
+  <body class="dark-mode">
+    <header class="api-header">
+      <a class="api-home" href="/">
+        <img src="/logo.svg" alt="" width="24" height="24" />
+        <span>Ekubo Docs</span>
+      </a>
+      <span class="api-header-label">API reference</span>
+      <button
+        class="api-theme-toggle"
+        id="api-theme-toggle"
+        type="button"
+        aria-label="Toggle color theme"
+        title="Toggle color theme"
+      >
+        <span class="light-icon" aria-hidden="true">☀</span>
+        <span class="dark-icon" aria-hidden="true">☾</span>
+      </button>
+    </header>
+    <div id="app"></div>
+    <noscript>
+      <p class="noscript">
+        This interactive reference requires JavaScript. Download the
+        <a href="/openapi/ekubo.json">Ekubo API</a> or
+        <a href="/openapi/quoter.json">Quoter API</a> OpenAPI document instead.
+      </p>
+    </noscript>
+    <script
+      is:inline
+      src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.64.1"></script>
+    <script is:inline>
+      const themeKey = "starlight-theme";
+      const preferredTheme = window.matchMedia("(prefers-color-scheme: dark)");
+      const savedTheme = localStorage.getItem(themeKey);
+      const initialDark =
+        savedTheme === "dark" ||
+        (savedTheme !== "light" && preferredTheme.matches);
+
+      Scalar.createApiReference("#app", {
+        sources: [
+          {
+            title: "Ekubo API",
+            slug: "ekubo",
+            url: "/openapi/ekubo.json",
+            default: true,
+          },
+          {
+            title: "Quoter API",
+            slug: "quoter",
+            url: "/openapi/quoter.json",
+          },
+        ],
+        theme: "default",
+        layout: "modern",
+        darkMode: initialDark,
+        hideDarkModeToggle: true,
+        withDefaultFonts: false,
+        modelsSectionLabel: "Schemas",
+        showOperationId: true,
+        showDeveloperTools: "never",
+        telemetry: false,
+        agent: { disabled: true },
+      });
+
+      function updateTheme(dark) {
+        document.body.classList.toggle("dark-mode", dark);
+        document.body.classList.toggle("light-mode", !dark);
+        const button = document.querySelector("#api-theme-toggle");
+        const target = dark ? "light" : "dark";
+        button?.setAttribute("aria-label", `Switch to ${target} theme`);
+        button?.setAttribute("title", `Switch to ${target} theme`);
+      }
+
+      updateTheme(initialDark);
+      document
+        .querySelector("#api-theme-toggle")
+        ?.addEventListener("click", () => {
+          const dark = !document.body.classList.contains("dark-mode");
+          localStorage.setItem(themeKey, dark ? "dark" : "light");
+          updateTheme(dark);
+        });
+      preferredTheme.addEventListener("change", (event) => {
+        if (!localStorage.getItem(themeKey)) updateTheme(event.matches);
+      });
+
+      let repairQueued = false;
+      function repairAccessibility() {
+        repairQueued = false;
+        for (const button of document.querySelectorAll("button")) {
+          if (
+            !button.getAttribute("aria-label") &&
+            (button.classList.contains("scalar-code-copy") ||
+              !button.textContent?.trim())
+          ) {
+            button.setAttribute("aria-label", "Copy code");
+          }
+        }
+        for (const link of document.querySelectorAll("a[href]")) {
+          if (!link.getAttribute("aria-label") && !link.textContent?.trim()) {
+            const href = link.getAttribute("href");
+            let label = "Open link";
+            if (href?.startsWith("mailto:")) {
+              label = "Email API support";
+            } else if (href) {
+              try {
+                label = `Visit ${new URL(href, location.href).hostname}`;
+              } catch {}
+            }
+            link.setAttribute("aria-label", label);
+          }
+        }
+        const regions = new Map();
+        for (const region of document.querySelectorAll('[role="region"]')) {
+          const id = region.getAttribute("aria-labelledby");
+          const label =
+            region.getAttribute("aria-label") ||
+            (id && document.getElementById(id)?.textContent?.trim());
+          if (!label) continue;
+          const group = regions.get(label) ?? [];
+          group.push(region);
+          regions.set(label, group);
+        }
+        for (const [label, group] of regions) {
+          if (group.length < 2) continue;
+          group.forEach((region, index) => {
+            region.setAttribute("aria-label", `${label} ${index + 1}`);
+            region.removeAttribute("aria-labelledby");
+          });
+        }
+        for (const element of document.querySelectorAll("pre, table")) {
+          if (element.scrollWidth > element.clientWidth) element.tabIndex = 0;
+        }
+      }
+      const observer = new MutationObserver(() => {
+        if (repairQueued) return;
+        repairQueued = true;
+        requestAnimationFrame(repairAccessibility);
+      });
+      observer.observe(document.querySelector("#app"), {
+        childList: true,
+        subtree: true,
+      });
+      repairAccessibility();
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    color-scheme: light dark;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: #101010;
+    color: #f6f6f9;
+    font-family:
+      "Suisse Intl", "Suisse Intl Fallback", ui-sans-serif, system-ui,
+      sans-serif;
+  }
+
+  body.light-mode {
+    background: #ffffff;
+    color: #131216;
+  }
+
+  .api-header {
+    align-items: center;
+    background: #101010;
+    border-bottom: 1px solid #272727;
+    display: flex;
+    height: 3.25rem;
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+
+  body.light-mode .api-header {
+    background: #ffffff;
+    border-color: #e1e1e1;
+  }
+
+  .api-home {
+    align-items: center;
+    color: #ffffff;
+    display: inline-flex;
+    font-weight: 500;
+    gap: 0.625rem;
+    text-decoration: none;
+  }
+
+  body.light-mode .api-home {
+    color: #101010;
+  }
+
+  .api-home:focus-visible {
+    border-radius: 0.25rem;
+    outline: 3px solid #b07df5;
+    outline-offset: 3px;
+  }
+
+  .api-header-label {
+    color: #aaa9a9;
+    font-size: 0.875rem;
+    margin-left: auto;
+  }
+
+  body.light-mode .api-header-label {
+    color: #5f5f5f;
+  }
+
+  .api-theme-toggle {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    border-radius: 0.5rem;
+    color: #aaa9a9;
+    cursor: pointer;
+    display: inline-flex;
+    font: inherit;
+    font-size: 1.15rem;
+    height: 2rem;
+    justify-content: center;
+    padding: 0;
+    width: 2rem;
+  }
+
+  body.light-mode .api-theme-toggle {
+    color: #5f5f5f;
+  }
+
+  .api-theme-toggle:hover {
+    color: #b07df5;
+  }
+
+  .api-theme-toggle:focus-visible {
+    outline: 3px solid #b07df5;
+    outline-offset: 2px;
+  }
+
+  body.dark-mode .dark-icon,
+  body.light-mode .light-icon {
+    display: none;
+  }
+
+  #app,
+  .scalar-app {
+    height: calc(100vh - 3.25rem);
+  }
+
+  .scalar-app {
+    --scalar-font:
+      "Suisse Intl", "Suisse Intl Fallback", ui-sans-serif, system-ui,
+      sans-serif;
+    --scalar-font-code: "Suisse Intl Mono", ui-monospace, monospace;
+    --scalar-color-accent: #9d5af2;
+    --scalar-radius: 8px;
+    --scalar-radius-lg: 8px;
+    --scalar-radius-xl: 12px;
+    --scalar-radius-2xl: 14px;
+    --scalar-radius-3xl: 20px;
+  }
+
+  body.dark-mode .scalar-app {
+    --scalar-background-1: #101010;
+    --scalar-background-2: #1d1d1d;
+    --scalar-background-3: #272727;
+    --scalar-border-color: #373737;
+    --scalar-color-1: #f6f6f9;
+    --scalar-color-2: #aaa9a9;
+    --scalar-color-3: #9c98a8;
+    --scalar-link-color: #b07df5;
+    --scalar-link-color-hover: #c9a3f8;
+    --scalar-sidebar-background-1: #101010;
+    --scalar-sidebar-color-1: #f6f6f9;
+    --scalar-sidebar-color-2: #aaa9a9;
+    --scalar-sidebar-color-active: #ffffff;
+    --scalar-sidebar-border-color: #373737;
+    --scalar-sidebar-item-active-background: #261b34;
+    --scalar-sidebar-item-hover-background: #1d1d1d;
+  }
+
+  body.light-mode .scalar-app {
+    --scalar-background-1: #ffffff;
+    --scalar-background-2: #f6f6f9;
+    --scalar-background-3: #e1e1e1;
+    --scalar-border-color: #e1e1e1;
+    --scalar-color-1: #131216;
+    --scalar-color-2: #5f5f5f;
+    --scalar-color-3: #737272;
+    --scalar-color-blue: #005f9e;
+    --scalar-link-color: #661cc4;
+    --scalar-link-color-hover: #661cc4;
+    --scalar-sidebar-background-1: #ffffff;
+    --scalar-sidebar-color-1: #131216;
+    --scalar-sidebar-color-2: #5f5f5f;
+    --scalar-sidebar-color-active: #101010;
+    --scalar-sidebar-border-color: #e1e1e1;
+    --scalar-sidebar-item-active-background: #f3e7fe;
+    --scalar-sidebar-item-hover-background: #f6f6f9;
+  }
+
+  .noscript {
+    margin: 2rem;
+  }
+
+  .noscript a {
+    color: #b07df5;
+  }
+
+  @media (max-width: 30rem) {
+    .api-header-label {
+      display: none;
+    }
+  }
+</style>
