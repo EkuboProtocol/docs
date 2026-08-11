@@ -28,9 +28,20 @@ for (const scheme of ["light", "dark"]) {
         timeout: 5_000,
       });
       await page
-        .getByText("Test Request", { exact: true })
+        .getByRole("button", { name: /Test Request/ })
         .first()
+        .click({
+          timeout: 5_000,
+        });
+      await page
+        .getByRole("dialog", { name: "API Client" })
         .waitFor({ timeout: 5_000 });
+      await page.getByRole("button", { name: "Close Client" }).click({
+        timeout: 5_000,
+      });
+      await page
+        .getByRole("dialog", { name: "API Client" })
+        .waitFor({ state: "hidden", timeout: 5_000 });
     } catch {
       failures.push(`${scheme}: endpoint testing panel is not interactive`);
     }

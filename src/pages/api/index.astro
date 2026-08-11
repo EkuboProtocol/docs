@@ -15,9 +15,9 @@ import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
 >
   <p class="api-intro">
     Search, inspect, and test both APIs in one place. Choose a specification in
-    the explorer, or download the machine-readable
+    the explorer, or download the machine-readable{" "}
     <a href="/openapi/ekubo.json">Ekubo API</a> and
-    <a href="/openapi/quoter.json">Quoter API</a> OpenAPI documents.
+    {" "}<a href="/openapi/quoter.json">Quoter API</a> OpenAPI documents.
   </p>
 
   <span id="quoter" class="api-spec-anchor" aria-hidden="true"></span>
@@ -188,6 +188,10 @@ import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
     overflow: clip;
   }
 
+  .main-pane:has(#scalar-reference) {
+    isolation: auto;
+  }
+
   .api-spec-anchor {
     display: block;
     scroll-margin-top: calc(var(--sl-nav-height) + 1rem);
@@ -255,6 +259,10 @@ import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
 
   #scalar-reference .scalar-mcp-layer {
     display: none;
+  }
+
+  #scalar-reference .scalar-container.scalar-client--open {
+    background: var(--scalar-background-1);
   }
 
   #scalar-reference a.endpoint {
