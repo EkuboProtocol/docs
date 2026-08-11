@@ -140,6 +140,6 @@ Rather than hard-coding any of this, a client can read it. `GET https://mcp.ekub
 
 - Supported on EVM chains, including Robinhood Chain (chain ID **4663** — the L2, not the brokerage).
 - The server is versioned and advertises `listChanged` for both tools and resources, so clients are notified when its surface changes.
-- Underlying protocol data comes from the same public [Ekubo API](/reference/ekubo-api/) and [Quoter API](/reference/quoter-api/) documented here, so results agree with the interface and with your own integrations.
+- Underlying protocol data comes from the same public [Ekubo API](/api/) and [Quoter API](/api/#quoter) documented here, so results agree with the interface and with your own integrations.
 
 Questions or problems? Ask in the [Discord](https://discord.ekubo.org).

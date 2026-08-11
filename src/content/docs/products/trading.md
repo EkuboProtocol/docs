@@ -11,13 +11,13 @@ A trade on Ekubo goes through three stages: finding a route, quoting it, and exe
 
 Ekubo's liquidity is spread across pool types and [extensions](/concepts/extensions/) — concentrated, stableswap, full-range, TWAMM, MEV capture, Ve33 — all inside the same Core contract. A good route often splits a trade across several of them.
 
-The [Quoter API](/reference/quoter-api/) does this for you. Given a chain, an amount, and a token pair, it returns **block-pinned split routes** for exact-input or exact-output swaps:
+The [Quoter API](/api/#quoter) does this for you. Given a chain, an amount, and a token pair, it returns **block-pinned split routes** for exact-input or exact-output swaps:
 
 ```
 GET https://prod-api-quoter.ekubo.org/{chainId}/{amount}/{specifiedToken}/{otherToken}
 ```
 
-A negative amount requests an exact-output quote. Token addresses and decimals resolve through the [Ekubo API](/reference/ekubo-api/) token list.
+A negative amount requests an exact-output quote. Token addresses and decimals resolve through the [Ekubo API](/api/) token list.
 
 Because quotes are pinned to a block, they reflect exact pool state at that block — including extension behavior, which is the part hand-rolled integrations most often get wrong.
 

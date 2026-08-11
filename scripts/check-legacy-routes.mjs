@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from "node:fs";
-import { buildRedirects, fileToRoute, legacyFiles } from "./legacy-routes.mjs";
+import { buildRedirects, fileToTarget, legacyFiles } from "./legacy-routes.mjs";
 
 const failures = [];
 const redirects = new Map(
@@ -14,7 +14,8 @@ const redirects = new Map(
 );
 
 for (const file of legacyFiles) {
-  const route = fileToRoute(file);
+  const target = fileToTarget(file);
+  const route = new URL(target, "https://docs.ekubo.org").pathname;
   const output =
     route === "/"
       ? new URL("../dist/index.html", import.meta.url)

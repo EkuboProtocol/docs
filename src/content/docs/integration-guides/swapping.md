@@ -7,7 +7,7 @@ title: "Swapping"
 
 ## Routing
 
-It is your responsibility to find the best list of pools for executing a trade. This is equivalent to finding the best route for arbitrage. The easiest way to get a route is the [Quoter API](/reference/quoter-api/), which returns block-pinned split routes ready to execute.
+It is your responsibility to find the best list of pools for executing a trade. This is equivalent to finding the best route for arbitrage. The easiest way to get a route is the [Quoter API](/api/#quoter), which returns block-pinned split routes ready to execute.
 
 ## Executing swaps on-chain
 

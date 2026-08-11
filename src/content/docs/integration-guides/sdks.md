@@ -66,4 +66,4 @@ Shared math and protocol encoding utilities, with **no runtime dependencies**. I
 npm install @ekubo/yul-router-sdk
 ```
 
-Encodes calldata for the [Yul Router](/integration-guides/yul-router/), the router used for Ekubo swaps on EVM chains. Use it to turn a route — typically one returned by the [Quoter API](/reference/quoter-api/) — into a transaction. See the [Yul Router guide](/integration-guides/yul-router/) for the full surface and worked examples.
+Encodes calldata for the [Yul Router](/integration-guides/yul-router/), the router used for Ekubo swaps on EVM chains. Use it to turn a route — typically one returned by the [Quoter API](/api/#quoter) — into a transaction. See the [Yul Router guide](/integration-guides/yul-router/) for the full surface and worked examples.

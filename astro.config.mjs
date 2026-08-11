@@ -61,6 +61,10 @@ export default defineConfig({
         {
           tag: "script",
           content: `document.addEventListener("DOMContentLoaded", () => {
+            const searchButton = document.querySelector('button[data-open-modal]');
+            if (searchButton?.textContent?.trim()) {
+              searchButton.setAttribute('aria-label', searchButton.textContent.trim());
+            }
             for (const element of document.querySelectorAll("pre, table")) {
               if (element.scrollWidth > element.clientWidth) element.tabIndex = 0;
             }
@@ -245,10 +249,8 @@ export default defineConfig({
                 },
               ],
             },
-            { label: "Ekubo API", slug: "reference/ekubo-api" },
-            { label: "Quoter API", slug: "reference/quoter-api" },
             {
-              label: "Interactive API reference",
+              label: "API reference",
               link: "/api/",
             },
             { label: "Audits", slug: "reference/audits" },

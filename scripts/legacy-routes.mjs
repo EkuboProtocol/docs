@@ -80,6 +80,16 @@ export function fileToRoute(file) {
   return `/${file.slice(0, -".md".length)}/`;
 }
 
+const legacyTargetOverrides = {
+  "reference/ekubo-api/README.md": "/api/",
+  "reference/ekubo-api/endpoints.md": "/api/",
+  "reference/quoter-api.md": "/api/#quoter",
+};
+
+export function fileToTarget(file) {
+  return legacyTargetOverrides[file] ?? fileToRoute(file);
+}
+
 export function buildRedirects() {
   const redirects = new Map();
   const add = (source, target) => {
@@ -87,7 +97,8 @@ export function buildRedirects() {
   };
 
   for (const file of legacyFiles) {
-    const target = fileToRoute(file);
+    const route = fileToRoute(file);
+    const target = fileToTarget(file);
     add(`/${file}`, target);
     add(`/${file}/`, target);
     if (file.endsWith("README.md")) {
@@ -95,10 +106,14 @@ export function buildRedirects() {
       add(readmePath, target);
       add(`${readmePath}/`, target);
     }
+    if (route !== target) {
+      add(route.replace(/\/$/, ""), target);
+      add(route, target);
+    }
   }
 
   for (const [source, targetFile] of Object.entries(movedRoutes)) {
-    const target = fileToRoute(targetFile);
+    const target = fileToTarget(targetFile);
     for (const variant of [
       `/${source}`,
       `/${source}/`,
@@ -109,15 +124,15 @@ export function buildRedirects() {
     }
   }
 
-  for (const source of [
-    "/api-explorer/ekubo",
-    "/api-explorer/quoter",
-    "/api/ekubo",
-    "/api/quoter",
+  for (const [source, target] of [
+    ["/api-explorer/ekubo", "/api/"],
+    ["/api-explorer/quoter", "/api/#quoter"],
+    ["/api/ekubo", "/api/"],
+    ["/api/quoter", "/api/#quoter"],
   ]) {
-    add(source, "/api/");
-    add(`${source}/`, "/api/");
-    add(`${source}/*`, "/api/");
+    add(source, target);
+    add(`${source}/`, target);
+    add(`${source}/*`, target);
   }
 
   return redirects;

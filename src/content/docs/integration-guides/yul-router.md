@@ -5,7 +5,7 @@ description: >-
 title: "Yul Router"
 ---
 
-The [Yul Router](https://github.com/EkuboProtocol/yul-router) is a gas-focused router written in Yul that executes Ekubo swaps on EVM chains. It is how swaps are executed in production today: the [interface](https://ekubo.org) encodes routes from [Quoter API](/reference/quoter-api/) results and sends them to the router.
+The [Yul Router](https://github.com/EkuboProtocol/yul-router) is a gas-focused router written in Yul that executes Ekubo swaps on EVM chains. It is how swaps are executed in production today: the [interface](https://ekubo.org) encodes routes from [Quoter API](/api/#quoter) results and sends them to the router.
 
 The router is deployed deterministically on every supported network. Always use `YUL_ROUTER_ADDRESS` exported by the same installed version of `@ekubo/yul-router-sdk` that you use to encode calldata. This keeps the router destination compatible with that version's encoding; do not copy or hard-code an address from documentation.
 
@@ -87,7 +87,7 @@ For `signedExclusiveSwap` hops, `encodeSignedSwapMeta({ deadline, fee, nonce, au
 
 ## Typical flow
 
-1. Fetch a quote from the [Quoter API](/reference/quoter-api/) — it returns block-pinned split routes in exactly the shape the SDK consumes.
+1. Fetch a quote from the [Quoter API](/api/#quoter) — it returns block-pinned split routes in exactly the shape the SDK consumes.
 2. Convert each split and hop into `multiHops` entries and call `encodeRoutes(...)` with your slippage threshold.
 3. Send the calldata to `YUL_ROUTER_ADDRESS` promptly (quotes are pinned to a block).
 

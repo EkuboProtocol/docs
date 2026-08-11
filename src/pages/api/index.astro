@@ -1,87 +1,46 @@
 ---
-import "../../styles/fonts.css";
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <meta
-      name="description"
-      content="Search, inspect, and test the Ekubo and Quoter APIs from their live OpenAPI specifications."
-    />
-    <meta name="theme-color" content="#101010" />
-    <link rel="canonical" href="https://docs.ekubo.org/api/" />
-    <link rel="icon" href="/favicon.svg" />
-    <link
-      rel="preload"
-      href="/fonts/suisse-intl-400.f6cfafea4909.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="preload"
-      href="/fonts/suisse-intl-500.ab9b74e775b5.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="preload"
-      href="/fonts/suisse-intl-600.480cfa8f0417.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="preload"
-      href="/fonts/suisse-intl-mono-400.c4afd40b2fde.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin="anonymous"
-    />
-    <title>API Reference | Ekubo Docs</title>
-  </head>
-  <body class="dark-mode">
-    <header class="api-header">
-      <a class="api-home" href="/">
-        <img src="/logo.svg" alt="" width="24" height="24" />
-        <span>Ekubo Docs</span>
-      </a>
-      <span class="api-header-label">API reference</span>
-      <button
-        class="api-theme-toggle"
-        id="api-theme-toggle"
-        type="button"
-        aria-label="Toggle color theme"
-        title="Toggle color theme"
-      >
-        <span class="light-icon" aria-hidden="true">☀</span>
-        <span class="dark-icon" aria-hidden="true">☾</span>
-      </button>
-    </header>
-    <div id="app"></div>
-    <noscript>
-      <p class="noscript">
-        This interactive reference requires JavaScript. Download the
-        <a href="/openapi/ekubo.json">Ekubo API</a> or
-        <a href="/openapi/quoter.json">Quoter API</a> OpenAPI document instead.
-      </p>
-    </noscript>
-    <script
-      is:inline
-      src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.64.1"></script>
-    <script is:inline>
-      const themeKey = "starlight-theme";
-      const preferredTheme = window.matchMedia("(prefers-color-scheme: dark)");
-      const savedTheme = localStorage.getItem(themeKey);
-      const initialDark =
-        savedTheme === "dark" ||
-        (savedTheme !== "light" && preferredTheme.matches);
+<StarlightPage
+  frontmatter={{
+    title: "API reference",
+    description:
+      "Search, inspect, and test the Ekubo and Quoter APIs from their OpenAPI specifications.",
+    editUrl: false,
+    pagefind: false,
+    tableOfContents: false,
+  }}
+  hasSidebar={false}
+>
+  <p class="api-intro">
+    Search, inspect, and test both APIs in one place. Choose a specification in
+    the explorer, or download the machine-readable
+    <a href="/openapi/ekubo.json">Ekubo API</a> and
+    <a href="/openapi/quoter.json">Quoter API</a> OpenAPI documents.
+  </p>
 
-      Scalar.createApiReference("#app", {
+  <span id="quoter" class="api-spec-anchor" aria-hidden="true"></span>
+  <div class="api-reference-frame">
+    <div id="scalar-reference" aria-label="Interactive API reference"></div>
+  </div>
+
+  <noscript>
+    <p>
+      The interactive reference requires JavaScript. Use the OpenAPI document
+      links above instead.
+    </p>
+  </noscript>
+
+  <script
+    is:inline
+    src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.64.1"></script>
+  <script is:inline>
+    const container = document.querySelector("#scalar-reference");
+
+    if (container && !container.dataset.mounted && window.Scalar) {
+      container.dataset.mounted = "true";
+      window.Scalar.createApiReference(container, {
         sources: [
           {
             title: "Ekubo API",
@@ -97,7 +56,7 @@ import "../../styles/fonts.css";
         ],
         theme: "default",
         layout: "modern",
-        darkMode: initialDark,
+        darkMode: document.documentElement.dataset.theme !== "light",
         hideDarkModeToggle: true,
         withDefaultFonts: false,
         modelsSectionLabel: "Schemas",
@@ -106,202 +65,139 @@ import "../../styles/fonts.css";
         telemetry: false,
         agent: { disabled: true },
       });
+    }
 
-      function updateTheme(dark) {
-        document.body.classList.toggle("dark-mode", dark);
-        document.body.classList.toggle("light-mode", !dark);
-        const button = document.querySelector("#api-theme-toggle");
-        const target = dark ? "light" : "dark";
-        button?.setAttribute("aria-label", `Switch to ${target} theme`);
-        button?.setAttribute("title", `Switch to ${target} theme`);
+    let repairQueued = false;
+    function repairAccessibility() {
+      repairQueued = false;
+      for (const main of container?.querySelectorAll("main") ?? []) {
+        const region = document.createElement("div");
+        for (const attribute of main.attributes) {
+          region.setAttribute(attribute.name, attribute.value);
+        }
+        region.setAttribute("role", "region");
+        region.setAttribute("aria-label", "API specification");
+        region.append(...main.childNodes);
+        main.replaceWith(region);
       }
-
-      updateTheme(initialDark);
-      document
-        .querySelector("#api-theme-toggle")
-        ?.addEventListener("click", () => {
-          const dark = !document.body.classList.contains("dark-mode");
-          localStorage.setItem(themeKey, dark ? "dark" : "light");
-          updateTheme(dark);
+      let previousHeadingLevel = 0;
+      for (const heading of container?.querySelectorAll(
+        "h1, h2, h3, h4, h5, h6",
+      ) ?? []) {
+        const naturalLevel = Number(heading.tagName.slice(1));
+        const level =
+          previousHeadingLevel && naturalLevel > previousHeadingLevel + 1
+            ? previousHeadingLevel + 1
+            : naturalLevel;
+        heading.setAttribute("aria-level", String(level));
+        previousHeadingLevel = level;
+      }
+      for (const button of container?.querySelectorAll("button") ?? []) {
+        if (
+          !button.getAttribute("aria-label") &&
+          (button.classList.contains("scalar-code-copy") ||
+            !button.textContent?.trim())
+        ) {
+          button.setAttribute("aria-label", "Copy code");
+        }
+      }
+      for (const link of container?.querySelectorAll("a[href]") ?? []) {
+        if (!link.getAttribute("aria-label") && !link.textContent?.trim()) {
+          const href = link.getAttribute("href");
+          let label = "Open link";
+          if (href?.startsWith("mailto:")) {
+            label = "Email API support";
+          } else if (href) {
+            try {
+              label = `Visit ${new URL(href, location.href).hostname}`;
+            } catch {}
+          }
+          link.setAttribute("aria-label", label);
+        }
+      }
+      for (const endpoint of container?.querySelectorAll(
+        "a.endpoint:not([href])",
+      ) ?? []) {
+        const group = endpoint.closest("section[id]");
+        const method = endpoint
+          .querySelector(".endpoint-method")
+          ?.textContent?.trim()
+          .toUpperCase();
+        const path = endpoint
+          .querySelector(".endpoint-path")
+          ?.textContent?.trim();
+        const target =
+          group?.id && method && path
+            ? `${group.id}/${method}${path}`
+            : undefined;
+        if (target && document.getElementById(target)) {
+          endpoint.setAttribute("href", `#${target}`);
+        }
+      }
+      const regions = new Map();
+      for (const region of container?.querySelectorAll('[role="region"]') ??
+        []) {
+        const id = region.getAttribute("aria-labelledby");
+        const label =
+          region.getAttribute("aria-label") ||
+          (id && document.getElementById(id)?.textContent?.trim());
+        if (!label) continue;
+        const group = regions.get(label) ?? [];
+        group.push(region);
+        regions.set(label, group);
+      }
+      for (const [label, group] of regions) {
+        if (group.length < 2) continue;
+        group.forEach((region, index) => {
+          region.setAttribute("aria-label", `${label} ${index + 1}`);
+          region.removeAttribute("aria-labelledby");
         });
-      preferredTheme.addEventListener("change", (event) => {
-        if (!localStorage.getItem(themeKey)) updateTheme(event.matches);
-      });
-
-      let repairQueued = false;
-      function repairAccessibility() {
-        repairQueued = false;
-        for (const button of document.querySelectorAll("button")) {
-          if (
-            !button.getAttribute("aria-label") &&
-            (button.classList.contains("scalar-code-copy") ||
-              !button.textContent?.trim())
-          ) {
-            button.setAttribute("aria-label", "Copy code");
-          }
-        }
-        for (const link of document.querySelectorAll("a[href]")) {
-          if (!link.getAttribute("aria-label") && !link.textContent?.trim()) {
-            const href = link.getAttribute("href");
-            let label = "Open link";
-            if (href?.startsWith("mailto:")) {
-              label = "Email API support";
-            } else if (href) {
-              try {
-                label = `Visit ${new URL(href, location.href).hostname}`;
-              } catch {}
-            }
-            link.setAttribute("aria-label", label);
-          }
-        }
-        const regions = new Map();
-        for (const region of document.querySelectorAll('[role="region"]')) {
-          const id = region.getAttribute("aria-labelledby");
-          const label =
-            region.getAttribute("aria-label") ||
-            (id && document.getElementById(id)?.textContent?.trim());
-          if (!label) continue;
-          const group = regions.get(label) ?? [];
-          group.push(region);
-          regions.set(label, group);
-        }
-        for (const [label, group] of regions) {
-          if (group.length < 2) continue;
-          group.forEach((region, index) => {
-            region.setAttribute("aria-label", `${label} ${index + 1}`);
-            region.removeAttribute("aria-labelledby");
-          });
-        }
-        for (const element of document.querySelectorAll("pre, table")) {
-          if (element.scrollWidth > element.clientWidth) element.tabIndex = 0;
-        }
       }
-      const observer = new MutationObserver(() => {
-        if (repairQueued) return;
-        repairQueued = true;
-        requestAnimationFrame(repairAccessibility);
-      });
-      observer.observe(document.querySelector("#app"), {
-        childList: true,
-        subtree: true,
-      });
+      for (const element of container?.querySelectorAll("pre, table") ?? []) {
+        if (element.scrollWidth > element.clientWidth) element.tabIndex = 0;
+      }
+    }
+
+    const observer = new MutationObserver(() => {
+      if (repairQueued) return;
+      repairQueued = true;
+      requestAnimationFrame(repairAccessibility);
+    });
+    if (container) {
+      observer.observe(container, { childList: true, subtree: true });
       repairAccessibility();
-    </script>
-  </body>
-</html>
+    }
+  </script>
+</StarlightPage>
 
 <style is:global>
-  :root {
-    color-scheme: light dark;
-  }
-
-  * {
-    box-sizing: border-box;
-  }
-
   body {
-    margin: 0;
-    overflow: hidden;
-    background: #101010;
-    color: #f6f6f9;
-    font-family:
-      "Suisse Intl", "Suisse Intl Fallback", ui-sans-serif, system-ui,
-      sans-serif;
+    line-height: 1.75;
   }
 
-  body.light-mode {
-    background: #ffffff;
-    color: #131216;
+  .api-intro {
+    color: var(--sl-color-gray-2);
+    max-width: 52rem;
   }
 
-  .api-header {
-    align-items: center;
-    background: #101010;
-    border-bottom: 1px solid #272727;
-    display: flex;
-    height: 3.25rem;
-    gap: 1rem;
-    padding: 0 1rem;
+  .api-reference-frame {
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.75rem;
+    margin-block: 1.75rem 0;
+    max-width: 100%;
+    overflow: clip;
   }
 
-  body.light-mode .api-header {
-    background: #ffffff;
-    border-color: #e1e1e1;
+  .api-spec-anchor {
+    display: block;
+    scroll-margin-top: calc(var(--sl-nav-height) + 1rem);
   }
 
-  .api-home {
-    align-items: center;
-    color: #ffffff;
-    display: inline-flex;
-    font-weight: 500;
-    gap: 0.625rem;
-    text-decoration: none;
+  #scalar-reference {
+    min-height: max(42rem, 100vh);
   }
 
-  body.light-mode .api-home {
-    color: #101010;
-  }
-
-  .api-home:focus-visible {
-    border-radius: 0.25rem;
-    outline: 3px solid #b07df5;
-    outline-offset: 3px;
-  }
-
-  .api-header-label {
-    color: #aaa9a9;
-    font-size: 0.875rem;
-    margin-left: auto;
-  }
-
-  body.light-mode .api-header-label {
-    color: #5f5f5f;
-  }
-
-  .api-theme-toggle {
-    align-items: center;
-    background: transparent;
-    border: 0;
-    border-radius: 0.5rem;
-    color: #aaa9a9;
-    cursor: pointer;
-    display: inline-flex;
-    font: inherit;
-    font-size: 1.15rem;
-    height: 2rem;
-    justify-content: center;
-    padding: 0;
-    width: 2rem;
-  }
-
-  body.light-mode .api-theme-toggle {
-    color: #5f5f5f;
-  }
-
-  .api-theme-toggle:hover {
-    color: #b07df5;
-  }
-
-  .api-theme-toggle:focus-visible {
-    outline: 3px solid #b07df5;
-    outline-offset: 2px;
-  }
-
-  body.dark-mode .dark-icon,
-  body.light-mode .light-icon {
-    display: none;
-  }
-
-  #app {
-    height: calc(100vh - 3.25rem);
-    overflow: auto;
-  }
-
-  .scalar-api-reference {
-    min-height: 100%;
-  }
-
-  #app > div > .scalar-api-reference {
+  #scalar-reference > div > .scalar-api-reference {
     --scalar-font:
       "Suisse Intl", "Suisse Intl Fallback", ui-sans-serif, system-ui,
       sans-serif;
@@ -314,7 +210,7 @@ import "../../styles/fonts.css";
     --scalar-radius-3xl: 20px;
   }
 
-  body.dark-mode #app > div > .scalar-api-reference {
+  :root[data-theme="dark"] #scalar-reference > div > .scalar-api-reference {
     --scalar-background-1: #101010;
     --scalar-background-2: #1d1d1d;
     --scalar-background-3: #272727;
@@ -333,7 +229,7 @@ import "../../styles/fonts.css";
     --scalar-sidebar-item-hover-background: #1d1d1d;
   }
 
-  body.light-mode #app > div > .scalar-api-reference {
+  :root[data-theme="light"] #scalar-reference > div > .scalar-api-reference {
     --scalar-background-1: #ffffff;
     --scalar-background-2: #f6f6f9;
     --scalar-background-3: #e1e1e1;
@@ -353,25 +249,26 @@ import "../../styles/fonts.css";
     --scalar-sidebar-item-hover-background: #f6f6f9;
   }
 
-  body.dark-mode .sidebar-search-placeholder {
-    color: #aaa9a9;
+  #scalar-reference .sidebar-search-placeholder {
+    color: var(--scalar-color-2);
   }
 
-  body.light-mode .sidebar-search-placeholder {
-    color: #5f5f5f;
+  #scalar-reference .scalar-mcp-layer {
+    display: none;
   }
 
-  .noscript {
-    margin: 2rem;
+  #scalar-reference a.endpoint {
+    min-height: 2rem;
+    padding-block: 0.25rem;
   }
 
-  .noscript a {
-    color: #b07df5;
+  #scalar-reference :focus-visible {
+    outline-color: var(--sl-color-accent);
   }
 
-  @media (max-width: 30rem) {
-    .api-header-label {
-      display: none;
+  @media (min-width: 72rem) {
+    html:not([data-has-sidebar]) {
+      --sl-content-width: 90rem;
     }
   }
 </style>

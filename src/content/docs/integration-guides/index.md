@@ -13,11 +13,11 @@ Every interaction with Ekubo goes through the Core singleton's [`lock` callback 
 
 ## 2. Quote Ekubo liquidity off-chain (aggregators, solvers)
 
-To route trades through Ekubo pools you need to simulate swaps off-chain. The easiest path is the [Quoter API](/reference/quoter-api/), which returns block-pinned split routes ready to execute. To compute quotes yourself, use the [SDKs](/integration-guides/sdks/) — the Rust SDK implements every pool type and extension — or see [Price representation](/reference/price-representation/) and [Pool math](/reference/pool-math/) to implement the math directly. Remember that pools with [extensions](/concepts/extensions/) can modify swap behavior; see the [Aggregators guide](/integration-guides/aggregators/) for how to handle them safely.
+To route trades through Ekubo pools you need to simulate swaps off-chain. The easiest path is the [Quoter API](/api/#quoter), which returns block-pinned split routes ready to execute. To compute quotes yourself, use the [SDKs](/integration-guides/sdks/) — the Rust SDK implements every pool type and extension — or see [Price representation](/reference/price-representation/) and [Pool math](/reference/pool-math/) to implement the math directly. Remember that pools with [extensions](/concepts/extensions/) can modify swap behavior; see the [Aggregators guide](/integration-guides/aggregators/) for how to handle them safely.
 
 ## 3. Index Ekubo data
 
-The open source [indexer](https://github.com/EkuboProtocol/indexer) ingests Ekubo events on any supported chain into Postgres — it is the same code that powers the [Ekubo API](/reference/ekubo-api/). Run your own instance for low-latency or high-volume needs.
+The open source [indexer](https://github.com/EkuboProtocol/indexer) ingests Ekubo events on any supported chain into Postgres — it is the same code that powers the [Ekubo API](/api/). Run your own instance for low-latency or high-volume needs.
 
 ## 4. Connect an AI agent
 

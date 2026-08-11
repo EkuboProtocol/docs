@@ -15,7 +15,10 @@ for (const scheme of ["light", "dark"]) {
     failures.push(`${scheme}: HTTP ${response?.status() ?? "none"}`);
   } else {
     try {
-      await page.locator("#app > *").first().waitFor({ timeout: 20_000 });
+      await page
+        .locator("#scalar-reference > *")
+        .first()
+        .waitFor({ timeout: 20_000 });
     } catch {
       failures.push(`${scheme}: Scalar did not render`);
     }
@@ -39,7 +42,10 @@ for (const scheme of ["light", "dark"]) {
     try {
       // Use real pointer actions so an overlay cannot silently intercept the UI.
       await sourceButton.click({ timeout: 5_000 });
-      const quoterOption = page.getByText("Quoter API", { exact: true });
+      const quoterOption = page.getByRole("option", {
+        name: "Quoter API",
+        exact: true,
+      });
       await quoterOption.waitFor({ timeout: 5_000 });
       await quoterOption.click({ timeout: 5_000 });
       await page
@@ -49,11 +55,13 @@ for (const scheme of ["light", "dark"]) {
       failures.push(`${scheme}: source selector is not pointer-interactive`);
     }
 
-    const app = page.locator("#app");
-    await app.hover();
+    const reference = page.locator("#scalar-reference");
+    await reference.hover();
+    const beforeScroll = await page.evaluate(() => window.scrollY);
     await page.mouse.wheel(0, 700);
     await page.waitForTimeout(100);
-    if ((await app.evaluate((element) => element.scrollTop)) === 0) {
+    const afterScroll = await page.evaluate(() => window.scrollY);
+    if (afterScroll <= beforeScroll) {
       failures.push(
         `${scheme}: API reference does not respond to wheel scrolling`,
       );
@@ -69,13 +77,25 @@ for (const scheme of ["light", "dark"]) {
     if (!styles.code.includes("Suisse Intl Mono"))
       failures.push(`${scheme}: code is not using Suisse Intl Mono`);
 
-    const expectedClass = `${scheme}-mode`;
-    if (
-      !(await page.locator("body").getAttribute("class"))?.includes(
-        expectedClass,
-      )
-    )
+    if ((await page.locator("html").getAttribute("data-theme")) !== scheme)
       failures.push(`${scheme}: API reference did not follow the system theme`);
+
+    if ((await page.locator(".scalar-api-reference").count()) !== 1)
+      failures.push(`${scheme}: expected exactly one embedded API explorer`);
+
+    try {
+      await page
+        .getByRole("link", { name: /Ekubo Docs/ })
+        .first()
+        .waitFor({ timeout: 2_000 });
+      await page
+        .getByRole("navigation", { name: "Ekubo properties" })
+        .waitFor({ timeout: 2_000 });
+    } catch {
+      failures.push(
+        `${scheme}: API reference is missing the shared docs shell`,
+      );
+    }
   }
 
   await context.close();
@@ -89,5 +109,5 @@ if (failures.length) {
 }
 
 console.log(
-  "Unified API reference rendered, scrolled, and switched specs with real pointer input in both themes.",
+  "Embedded API reference rendered in the docs shell, scrolled, and switched specs with real pointer input in both themes.",
 );
