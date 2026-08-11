@@ -20,28 +20,43 @@ for (const scheme of ["light", "dark"]) {
       failures.push(`${scheme}: Scalar did not render`);
     }
 
-    const pageText = await page.locator("body").innerText();
-    if (!pageText.includes("Test Request"))
-      failures.push(`${scheme}: request testing is not available`);
+    try {
+      await page.getByRole("button", { name: /List tokens/ }).click({
+        timeout: 5_000,
+      });
+      await page
+        .getByText("Test Request", { exact: true })
+        .first()
+        .waitFor({ timeout: 5_000 });
+    } catch {
+      failures.push(`${scheme}: endpoint testing panel is not interactive`);
+    }
 
     const sourceButton = page.getByRole("button", {
       name: "Ekubo API",
       exact: true,
     });
     try {
-      await sourceButton.evaluate((button) => {
-        if (button instanceof HTMLElement) button.click();
-      });
+      // Use real pointer actions so an overlay cannot silently intercept the UI.
+      await sourceButton.click({ timeout: 5_000 });
       const quoterOption = page.getByText("Quoter API", { exact: true });
       await quoterOption.waitFor({ timeout: 5_000 });
-      await quoterOption.evaluate((option) => {
-        if (option instanceof HTMLElement) option.click();
-      });
+      await quoterOption.click({ timeout: 5_000 });
       await page
         .getByRole("button", { name: "Quoter API", exact: true })
         .waitFor({ timeout: 5_000 });
     } catch {
-      failures.push(`${scheme}: both OpenAPI sources are not discoverable`);
+      failures.push(`${scheme}: source selector is not pointer-interactive`);
+    }
+
+    const app = page.locator("#app");
+    await app.hover();
+    await page.mouse.wheel(0, 700);
+    await page.waitForTimeout(100);
+    if ((await app.evaluate((element) => element.scrollTop)) === 0) {
+      failures.push(
+        `${scheme}: API reference does not respond to wheel scrolling`,
+      );
     }
 
     const styles = await page.evaluate(() => ({
@@ -74,5 +89,5 @@ if (failures.length) {
 }
 
 console.log(
-  "Unified API reference rendered both specs with the Ekubo fonts in light and dark themes.",
+  "Unified API reference rendered, scrolled, and switched specs with real pointer input in both themes.",
 );

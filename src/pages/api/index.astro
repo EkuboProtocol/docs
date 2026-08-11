@@ -292,12 +292,16 @@ import "../../styles/fonts.css";
     display: none;
   }
 
-  #app,
-  .scalar-app {
+  #app {
     height: calc(100vh - 3.25rem);
+    overflow: auto;
   }
 
-  .scalar-app {
+  .scalar-api-reference {
+    min-height: 100%;
+  }
+
+  #app > div > .scalar-api-reference {
     --scalar-font:
       "Suisse Intl", "Suisse Intl Fallback", ui-sans-serif, system-ui,
       sans-serif;
@@ -310,7 +314,7 @@ import "../../styles/fonts.css";
     --scalar-radius-3xl: 20px;
   }
 
-  body.dark-mode .scalar-app {
+  body.dark-mode #app > div > .scalar-api-reference {
     --scalar-background-1: #101010;
     --scalar-background-2: #1d1d1d;
     --scalar-background-3: #272727;
@@ -329,7 +333,7 @@ import "../../styles/fonts.css";
     --scalar-sidebar-item-hover-background: #1d1d1d;
   }
 
-  body.light-mode .scalar-app {
+  body.light-mode #app > div > .scalar-api-reference {
     --scalar-background-1: #ffffff;
     --scalar-background-2: #f6f6f9;
     --scalar-background-3: #e1e1e1;
@@ -347,6 +351,14 @@ import "../../styles/fonts.css";
     --scalar-sidebar-border-color: #e1e1e1;
     --scalar-sidebar-item-active-background: #f3e7fe;
     --scalar-sidebar-item-hover-background: #f6f6f9;
+  }
+
+  body.dark-mode .sidebar-search-placeholder {
+    color: #aaa9a9;
+  }
+
+  body.light-mode .sidebar-search-placeholder {
+    color: #5f5f5f;
   }
 
   .noscript {
