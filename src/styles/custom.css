@@ -35,7 +35,11 @@
 
 .site-title img {
   height: 1.7rem;
-  width: 1.7rem;
+  width: 2.55rem;
+}
+
+:root[data-theme="dark"] .site-title img {
+  filter: invert(1);
 }
 
 .content-panel img {
