@@ -40,6 +40,7 @@ export const legacyFiles = [
 ];
 
 export const movedRoutes = {
+  "products/wallet": "wallet/README.md",
   "integration-guides/till-pattern": "concepts/architecture.md",
   "concepts/till-pattern": "concepts/architecture.md",
   "integration-guides/extensions": "concepts/extensions.md",

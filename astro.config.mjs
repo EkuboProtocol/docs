@@ -166,7 +166,6 @@ export default defineConfig({
           label: "Products",
           items: [
             { label: "Overview", slug: "products" },
-            { label: "Wallet", slug: "products/wallet" },
             { label: "Trading", slug: "products/trading" },
             { label: "Providing liquidity", slug: "products/liquidity" },
             { label: "Ve33 and STONX", slug: "products/ve33" },
@@ -174,6 +173,18 @@ export default defineConfig({
             { label: "Indexer", slug: "products/indexer" },
             { label: "MCP server", slug: "products/mcp-server" },
             { label: "Governance", slug: "products/governance" },
+          ],
+        },
+        {
+          label: "Wallet",
+          items: [
+            { label: "Overview", slug: "wallet" },
+            { label: "Install", slug: "wallet/install" },
+            { label: "AI agents", slug: "wallet/agents" },
+            { label: "Review requests", slug: "wallet/approvals" },
+            { label: "Signing policies", slug: "wallet/policies" },
+            { label: "WalletConnect", slug: "wallet/walletconnect" },
+            { label: "Security and privacy", slug: "wallet/security" },
           ],
         },
         {

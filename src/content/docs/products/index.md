@@ -5,7 +5,7 @@ title: "Products"
 
 Ekubo is more than an AMM contract. It is a set of products built around one shared liquidity layer — for traders, liquidity providers, ecosystems bootstrapping their own markets, and developers who need the underlying data.
 
-## [Wallet](/products/wallet/)
+## [Wallet](/wallet/)
 
 A native desktop EVM wallet for people, local AI agents, and WalletConnect dapps. Agents can discover accounts and networks, inspect balances, simulate exact actions, and propose transactions while private keys, security settings, and owner approvals remain inside the wallet.
 
