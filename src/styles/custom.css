@@ -52,6 +52,14 @@ code {
   font-weight: 400;
 }
 
+.social-icons a {
+  color: var(--sl-color-gray-2);
+}
+
+.social-icons a:hover {
+  color: var(--sl-color-white);
+}
+
 :root[data-theme="dark"] a[aria-current="page"] {
   background-color: #261b34;
   color: #b07df5;
