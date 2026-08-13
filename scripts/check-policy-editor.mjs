@@ -48,6 +48,43 @@ if (!response || response.status() >= 400) {
     }
   }
 
+  const buttonGeometry = await page
+    .locator(".policy-editor-actions button")
+    .evaluateAll((buttons) =>
+      buttons.map((button) => {
+        const box = button.getBoundingClientRect();
+        return {
+          top: box.top,
+          height: box.height,
+          marginTop: getComputedStyle(button).marginTop,
+        };
+      }),
+    );
+  if (
+    buttonGeometry.length !== 2 ||
+    buttonGeometry.some(({ marginTop }) => marginTop !== "0px") ||
+    Math.abs(buttonGeometry[0].top - buttonGeometry[1].top) > 1 ||
+    Math.abs(buttonGeometry[0].height - buttonGeometry[1].height) > 1
+  ) {
+    failures.push("Format and Reset controls are not aligned consistently");
+  }
+
+  const versionLine = page
+    .locator("#policy-json-editor .cm-line")
+    .filter({ hasText: '"version"' })
+    .first();
+  await versionLine.click({ position: { x: 90, y: 8 } });
+  const lineBox = await versionLine.boundingBox();
+  const cursorBox = await page.locator(".cm-cursor-primary").boundingBox();
+  if (
+    !lineBox ||
+    !cursorBox ||
+    cursorBox.y + cursorBox.height < lineBox.y ||
+    cursorBox.y > lineBox.y + lineBox.height
+  ) {
+    failures.push("editor caret is not positioned on the clicked line");
+  }
+
   const firstLine = page.locator("#policy-json-editor .cm-line").first();
   await firstLine.click({ position: { x: 8, y: 8 } });
   await page.keyboard.press("End");
@@ -71,16 +108,42 @@ if (!response || response.status() >= 400) {
       ?.textContent?.startsWith("Valid JSON"),
   );
 
-  await firstLine.click({ position: { x: 8, y: 8 } });
-  await page.keyboard.press("End");
-  await page.keyboard.press("Enter");
-  await page.keyboard.type('"');
+  const content = page.locator("#policy-json-editor .cm-content");
+  const selectAll = process.platform === "darwin" ? "Meta+A" : "Control+A";
+  const compactPolicy = '{"version":1,"rules":[]}';
+  await content.click();
+  await page.keyboard.press(selectAll);
+  await page.keyboard.insertText(compactPolicy);
+  await page.locator("#format-policy").click();
+  await page.waitForFunction(() =>
+    document
+      .querySelector("#policy-editor-status")
+      ?.textContent?.startsWith("Valid JSON"),
+  );
+  if ((await page.locator("#policy-json-editor .cm-line").count()) < 4) {
+    failures.push("Format did not expand compact JSON");
+  }
+
+  await content.click();
+  await page.keyboard.press(selectAll);
+  await page.keyboard.insertText('{"version":1,"rules":[{"effect":""}]}');
+  for (let index = 0; index < 4; index += 1) {
+    await page.keyboard.press("ArrowLeft");
+  }
   await page.keyboard.press("Control+Space");
   const completion = page.locator(".cm-tooltip-autocomplete");
   await completion.waitFor();
-  if (!(await completion.textContent())?.includes("$schema")) {
-    failures.push("schema-driven property completion did not offer $schema");
+  const completionText = await completion.textContent();
+  if (!completionText?.includes("allow") || !completionText.includes("deny")) {
+    failures.push("effect completion did not offer allow and deny");
   }
+
+  await page.locator("#reset-policy").click();
+  await page.waitForFunction(() =>
+    document
+      .querySelector("#policy-editor-status")
+      ?.textContent?.startsWith("Valid JSON"),
+  );
 }
 
 await browser.close();
@@ -91,5 +154,5 @@ if (failures.length) {
 }
 
 console.log(
-  "Policy editor loaded a valid starter document, published the canonical schema, reported schema errors inline, and offered schema-driven completion.",
+  "Policy editor published the canonical schema; kept controls and caret aligned; formatted and reset JSON; reported inline errors; and completed effect with allow and deny.",
 );

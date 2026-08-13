@@ -4,7 +4,10 @@ import schemaJson from "../data/ekubo-wallet-policy.schema.json?raw";
 const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
 ---
 
-<section class="policy-workbench" aria-labelledby="policy-workbench-title">
+<section
+  class="policy-workbench not-content"
+  aria-labelledby="policy-workbench-title"
+>
   <div class="policy-workbench-header">
     <div>
       <h3 id="policy-workbench-title">Policy JSON editor</h3>
@@ -108,6 +111,55 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
       : "Value does not match the policy schema.";
   }
 
+  function schemaPointer(root: unknown, pointer: string): unknown {
+    if (!pointer.startsWith("#/")) return undefined;
+    return pointer
+      .slice(2)
+      .split("/")
+      .map((part) => part.replaceAll("~1", "/").replaceAll("~0", "~"))
+      .reduce<unknown>((value, part) => {
+        if (!value || typeof value !== "object") return undefined;
+        return (value as Record<string, unknown>)[part];
+      }, root);
+  }
+
+  // The completion extension does not follow `$ref` while collecting value
+  // proposals. Expand local references for completion only. Cyclic Predicate
+  // branches retain their back-reference; AJV still validates against the
+  // original, canonical schema below.
+  function completionSchema(
+    value: unknown,
+    root: unknown,
+    resolving = new Set<string>(),
+  ): unknown {
+    if (Array.isArray(value)) {
+      return value.map((item) => completionSchema(item, root, resolving));
+    }
+    if (!value || typeof value !== "object") return value;
+
+    const object = value as Record<string, unknown>;
+    const reference = typeof object.$ref === "string" ? object.$ref : undefined;
+    if (reference && !resolving.has(reference)) {
+      const target = schemaPointer(root, reference);
+      if (target && typeof target === "object") {
+        const nextResolving = new Set(resolving).add(reference);
+        const { $ref: _, ...siblings } = object;
+        return completionSchema(
+          { ...(target as Record<string, unknown>), ...siblings },
+          root,
+          nextResolving,
+        );
+      }
+    }
+
+    return Object.fromEntries(
+      Object.entries(object).map(([key, item]) => [
+        key,
+        completionSchema(item, root, new Set(resolving)),
+      ]),
+    );
+  }
+
   if (editorHost && status && formatButton && resetButton) {
     const ajv = new Ajv2020({
       allErrors: true,
@@ -115,6 +167,7 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
       validateFormats: false,
     });
     const validatePolicy = ajv.compile(policySchema);
+    const policyCompletionSchema = completionSchema(policySchema, policySchema);
 
     const policySchemaLinter = (view: EditorViewType): Diagnostic[] => {
       const text = view.state.doc.toString();
@@ -228,7 +281,7 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
         linter(jsonParseLinter(), { delay: 150 }),
         linter(policySchemaLinter, { delay: 150 }),
         lintGutter(),
-        stateExtensions(policySchema),
+        stateExtensions(policyCompletionSchema as typeof policySchema),
         editorTheme,
         EditorView.lineWrapping,
         EditorView.contentAttributes.of({
