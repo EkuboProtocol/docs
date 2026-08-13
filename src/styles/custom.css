@@ -52,6 +52,33 @@ code {
   font-weight: 400;
 }
 
+@supports (interpolate-size: allow-keywords) {
+  .sidebar-content {
+    interpolate-size: allow-keywords;
+  }
+
+  .sidebar-content details::details-content {
+    height: 0;
+    opacity: 0;
+    overflow: clip;
+    transition:
+      height 150ms ease,
+      opacity 150ms ease,
+      content-visibility 150ms allow-discrete;
+  }
+
+  .sidebar-content details[open]::details-content {
+    height: auto;
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sidebar-content details::details-content {
+      transition: none;
+    }
+  }
+}
+
 .social-icons a {
   color: var(--sl-color-gray-2);
 }
