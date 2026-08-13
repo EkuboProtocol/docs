@@ -16,24 +16,25 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
         schema. Errors are underlined and listed in the diagnostics panel.
       </p>
     </div>
-    <div class="policy-editor-actions">
-      <button id="format-policy" type="button">Format</button>
-      <button id="reset-policy" type="button">Reset to empty</button>
-    </div>
   </div>
 
   <div class="policy-example-picker">
     <div class="policy-example-field">
       <label for="policy-example">Example policy</label>
-      <select id="policy-example" aria-describedby="policy-example-description">
-        <option value="review">Review every transaction</option>
-        <option value="deny-all">Deny every transaction</option>
-        <option value="deny-native-value">Deny calls with native value</option>
-        <option value="constrained-call">Constrain a contract call</option>
-        <option value="single-purpose">Single-purpose wallet</option>
-      </select>
+      <div class="policy-example-select">
+        <select
+          id="policy-example"
+          aria-describedby="policy-example-description"
+        >
+          <option value="review">Review every transaction (Default)</option>
+          <option value="deny-all">Deny every transaction</option>
+          <option value="deny-native-value">Deny calls with native value</option
+          >
+          <option value="constrained-call">Constrain a contract call</option>
+          <option value="single-purpose">Single-purpose wallet</option>
+        </select>
+      </div>
     </div>
-    <button id="load-policy-example" type="button">Load example</button>
     <p id="policy-example-description">
       An empty policy leaves every transaction for owner review.
     </p>
@@ -200,15 +201,8 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
 
   const editorHost = document.querySelector<HTMLElement>("#policy-json-editor");
   const status = document.querySelector<HTMLElement>("#policy-editor-status");
-  const formatButton =
-    document.querySelector<HTMLButtonElement>("#format-policy");
-  const resetButton =
-    document.querySelector<HTMLButtonElement>("#reset-policy");
   const exampleSelect =
     document.querySelector<HTMLSelectElement>("#policy-example");
-  const loadExampleButton = document.querySelector<HTMLButtonElement>(
-    "#load-policy-example",
-  );
   const exampleDescription = document.querySelector<HTMLElement>(
     "#policy-example-description",
   );
@@ -281,15 +275,7 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
     );
   }
 
-  if (
-    editorHost &&
-    status &&
-    formatButton &&
-    resetButton &&
-    exampleSelect &&
-    loadExampleButton &&
-    exampleDescription
-  ) {
+  if (editorHost && status && exampleSelect && exampleDescription) {
     const ajv = new Ajv2020({
       allErrors: true,
       strict: true,
@@ -447,36 +433,39 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
     forceLinting(view);
     window.setTimeout(updateStatus, 0);
 
-    const replaceDocument = (document: string) => {
+    const replaceDocument = (document: string, focusEditor = true) => {
       view.dispatch({
         changes: { from: 0, to: view.state.doc.length, insert: document },
       });
-      view.focus();
+      if (focusEditor) view.focus();
       forceLinting(view);
     };
 
-    resetButton.addEventListener("click", () => replaceDocument(starterPolicy));
-    exampleSelect.addEventListener("change", () => {
-      const example = examplePolicies[exampleSelect.value as ExamplePolicyKey];
-      if (example) exampleDescription.textContent = example.description;
-    });
-    loadExampleButton.addEventListener("click", () => {
-      const example = examplePolicies[exampleSelect.value as ExamplePolicyKey];
-      if (!example) return;
-      replaceDocument(
-        withMinimumEditorLines(`${JSON.stringify(example.policy, null, 2)}\n`),
-      );
-    });
-    formatButton.addEventListener("click", () => {
+    const formatDocument = () => {
       try {
         const formatted = withMinimumEditorLines(
           `${JSON.stringify(JSON.parse(view.state.doc.toString()), null, 2)}\n`,
         );
-        replaceDocument(formatted);
+        if (formatted !== view.state.doc.toString()) {
+          replaceDocument(formatted, false);
+        }
       } catch {
-        status.dataset.state = "invalid";
-        status.textContent = "Fix the JSON syntax before formatting.";
-        view.focus();
+        // Keep invalid JSON untouched so the inline diagnostics can guide the edit.
+      }
+    };
+
+    exampleSelect.addEventListener("change", () => {
+      const example = examplePolicies[exampleSelect.value as ExamplePolicyKey];
+      if (!example) return;
+      exampleDescription.textContent = example.description;
+      replaceDocument(
+        withMinimumEditorLines(`${JSON.stringify(example.policy, null, 2)}\n`),
+      );
+    });
+    view.dom.addEventListener("focusout", (event) => {
+      const nextTarget = event.relatedTarget;
+      if (!(nextTarget instanceof Node) || !view.dom.contains(nextTarget)) {
+        formatDocument();
       }
     });
   }
@@ -511,39 +500,9 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
     font-size: var(--sl-text-sm);
   }
 
-  .policy-editor-actions {
-    display: flex;
-    flex: none;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .policy-editor-actions button {
-    padding: 0.4rem 0.75rem;
-    border: 1px solid var(--sl-color-gray-4);
-    border-radius: 0.35rem;
-    background: var(--sl-color-black);
-    color: var(--sl-color-white);
-    font: inherit;
-    font-weight: 600;
-    cursor: pointer;
-  }
-
-  .policy-editor-actions button:hover {
-    border-color: var(--sl-color-accent);
-    color: var(--sl-color-text-accent);
-  }
-
-  .policy-editor-actions button:focus-visible {
-    outline: 2px solid var(--sl-color-accent);
-    outline-offset: 2px;
-  }
-
   .policy-example-picker {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 0.5rem 0.75rem;
-    align-items: end;
+    gap: 0.5rem;
     padding: 0.85rem 1rem;
     border-bottom: 1px solid var(--sl-color-gray-5);
     background: var(--sl-color-black);
@@ -560,9 +519,28 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
     font-weight: 600;
   }
 
-  .policy-example-field select,
-  #load-policy-example {
+  .policy-example-select {
+    position: relative;
+  }
+
+  .policy-example-select::after {
+    position: absolute;
+    top: 50%;
+    right: 0.85rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-right: 2px solid var(--sl-color-gray-2);
+    border-bottom: 2px solid var(--sl-color-gray-2);
+    content: "";
+    pointer-events: none;
+    transform: translateY(-70%) rotate(45deg);
+  }
+
+  .policy-example-field select {
+    width: 100%;
     min-height: 2.5rem;
+    appearance: none;
+    padding: 0.4rem 2.75rem 0.4rem 0.65rem;
     border: 1px solid var(--sl-color-gray-4);
     border-radius: 0.35rem;
     background: var(--sl-color-gray-7);
@@ -570,24 +548,7 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
     font: inherit;
   }
 
-  .policy-example-field select {
-    width: 100%;
-    padding: 0.4rem 2rem 0.4rem 0.65rem;
-  }
-
-  #load-policy-example {
-    padding: 0.4rem 0.75rem;
-    font-weight: 600;
-    cursor: pointer;
-  }
-
-  #load-policy-example:hover {
-    border-color: var(--sl-color-accent);
-    color: var(--sl-color-text-accent);
-  }
-
-  .policy-example-field select:focus-visible,
-  #load-policy-example:focus-visible {
+  .policy-example-field select:focus-visible {
     outline: 2px solid var(--sl-color-accent);
     outline-offset: 2px;
   }
@@ -667,10 +628,6 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
   @media (max-width: 35rem) {
     .policy-workbench-header {
       flex-direction: column;
-    }
-
-    .policy-example-picker {
-      grid-template-columns: minmax(0, 1fr);
     }
   }
 </style>

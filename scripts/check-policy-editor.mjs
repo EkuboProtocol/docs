@@ -23,6 +23,48 @@ if (!response || response.status() >= 400) {
     failures.push(`starter policy is not valid: ${await status.textContent()}`);
   }
   const content = page.locator("#policy-json-editor .cm-content");
+  const exampleSelect = page.locator("#policy-example");
+  const restoreDefault = async () => {
+    if ((await exampleSelect.inputValue()) === "review") {
+      await exampleSelect.selectOption("deny-all");
+    }
+    await exampleSelect.selectOption("review");
+    await page.waitForFunction(() =>
+      document
+        .querySelector("#policy-editor-status")
+        ?.textContent?.startsWith("Valid JSON"),
+    );
+  };
+
+  if (
+    (await page.locator("#policy-example option").first().textContent()) !==
+    "Review every transaction (Default)"
+  ) {
+    failures.push("review example is not labeled as the default");
+  }
+  if (
+    (await page
+      .locator("#reset-policy, #format-policy, #load-policy-example")
+      .count()) !== 0
+  ) {
+    failures.push("obsolete editor action buttons are still rendered");
+  }
+  const selectStyle = await exampleSelect.evaluate((select) => {
+    const style = getComputedStyle(select);
+    const arrow = getComputedStyle(select.parentElement, "::after");
+    return {
+      appearance: style.appearance,
+      paddingRight: Number.parseFloat(style.paddingRight),
+      arrowRight: Number.parseFloat(arrow.right),
+    };
+  });
+  if (
+    selectStyle.appearance !== "none" ||
+    selectStyle.paddingRight < 32 ||
+    selectStyle.arrowRight < 8
+  ) {
+    failures.push("example select arrow does not have enough right padding");
+  }
 
   const editorGeometry = await editor.evaluate((host) => {
     const codeMirror = host.querySelector(".cm-editor");
@@ -97,13 +139,12 @@ if (!response || response.status() >= 400) {
     ["single-purpose", 2],
   ];
   for (const [value, expectedRuleCount] of examples) {
-    await page.locator("#policy-example").selectOption(value);
+    await exampleSelect.selectOption(value);
     if (
       !(await page.locator("#policy-example-description").textContent())?.trim()
     ) {
       failures.push(`${value} example has no description`);
     }
-    await page.locator("#load-policy-example").click();
     await page.waitForFunction(() =>
       document
         .querySelector("#policy-editor-status")
@@ -135,34 +176,13 @@ if (!response || response.status() >= 400) {
   ) {
     failures.push("single-purpose example does not end with deny all");
   }
-  await page.locator("#reset-policy").click();
+  await restoreDefault();
   await page.evaluate(
     () =>
       new Promise((resolve) =>
         requestAnimationFrame(() => requestAnimationFrame(resolve)),
       ),
   );
-
-  const buttonGeometry = await page
-    .locator(".policy-editor-actions button")
-    .evaluateAll((buttons) =>
-      buttons.map((button) => {
-        const box = button.getBoundingClientRect();
-        return {
-          top: box.top,
-          height: box.height,
-          marginTop: getComputedStyle(button).marginTop,
-        };
-      }),
-    );
-  if (
-    buttonGeometry.length !== 2 ||
-    buttonGeometry.some(({ marginTop }) => marginTop !== "0px") ||
-    Math.abs(buttonGeometry[0].top - buttonGeometry[1].top) > 1 ||
-    Math.abs(buttonGeometry[0].height - buttonGeometry[1].height) > 1
-  ) {
-    failures.push("Format and Reset controls are not aligned consistently");
-  }
 
   const versionLine = page
     .locator("#policy-json-editor .cm-line")
@@ -195,13 +215,12 @@ if (!response || response.status() >= 400) {
       "schema-invalid property did not receive an inline diagnostic",
     );
   }
+  await exampleSelect.focus();
+  if (!(await content.innerText()).includes('"unexpected"')) {
+    failures.push("automatic formatting changed invalid JSON");
+  }
 
-  await page.locator("#reset-policy").click();
-  await page.waitForFunction(() =>
-    document
-      .querySelector("#policy-editor-status")
-      ?.textContent?.startsWith("Valid JSON"),
-  );
+  await restoreDefault();
 
   const selectAll = process.platform === "darwin" ? "Meta+A" : "Control+A";
   const compactPolicy = '{"version":1,"rules":[]}';
@@ -211,14 +230,15 @@ if (!response || response.status() >= 400) {
   if ((await page.locator("#policy-json-editor .cm-line").count()) < 14) {
     failures.push("editing allowed the document below its minimum line count");
   }
-  await page.locator("#format-policy").click();
+  await exampleSelect.focus();
   await page.waitForFunction(() =>
     document
       .querySelector("#policy-editor-status")
       ?.textContent?.startsWith("Valid JSON"),
   );
-  if ((await page.locator("#policy-json-editor .cm-line").count()) < 4) {
-    failures.push("Format did not expand compact JSON");
+  const formattedText = await content.innerText();
+  if (formattedText.split("\n").filter((line) => line.trim()).length < 4) {
+    failures.push("valid compact JSON was not formatted automatically");
   }
 
   await content.click();
@@ -235,12 +255,7 @@ if (!response || response.status() >= 400) {
     failures.push("effect completion did not offer allow and deny");
   }
 
-  await page.locator("#reset-policy").click();
-  await page.waitForFunction(() =>
-    document
-      .querySelector("#policy-editor-status")
-      ?.textContent?.startsWith("Valid JSON"),
-  );
+  await restoreDefault();
 }
 
 await browser.close();
@@ -251,5 +266,5 @@ if (failures.length) {
 }
 
 console.log(
-  "Policy editor published the canonical schema; loaded five valid formatted examples including a single-purpose deny-all policy; filled its minimum height with numbered lines; kept controls and caret aligned; formatted and reset JSON; reported inline errors; and completed effect with allow and deny.",
+  "Policy editor published the canonical schema; loaded five examples immediately on selection; marked and restored the default; inset the select arrow; automatically formatted valid JSON; preserved invalid edits; filled its minimum height with numbered lines; kept the caret aligned; reported inline errors; and completed effect with allow and deny.",
 );
