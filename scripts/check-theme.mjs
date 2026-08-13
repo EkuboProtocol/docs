@@ -55,7 +55,7 @@ for (const scheme of ["light", "dark"]) {
   await context.close();
 }
 
-// Simulate a cold connection and verify that fallback glyphs are never
+// Simulate a cold connection and verify that readable fallback glyphs are
 // painted while the preloaded brand face is still downloading.
 const coldContext = await browser.newContext({ colorScheme: "light" });
 const coldPage = await coldContext.newPage();
@@ -111,8 +111,8 @@ if (
       }
       return painted;
     };
-    if ((await paintedPixels(before)) !== 0)
-      failures.push("cold load: fallback heading glyphs were painted");
+    if ((await paintedPixels(before)) === 0)
+      failures.push("cold load: fallback heading glyphs were not painted");
     if ((await paintedPixels(after)) === 0)
       failures.push("cold load: brand heading glyphs did not render");
   }
@@ -128,5 +128,5 @@ if (failures.length) {
 }
 
 console.log(
-  "System-default theme, toggle persistence, cold-load font rendering, Ekubo fonts, and footer links passed.",
+  "System-default theme, toggle persistence, visible cold-load fallback, Ekubo fonts, and footer links passed.",
 );
