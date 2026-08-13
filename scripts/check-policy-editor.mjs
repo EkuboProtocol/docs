@@ -22,6 +22,45 @@ if (!response || response.status() >= 400) {
     failures.push(`starter policy is not valid: ${await status.textContent()}`);
   }
 
+  const editorGeometry = await editor.evaluate((host) => {
+    const codeMirror = host.querySelector(".cm-editor");
+    const scroller = host.querySelector(".cm-scroller");
+    const gutters = host.querySelector(".cm-gutters");
+    const codeLines = host.querySelectorAll(".cm-line");
+    const lineNumbers = host.querySelectorAll(
+      ".cm-lineNumbers .cm-gutterElement",
+    );
+    const firstCodeLine = codeLines.item(0).getBoundingClientRect();
+    const lastCodeLine = codeLines
+      .item(codeLines.length - 1)
+      .getBoundingClientRect();
+    const firstLineNumber = lineNumbers.item(1).getBoundingClientRect();
+    const lastLineNumber = lineNumbers
+      .item(lineNumbers.length - 1)
+      .getBoundingClientRect();
+    return {
+      editorHeight: codeMirror?.getBoundingClientRect().height ?? 0,
+      scrollerHeight: scroller?.getBoundingClientRect().height ?? 0,
+      gutterHeight: gutters?.getBoundingClientRect().height ?? 0,
+      lineCount: codeLines.length,
+      lastLineNumberText: lineNumbers.item(lineNumbers.length - 1).textContent,
+      firstLineOffset: Math.abs(firstCodeLine.top - firstLineNumber.top),
+      lastLineOffset: Math.abs(lastCodeLine.bottom - lastLineNumber.bottom),
+    };
+  });
+  if (
+    editorGeometry.lineCount < 14 ||
+    Number(editorGeometry.lastLineNumberText) < 14 ||
+    editorGeometry.scrollerHeight + 1 < editorGeometry.editorHeight ||
+    editorGeometry.gutterHeight + 1 < editorGeometry.editorHeight ||
+    editorGeometry.firstLineOffset > 1 ||
+    editorGeometry.lastLineOffset > 1
+  ) {
+    failures.push(
+      "editor does not fill its minimum height with numbered document lines",
+    );
+  }
+
   const schemaResponse = await page.request.get(
     `${base}/schemas/ekubo-wallet-policy.schema.json`,
   );
@@ -33,8 +72,8 @@ if (!response || response.status() >= 400) {
     failures.push(`policy schema: HTTP ${schemaResponse.status()}`);
   } else {
     if (
-      !["application/json", "application/schema+json"].includes(
-        schemaResponse.headers()["content-type"],
+      !["application/json", "application/schema+json"].some((type) =>
+        schemaResponse.headers()["content-type"]?.startsWith(type),
       )
     ) {
       failures.push(
@@ -114,6 +153,9 @@ if (!response || response.status() >= 400) {
   await content.click();
   await page.keyboard.press(selectAll);
   await page.keyboard.insertText(compactPolicy);
+  if ((await page.locator("#policy-json-editor .cm-line").count()) < 14) {
+    failures.push("editing allowed the document below its minimum line count");
+  }
   await page.locator("#format-policy").click();
   await page.waitForFunction(() =>
     document
@@ -154,5 +196,5 @@ if (failures.length) {
 }
 
 console.log(
-  "Policy editor published the canonical schema; kept controls and caret aligned; formatted and reset JSON; reported inline errors; and completed effect with allow and deny.",
+  "Policy editor published the canonical schema; filled its minimum height with numbered lines; kept controls and caret aligned; formatted and reset JSON; reported inline errors; and completed effect with allow and deny.",
 );

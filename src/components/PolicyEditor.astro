@@ -79,11 +79,18 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
 
   const schemaUrl =
     "https://docs.ekubo.org/schemas/ekubo-wallet-policy.schema.json";
-  const starterPolicy = `${JSON.stringify(
-    { $schema: schemaUrl, version: 1, rules: [] },
-    null,
-    2,
-  )}\n`;
+  const minimumEditorLines = 14;
+
+  function withMinimumEditorLines(document: string) {
+    const missingLines = minimumEditorLines - document.split("\n").length;
+    return missingLines > 0
+      ? `${document}${"\n".repeat(missingLines)}`
+      : document;
+  }
+
+  const starterPolicy = withMinimumEditorLines(
+    `${JSON.stringify({ $schema: schemaUrl, version: 1, rules: [] }, null, 2)}\n`,
+  );
 
   const editorHost = document.querySelector<HTMLElement>("#policy-json-editor");
   const status = document.querySelector<HTMLElement>("#policy-editor-status");
@@ -275,6 +282,21 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
       doc: starterPolicy,
       extensions: [
         basicSetup,
+        EditorState.transactionFilter.of((transaction) => {
+          const missingLines = minimumEditorLines - transaction.newDoc.lines;
+          if (missingLines <= 0) return transaction;
+
+          return [
+            transaction,
+            {
+              sequential: true,
+              changes: {
+                from: transaction.newDoc.length,
+                insert: "\n".repeat(missingLines),
+              },
+            },
+          ];
+        }),
         json(),
         syntaxHighlighting(editorHighlighting),
         jsonLanguage.data.of({ autocomplete: jsonCompletion() }),
@@ -283,7 +305,6 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
         lintGutter(),
         stateExtensions(policyCompletionSchema as typeof policySchema),
         editorTheme,
-        EditorView.lineWrapping,
         EditorView.contentAttributes.of({
           "aria-label": "Policy JSON",
           "aria-describedby": "policy-editor-help policy-editor-status",
@@ -295,6 +316,9 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
     });
 
     view = new EditorView({ state, parent: editorHost });
+    view.scrollDOM.tabIndex = 0;
+    view.scrollDOM.setAttribute("role", "region");
+    view.scrollDOM.setAttribute("aria-label", "Policy JSON editor scroll area");
     editorHost.ariaBusy = "false";
     editorHost.dataset.ready = "true";
     forceLinting(view);
@@ -311,11 +335,9 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
     resetButton.addEventListener("click", () => replaceDocument(starterPolicy));
     formatButton.addEventListener("click", () => {
       try {
-        const formatted = `${JSON.stringify(
-          JSON.parse(view.state.doc.toString()),
-          null,
-          2,
-        )}\n`;
+        const formatted = withMinimumEditorLines(
+          `${JSON.stringify(JSON.parse(view.state.doc.toString()), null, 2)}\n`,
+        );
         replaceDocument(formatted);
       } catch {
         status.dataset.state = "invalid";
@@ -388,10 +410,21 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
     max-height: 34rem;
     font-family: var(--sl-font-mono);
     font-size: var(--sl-text-sm);
+    line-height: 1.4;
   }
 
   #policy-json-editor .cm-scroller {
     overflow: auto;
+  }
+
+  #policy-json-editor .cm-gutters {
+    align-self: stretch;
+    padding-block: 4px;
+  }
+
+  #policy-json-editor .cm-lineNumbers > .cm-gutterElement:not(:first-child) {
+    height: 1.4em !important;
+    line-height: 1.4;
   }
 
   #policy-json-editor .cm-editor.cm-focused {
