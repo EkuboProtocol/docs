@@ -18,8 +18,24 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
     </div>
     <div class="policy-editor-actions">
       <button id="format-policy" type="button">Format</button>
-      <button id="reset-policy" type="button">Reset</button>
+      <button id="reset-policy" type="button">Reset to empty</button>
     </div>
+  </div>
+
+  <div class="policy-example-picker">
+    <div class="policy-example-field">
+      <label for="policy-example">Example policy</label>
+      <select id="policy-example" aria-describedby="policy-example-description">
+        <option value="review">Review every transaction</option>
+        <option value="deny-all">Deny every transaction</option>
+        <option value="deny-native-value">Deny calls with native value</option>
+        <option value="constrained-call">Constrain a contract call</option>
+      </select>
+    </div>
+    <button id="load-policy-example" type="button">Load example</button>
+    <p id="policy-example-description">
+      An empty policy leaves every transaction for owner review.
+    </p>
   </div>
 
   <div id="policy-json-editor" aria-busy="true"></div>
@@ -80,6 +96,64 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
   const schemaUrl =
     "https://docs.ekubo.org/schemas/ekubo-wallet-policy.schema.json";
   const minimumEditorLines = 14;
+  const examplePolicies = {
+    review: {
+      description: "An empty policy leaves every transaction for owner review.",
+      policy: { $schema: schemaUrl, version: 1, rules: [] },
+    },
+    "deny-all": {
+      description:
+        "A matcherless deny rule rejects every transaction requested by an agent.",
+      policy: {
+        $schema: schemaUrl,
+        version: 1,
+        rules: [{ effect: "deny", label: "Deny every transaction" }],
+      },
+    },
+    "deny-native-value": {
+      description:
+        "Reject calls carrying native value; calls with no native value still require owner review.",
+      policy: {
+        $schema: schemaUrl,
+        version: 1,
+        rules: [
+          {
+            effect: "deny",
+            label: "Deny calls with native value",
+            native_value: { gt: "0" },
+          },
+        ],
+      },
+    },
+    "constrained-call": {
+      description:
+        "Allow one method with constrained arguments. Replace both example addresses before proposing this policy.",
+      policy: {
+        $schema: schemaUrl,
+        version: 1,
+        rules: [
+          {
+            effect: "allow",
+            label: "Example constrained approval",
+            to: { eq: "0x1111111111111111111111111111111111111111" },
+            native_value: { eq: "0" },
+            calldata: {
+              selector: {
+                abi: "approve(address spender, uint256 amount)",
+                args: {
+                  spender: {
+                    eq: "0x2222222222222222222222222222222222222222",
+                  },
+                  amount: { lte: "100" },
+                },
+              },
+            },
+          },
+        ],
+      },
+    },
+  } as const;
+  type ExamplePolicyKey = keyof typeof examplePolicies;
 
   function withMinimumEditorLines(document: string) {
     const missingLines = minimumEditorLines - document.split("\n").length;
@@ -98,6 +172,14 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
     document.querySelector<HTMLButtonElement>("#format-policy");
   const resetButton =
     document.querySelector<HTMLButtonElement>("#reset-policy");
+  const exampleSelect =
+    document.querySelector<HTMLSelectElement>("#policy-example");
+  const loadExampleButton = document.querySelector<HTMLButtonElement>(
+    "#load-policy-example",
+  );
+  const exampleDescription = document.querySelector<HTMLElement>(
+    "#policy-example-description",
+  );
 
   function escapePointerSegment(value: string) {
     return value.replaceAll("~", "~0").replaceAll("/", "~1");
@@ -167,7 +249,15 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
     );
   }
 
-  if (editorHost && status && formatButton && resetButton) {
+  if (
+    editorHost &&
+    status &&
+    formatButton &&
+    resetButton &&
+    exampleSelect &&
+    loadExampleButton &&
+    exampleDescription
+  ) {
     const ajv = new Ajv2020({
       allErrors: true,
       strict: true,
@@ -319,6 +409,7 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
     view.scrollDOM.tabIndex = 0;
     view.scrollDOM.setAttribute("role", "region");
     view.scrollDOM.setAttribute("aria-label", "Policy JSON editor scroll area");
+    void document.fonts.ready.then(() => view.requestMeasure());
     editorHost.ariaBusy = "false";
     editorHost.dataset.ready = "true";
     forceLinting(view);
@@ -333,6 +424,17 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
     };
 
     resetButton.addEventListener("click", () => replaceDocument(starterPolicy));
+    exampleSelect.addEventListener("change", () => {
+      const example = examplePolicies[exampleSelect.value as ExamplePolicyKey];
+      if (example) exampleDescription.textContent = example.description;
+    });
+    loadExampleButton.addEventListener("click", () => {
+      const example = examplePolicies[exampleSelect.value as ExamplePolicyKey];
+      if (!example) return;
+      replaceDocument(
+        withMinimumEditorLines(`${JSON.stringify(example.policy, null, 2)}\n`),
+      );
+    });
     formatButton.addEventListener("click", () => {
       try {
         const formatted = withMinimumEditorLines(
@@ -405,6 +507,66 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
     outline-offset: 2px;
   }
 
+  .policy-example-picker {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.5rem 0.75rem;
+    align-items: end;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--sl-color-gray-5);
+    background: var(--sl-color-black);
+  }
+
+  .policy-example-field {
+    display: grid;
+    gap: 0.3rem;
+  }
+
+  .policy-example-field label {
+    color: var(--sl-color-white);
+    font-size: var(--sl-text-sm);
+    font-weight: 600;
+  }
+
+  .policy-example-field select,
+  #load-policy-example {
+    min-height: 2.5rem;
+    border: 1px solid var(--sl-color-gray-4);
+    border-radius: 0.35rem;
+    background: var(--sl-color-gray-7);
+    color: var(--sl-color-white);
+    font: inherit;
+  }
+
+  .policy-example-field select {
+    width: 100%;
+    padding: 0.4rem 2rem 0.4rem 0.65rem;
+  }
+
+  #load-policy-example {
+    padding: 0.4rem 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  #load-policy-example:hover {
+    border-color: var(--sl-color-accent);
+    color: var(--sl-color-text-accent);
+  }
+
+  .policy-example-field select:focus-visible,
+  #load-policy-example:focus-visible {
+    outline: 2px solid var(--sl-color-accent);
+    outline-offset: 2px;
+  }
+
+  #policy-example-description {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: var(--sl-color-gray-2);
+    font-size: var(--sl-text-sm);
+  }
+
   #policy-json-editor .cm-editor {
     min-height: 17rem;
     max-height: 34rem;
@@ -473,6 +635,10 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
   @media (max-width: 35rem) {
     .policy-workbench-header {
       flex-direction: column;
+    }
+
+    .policy-example-picker {
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 </style>

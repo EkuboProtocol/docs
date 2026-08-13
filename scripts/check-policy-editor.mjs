@@ -16,11 +16,13 @@ if (!response || response.status() >= 400) {
 } else {
   const editor = page.locator('#policy-json-editor[data-ready="true"]');
   await editor.waitFor();
+  await page.evaluate(() => document.fonts.ready);
 
   const status = page.locator("#policy-editor-status");
   if (!(await status.textContent())?.startsWith("Valid JSON")) {
     failures.push(`starter policy is not valid: ${await status.textContent()}`);
   }
+  const content = page.locator("#policy-json-editor .cm-content");
 
   const editorGeometry = await editor.evaluate((host) => {
     const codeMirror = host.querySelector(".cm-editor");
@@ -87,6 +89,46 @@ if (!response || response.status() >= 400) {
     }
   }
 
+  const examples = [
+    ["review", 0],
+    ["deny-all", 1],
+    ["deny-native-value", 1],
+    ["constrained-call", 1],
+  ];
+  for (const [value, expectedRuleCount] of examples) {
+    await page.locator("#policy-example").selectOption(value);
+    if (
+      !(await page.locator("#policy-example-description").textContent())?.trim()
+    ) {
+      failures.push(`${value} example has no description`);
+    }
+    await page.locator("#load-policy-example").click();
+    await page.waitForFunction(() =>
+      document
+        .querySelector("#policy-editor-status")
+        ?.textContent?.startsWith("Valid JSON"),
+    );
+    const text = await content.innerText();
+    try {
+      const example = JSON.parse(text);
+      if (example.rules?.length !== expectedRuleCount || !text.includes("\n")) {
+        failures.push(`${value} example did not load as formatted JSON`);
+      }
+    } catch {
+      failures.push(`${value} example did not load valid JSON`);
+    }
+  }
+  const constrainedExample = JSON.parse(await content.innerText());
+  if (
+    constrainedExample.rules?.[0]?.calldata?.selector?.abi !==
+    "approve(address spender, uint256 amount)"
+  ) {
+    failures.push(
+      "constrained-call example did not load its calldata predicate",
+    );
+  }
+  await page.locator("#reset-policy").click();
+
   const buttonGeometry = await page
     .locator(".policy-editor-actions button")
     .evaluateAll((buttons) =>
@@ -147,7 +189,6 @@ if (!response || response.status() >= 400) {
       ?.textContent?.startsWith("Valid JSON"),
   );
 
-  const content = page.locator("#policy-json-editor .cm-content");
   const selectAll = process.platform === "darwin" ? "Meta+A" : "Control+A";
   const compactPolicy = '{"version":1,"rules":[]}';
   await content.click();
@@ -196,5 +237,5 @@ if (failures.length) {
 }
 
 console.log(
-  "Policy editor published the canonical schema; filled its minimum height with numbered lines; kept controls and caret aligned; formatted and reset JSON; reported inline errors; and completed effect with allow and deny.",
+  "Policy editor published the canonical schema; loaded four valid formatted examples; filled its minimum height with numbered lines; kept controls and caret aligned; formatted and reset JSON; reported inline errors; and completed effect with allow and deny.",
 );
