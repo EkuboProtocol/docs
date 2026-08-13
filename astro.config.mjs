@@ -15,12 +15,9 @@ export default defineConfig({
       description:
         "Documentation for Ekubo Protocol users, integrators, and developers.",
       favicon: "/favicon.svg",
-      logo: {
-        src: "./public/logo.svg",
-        replacesTitle: false,
-      },
       customCss: ["./src/styles/fonts.css", "./src/styles/custom.css"],
       components: {
+        SiteTitle: "./src/components/SiteTitle.astro",
         ThemeSelect: "./src/components/ThemeToggle.astro",
         Footer: "./src/components/Footer.astro",
       },

@@ -35,15 +35,6 @@
   --sl-color-black: #ffffff;
 }
 
-.site-title img {
-  height: 1.7rem;
-  width: 2.55rem;
-}
-
-:root[data-theme="dark"] .site-title img {
-  filter: brightness(0) invert(1);
-}
-
 .content-panel img {
   border-radius: 0.5rem;
 }
