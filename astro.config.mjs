@@ -166,6 +166,7 @@ export default defineConfig({
           label: "Products",
           items: [
             { label: "Overview", slug: "products" },
+            { label: "Wallet", slug: "products/wallet" },
             { label: "Trading", slug: "products/trading" },
             { label: "Providing liquidity", slug: "products/liquidity" },
             { label: "Ve33 and STONX", slug: "products/ve33" },
