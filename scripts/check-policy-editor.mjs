@@ -191,6 +191,15 @@ if (!response || response.status() >= 400) {
   await versionLine.click({ position: { x: 90, y: 8 } });
   const lineBox = await versionLine.boundingBox();
   const cursorBox = await page.locator(".cm-cursor-primary").boundingBox();
+  const focusedEditorStyle = await page
+    .locator("#policy-json-editor .cm-editor.cm-focused")
+    .evaluate((element) => {
+      const style = getComputedStyle(element);
+      return style.outlineStyle;
+    });
+  if (focusedEditorStyle !== "none") {
+    failures.push("focused editor still renders an outer outline");
+  }
   if (
     !lineBox ||
     !cursorBox ||
@@ -266,5 +275,5 @@ if (failures.length) {
 }
 
 console.log(
-  "Policy editor published the canonical schema; loaded five examples immediately on selection; marked and restored the default; inset the select arrow; automatically formatted valid JSON; preserved invalid edits; filled its minimum height with numbered lines; kept the caret aligned; reported inline errors; and completed effect with allow and deny.",
+  "Policy editor published the canonical schema; loaded five examples immediately on selection; marked and restored the default; inset the select arrow; automatically formatted valid JSON; preserved invalid edits; filled its minimum height with numbered lines; kept focus visible through the caret and active line without an outer outline; reported inline errors; and completed effect with allow and deny.",
 );
