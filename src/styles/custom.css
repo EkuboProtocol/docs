@@ -48,6 +48,10 @@ code {
   overflow-wrap: anywhere;
 }
 
+.sidebar-content a[aria-current="page"]:not(.large) {
+  font-weight: 400;
+}
+
 :root[data-theme="dark"] a[aria-current="page"] {
   background-color: #261b34;
   color: #b07df5;
