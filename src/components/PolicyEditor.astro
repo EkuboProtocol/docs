@@ -1,0 +1,392 @@
+---
+import schemaJson from "../data/ekubo-wallet-policy.schema.json?raw";
+
+const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
+---
+
+<section class="policy-workbench" aria-labelledby="policy-workbench-title">
+  <div class="policy-workbench-header">
+    <div>
+      <h3 id="policy-workbench-title">Policy JSON editor</h3>
+      <p id="policy-editor-help">
+        Press <kbd>Ctrl</kbd>+<kbd>Space</kbd> to see properties and values from the
+        schema. Errors are underlined and listed in the diagnostics panel.
+      </p>
+    </div>
+    <div class="policy-editor-actions">
+      <button id="format-policy" type="button">Format</button>
+      <button id="reset-policy" type="button">Reset</button>
+    </div>
+  </div>
+
+  <div id="policy-json-editor" aria-busy="true"></div>
+  <p id="policy-editor-status" role="status" aria-live="polite">
+    Loading the policy schema…
+  </p>
+
+  <noscript>
+    <p>
+      The interactive editor requires JavaScript. The schema remains available
+      from the download link below.
+    </p>
+  </noscript>
+</section>
+
+<p class="schema-download">
+  <a href={schemaUrl} download="ekubo-wallet-policy.schema.json">
+    Download the Ekubo Wallet policy JSON Schema
+  </a>
+</p>
+
+<details class="policy-schema-source">
+  <summary>View the complete JSON Schema</summary>
+  <pre
+    aria-label="Ekubo Wallet policy JSON Schema"><code>{schemaJson}</code></pre>
+</details>
+
+<script>
+  import type { Diagnostic } from "@codemirror/lint";
+  import type { EditorView as EditorViewType } from "@codemirror/view";
+  import type { ErrorObject } from "ajv";
+  import policySchema from "../data/ekubo-wallet-policy.schema.json";
+
+  const [
+    { json, jsonLanguage, jsonParseLinter },
+    { HighlightStyle, syntaxHighlighting },
+    { tags },
+    { diagnosticCount, forceLinting, linter, lintGutter },
+    { EditorState },
+    { EditorView },
+    { default: Ajv2020 },
+    { basicSetup },
+    { jsonCompletion, stateExtensions },
+    { parse: parseJsonWithPointers },
+  ] = await Promise.all([
+    import("@codemirror/lang-json"),
+    import("@codemirror/language"),
+    import("@lezer/highlight"),
+    import("@codemirror/lint"),
+    import("@codemirror/state"),
+    import("@codemirror/view"),
+    import("ajv/dist/2020"),
+    import("codemirror"),
+    import("@valtown/codemirror-json-schema"),
+    import("json-source-map"),
+  ]);
+
+  const schemaUrl =
+    "https://docs.ekubo.org/schemas/ekubo-wallet-policy.schema.json";
+  const starterPolicy = `${JSON.stringify(
+    { $schema: schemaUrl, version: 1, rules: [] },
+    null,
+    2,
+  )}\n`;
+
+  const editorHost = document.querySelector<HTMLElement>("#policy-json-editor");
+  const status = document.querySelector<HTMLElement>("#policy-editor-status");
+  const formatButton =
+    document.querySelector<HTMLButtonElement>("#format-policy");
+  const resetButton =
+    document.querySelector<HTMLButtonElement>("#reset-policy");
+
+  function escapePointerSegment(value: string) {
+    return value.replaceAll("~", "~0").replaceAll("/", "~1");
+  }
+
+  function diagnosticMessage(error: ErrorObject) {
+    if (error.keyword === "required") {
+      return `Missing required property “${error.params.missingProperty}”.`;
+    }
+    if (error.keyword === "additionalProperties") {
+      return `Property “${error.params.additionalProperty}” is not allowed here.`;
+    }
+    if (error.keyword === "const") {
+      return `Expected ${JSON.stringify(error.params.allowedValue)}.`;
+    }
+    return error.message
+      ? `${error.instancePath || "Document"} ${error.message}.`
+      : "Value does not match the policy schema.";
+  }
+
+  if (editorHost && status && formatButton && resetButton) {
+    const ajv = new Ajv2020({
+      allErrors: true,
+      strict: true,
+      validateFormats: false,
+    });
+    const validatePolicy = ajv.compile(policySchema);
+
+    const policySchemaLinter = (view: EditorViewType): Diagnostic[] => {
+      const text = view.state.doc.toString();
+      let parsed;
+      try {
+        parsed = parseJsonWithPointers(text);
+      } catch {
+        return [];
+      }
+
+      if (validatePolicy(parsed.data)) return [];
+
+      return (validatePolicy.errors ?? []).slice(0, 40).map((error) => {
+        let pointer = error.instancePath;
+        if (error.keyword === "additionalProperties") {
+          pointer += `/${escapePointerSegment(error.params.additionalProperty)}`;
+        }
+        const mapping =
+          parsed.pointers[pointer] ??
+          parsed.pointers[error.instancePath] ??
+          parsed.pointers[""];
+        const useKey = error.keyword === "additionalProperties" && mapping?.key;
+        const start = useKey ? mapping.key : mapping?.value;
+        const end = useKey ? mapping.keyEnd : mapping?.valueEnd;
+        const from = Math.min(start?.pos ?? 0, text.length);
+        const to = Math.max(from, Math.min(end?.pos ?? from + 1, text.length));
+
+        return {
+          from,
+          to,
+          severity: "error",
+          source: "Ekubo Wallet policy schema",
+          message: diagnosticMessage(error),
+        };
+      });
+    };
+
+    const editorHighlighting = HighlightStyle.define([
+      {
+        tag: [tags.propertyName, tags.name],
+        color: "var(--sl-color-white)",
+      },
+      {
+        tag: [tags.string, tags.number, tags.bool, tags.null, tags.escape],
+        color: "var(--sl-color-text-accent)",
+      },
+      {
+        tag: [tags.bracket, tags.separator],
+        color: "var(--sl-color-gray-2)",
+      },
+      {
+        tag: tags.invalid,
+        color: "var(--sl-color-white)",
+        textDecoration: "underline wavy var(--sl-color-red-high, #d33)",
+      },
+    ]);
+
+    const editorTheme = EditorView.theme({
+      "&": {
+        backgroundColor: "var(--sl-color-black)",
+        color: "var(--sl-color-white)",
+      },
+      ".cm-content": {
+        caretColor: "var(--sl-color-text-accent)",
+      },
+      ".cm-cursor, .cm-dropCursor": {
+        borderLeftColor: "var(--sl-color-text-accent)",
+      },
+      ".cm-gutters": {
+        backgroundColor: "var(--sl-color-gray-7)",
+        color: "var(--sl-color-gray-3)",
+        borderRightColor: "var(--sl-color-gray-5)",
+      },
+      ".cm-activeLine, .cm-activeLineGutter": {
+        backgroundColor: "var(--sl-color-accent-low)",
+      },
+      ".cm-selectionBackground, ::selection": {
+        backgroundColor: "var(--sl-color-accent-low) !important",
+      },
+      ".cm-tooltip": {
+        backgroundColor: "var(--sl-color-gray-7)",
+        color: "var(--sl-color-white)",
+        borderColor: "var(--sl-color-gray-5)",
+      },
+      ".cm-tooltip-autocomplete ul li[aria-selected]": {
+        backgroundColor: "var(--sl-color-accent-low)",
+        color: "var(--sl-color-white)",
+      },
+      ".cm-panels": {
+        backgroundColor: "var(--sl-color-gray-7)",
+        color: "var(--sl-color-white)",
+      },
+    });
+
+    let view: EditorViewType;
+    const updateStatus = () => {
+      const count = diagnosticCount(view.state);
+      status.dataset.state = count ? "invalid" : "valid";
+      status.textContent = count
+        ? `${count} schema or JSON ${count === 1 ? "error" : "errors"}.`
+        : "Valid JSON matching the published policy schema.";
+    };
+
+    const state = EditorState.create({
+      doc: starterPolicy,
+      extensions: [
+        basicSetup,
+        json(),
+        syntaxHighlighting(editorHighlighting),
+        jsonLanguage.data.of({ autocomplete: jsonCompletion() }),
+        linter(jsonParseLinter(), { delay: 150 }),
+        linter(policySchemaLinter, { delay: 150 }),
+        lintGutter(),
+        stateExtensions(policySchema),
+        editorTheme,
+        EditorView.lineWrapping,
+        EditorView.contentAttributes.of({
+          "aria-label": "Policy JSON",
+          "aria-describedby": "policy-editor-help policy-editor-status",
+        }),
+        EditorView.updateListener.of((update) => {
+          if (update.docChanged || update.transactions.length) updateStatus();
+        }),
+      ],
+    });
+
+    view = new EditorView({ state, parent: editorHost });
+    editorHost.ariaBusy = "false";
+    editorHost.dataset.ready = "true";
+    forceLinting(view);
+    window.setTimeout(updateStatus, 0);
+
+    const replaceDocument = (document: string) => {
+      view.dispatch({
+        changes: { from: 0, to: view.state.doc.length, insert: document },
+      });
+      view.focus();
+      forceLinting(view);
+    };
+
+    resetButton.addEventListener("click", () => replaceDocument(starterPolicy));
+    formatButton.addEventListener("click", () => {
+      try {
+        const formatted = `${JSON.stringify(
+          JSON.parse(view.state.doc.toString()),
+          null,
+          2,
+        )}\n`;
+        replaceDocument(formatted);
+      } catch {
+        status.dataset.state = "invalid";
+        status.textContent = "Fix the JSON syntax before formatting.";
+        view.focus();
+      }
+    });
+  }
+</script>
+
+<style is:global>
+  .policy-workbench {
+    margin-block: 1.5rem;
+    overflow: hidden;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.65rem;
+    background: var(--sl-color-gray-7);
+  }
+
+  .policy-workbench-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid var(--sl-color-gray-5);
+  }
+
+  .policy-workbench-header h3,
+  .policy-workbench-header p {
+    margin: 0;
+  }
+
+  .policy-workbench-header p {
+    margin-top: 0.35rem;
+    color: var(--sl-color-gray-2);
+    font-size: var(--sl-text-sm);
+  }
+
+  .policy-editor-actions {
+    display: flex;
+    flex: none;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .policy-editor-actions button {
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--sl-color-gray-4);
+    border-radius: 0.35rem;
+    background: var(--sl-color-black);
+    color: var(--sl-color-white);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .policy-editor-actions button:hover {
+    border-color: var(--sl-color-accent);
+    color: var(--sl-color-text-accent);
+  }
+
+  .policy-editor-actions button:focus-visible {
+    outline: 2px solid var(--sl-color-accent);
+    outline-offset: 2px;
+  }
+
+  #policy-json-editor .cm-editor {
+    min-height: 17rem;
+    max-height: 34rem;
+    font-family: var(--sl-font-mono);
+    font-size: var(--sl-text-sm);
+  }
+
+  #policy-json-editor .cm-scroller {
+    overflow: auto;
+  }
+
+  #policy-json-editor .cm-editor.cm-focused {
+    outline: 2px solid var(--sl-color-accent);
+    outline-offset: -2px;
+  }
+
+  #policy-json-editor .cm-diagnosticText {
+    overflow-wrap: anywhere;
+  }
+
+  #policy-editor-status {
+    margin: 0;
+    padding: 0.7rem 1rem;
+    border-top: 1px solid var(--sl-color-gray-5);
+    color: var(--sl-color-gray-2);
+    font-size: var(--sl-text-sm);
+  }
+
+  #policy-editor-status[data-state="valid"] {
+    color: var(--sl-color-green-high, var(--sl-color-text-accent));
+  }
+
+  #policy-editor-status[data-state="invalid"] {
+    color: var(--sl-color-red-high, #d33);
+  }
+
+  .schema-download {
+    margin-block: 1rem;
+  }
+
+  .policy-schema-source {
+    margin-block: 1rem 2rem;
+  }
+
+  .policy-schema-source summary {
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .policy-schema-source pre {
+    max-height: 32rem;
+    overflow: auto;
+  }
+
+  @media (max-width: 35rem) {
+    .policy-workbench-header {
+      flex-direction: column;
+    }
+  }
+</style>

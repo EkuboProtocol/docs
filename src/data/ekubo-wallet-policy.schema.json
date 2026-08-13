@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Ekubo Wallet policy",
+  "type": "object",
+  "properties": {
+    "$schema": { "type": ["string", "null"] },
+    "version": { "type": "integer", "minimum": 1, "maximum": 1 },
+    "rules": { "type": "array", "maxItems": 256, "items": { "$ref": "#/$defs/Rule" } }
+  },
+  "additionalProperties": false,
+  "required": ["version", "rules"],
+  "$defs": {
+    "Rule": {
+      "type": "object",
+      "properties": {
+        "effect": { "$ref": "#/$defs/Effect" },
+        "label": { "type": ["string", "null"] },
+        "chain_id": { "anyOf": [{ "$ref": "#/$defs/Predicate" }, { "type": "null" }] },
+        "to": { "anyOf": [{ "$ref": "#/$defs/Predicate" }, { "type": "null" }] },
+        "native_value": { "anyOf": [{ "$ref": "#/$defs/Predicate" }, { "type": "null" }] },
+        "calldata": { "anyOf": [{ "$ref": "#/$defs/Predicate" }, { "type": "null" }] }
+      },
+      "additionalProperties": false,
+      "required": ["effect"]
+    },
+    "Effect": {
+      "oneOf": [
+        { "type": "string", "const": "allow" },
+        { "type": "string", "const": "deny" }
+      ]
+    },
+    "Predicate": {
+      "oneOf": [
+        { "type": "string", "const": "any_value" },
+        { "$ref": "#/$defs/Eq" },
+        { "$ref": "#/$defs/In" },
+        { "$ref": "#/$defs/Lt" },
+        { "$ref": "#/$defs/Lte" },
+        { "$ref": "#/$defs/Gt" },
+        { "$ref": "#/$defs/Gte" },
+        { "$ref": "#/$defs/Selector" },
+        { "$ref": "#/$defs/Each" },
+        { "$ref": "#/$defs/Any" },
+        { "$ref": "#/$defs/All" },
+        { "$ref": "#/$defs/Not" },
+        { "$ref": "#/$defs/Length" }
+      ]
+    },
+    "Eq": { "type": "object", "properties": { "eq": { "type": "string" } }, "required": ["eq"], "additionalProperties": false },
+    "In": { "type": "object", "properties": { "in": { "type": "array", "uniqueItems": true, "items": { "type": "string" } } }, "required": ["in"], "additionalProperties": false },
+    "Lt": { "type": "object", "properties": { "lt": { "type": "string" } }, "required": ["lt"], "additionalProperties": false },
+    "Lte": { "type": "object", "properties": { "lte": { "type": "string" } }, "required": ["lte"], "additionalProperties": false },
+    "Gt": { "type": "object", "properties": { "gt": { "type": "string" } }, "required": ["gt"], "additionalProperties": false },
+    "Gte": { "type": "object", "properties": { "gte": { "type": "string" } }, "required": ["gte"], "additionalProperties": false },
+    "Selector": { "type": "object", "properties": { "selector": { "$ref": "#/$defs/SelectorPredicate" } }, "required": ["selector"], "additionalProperties": false },
+    "SelectorPredicate": {
+      "type": "object",
+      "properties": {
+        "abi": { "type": "string" },
+        "args": { "type": "object", "additionalProperties": { "$ref": "#/$defs/Predicate" } }
+      },
+      "additionalProperties": false,
+      "required": ["abi"]
+    },
+    "Each": { "type": "object", "properties": { "each": { "$ref": "#/$defs/Predicate" } }, "required": ["each"], "additionalProperties": false },
+    "Any": { "type": "object", "properties": { "any": { "type": "array", "items": { "$ref": "#/$defs/Predicate" } } }, "required": ["any"], "additionalProperties": false },
+    "All": { "type": "object", "properties": { "all": { "type": "array", "items": { "$ref": "#/$defs/Predicate" } } }, "required": ["all"], "additionalProperties": false },
+    "Not": { "type": "object", "properties": { "not": { "$ref": "#/$defs/Predicate" } }, "required": ["not"], "additionalProperties": false },
+    "Length": { "type": "object", "properties": { "length": { "$ref": "#/$defs/Predicate" } }, "required": ["length"], "additionalProperties": false }
+  },
+  "description": "Ordered stateless per-call signing policy. The first matching rule decides each call: allow signs automatically, deny rejects without queuing, and reaching the end requires explicit owner approval. Omitted matchers mean anything and present matchers are ANDed. Native-value comparisons are per-call conditions, not cumulative spending budgets."
+}
