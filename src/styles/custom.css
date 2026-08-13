@@ -12,6 +12,8 @@
   --sl-color-gray-6: #272727;
   --sl-color-gray-7: #1d1d1d;
   --sl-color-black: #101010;
+  --sl-color-bg-nav: var(--sl-color-gray-7);
+  --sl-color-bg-sidebar: var(--sl-color-gray-7);
   --sl-font:
     "Suisse Intl", "Suisse Intl Fallback", ui-sans-serif, system-ui, sans-serif;
   --sl-font-mono: "Suisse Intl Mono", ui-monospace, monospace;
