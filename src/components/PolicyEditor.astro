@@ -30,6 +30,7 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
         <option value="deny-all">Deny every transaction</option>
         <option value="deny-native-value">Deny calls with native value</option>
         <option value="constrained-call">Constrain a contract call</option>
+        <option value="single-purpose">Single-purpose wallet</option>
       </select>
     </div>
     <button id="load-policy-example" type="button">Load example</button>
@@ -148,6 +149,37 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
                 },
               },
             },
+          },
+        ],
+      },
+    },
+    "single-purpose": {
+      description:
+        "Allow one constrained agent action and reject every other agent transaction. Owner controls remain available.",
+      policy: {
+        $schema: schemaUrl,
+        version: 1,
+        rules: [
+          {
+            effect: "allow",
+            label: "Only permitted agent action",
+            to: { eq: "0x1111111111111111111111111111111111111111" },
+            native_value: { eq: "0" },
+            calldata: {
+              selector: {
+                abi: "approve(address spender, uint256 amount)",
+                args: {
+                  spender: {
+                    eq: "0x2222222222222222222222222222222222222222",
+                  },
+                  amount: { lte: "100" },
+                },
+              },
+            },
+          },
+          {
+            effect: "deny",
+            label: "Deny every other agent transaction",
           },
         ],
       },

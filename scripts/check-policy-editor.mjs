@@ -94,6 +94,7 @@ if (!response || response.status() >= 400) {
     ["deny-all", 1],
     ["deny-native-value", 1],
     ["constrained-call", 1],
+    ["single-purpose", 2],
   ];
   for (const [value, expectedRuleCount] of examples) {
     await page.locator("#policy-example").selectOption(value);
@@ -118,16 +119,29 @@ if (!response || response.status() >= 400) {
       failures.push(`${value} example did not load valid JSON`);
     }
   }
-  const constrainedExample = JSON.parse(await content.innerText());
+  const singlePurposeExample = JSON.parse(await content.innerText());
   if (
-    constrainedExample.rules?.[0]?.calldata?.selector?.abi !==
+    singlePurposeExample.rules?.[0]?.calldata?.selector?.abi !==
     "approve(address spender, uint256 amount)"
   ) {
-    failures.push(
-      "constrained-call example did not load its calldata predicate",
-    );
+    failures.push("single-purpose example did not load its calldata predicate");
+  }
+  const finalRule = singlePurposeExample.rules?.at(-1);
+  if (
+    finalRule?.effect !== "deny" ||
+    Object.keys(finalRule).some((key) =>
+      ["chain_id", "to", "native_value", "calldata"].includes(key),
+    )
+  ) {
+    failures.push("single-purpose example does not end with deny all");
   }
   await page.locator("#reset-policy").click();
+  await page.evaluate(
+    () =>
+      new Promise((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(resolve)),
+      ),
+  );
 
   const buttonGeometry = await page
     .locator(".policy-editor-actions button")
@@ -237,5 +251,5 @@ if (failures.length) {
 }
 
 console.log(
-  "Policy editor published the canonical schema; loaded four valid formatted examples; filled its minimum height with numbered lines; kept controls and caret aligned; formatted and reset JSON; reported inline errors; and completed effect with allow and deny.",
+  "Policy editor published the canonical schema; loaded five valid formatted examples including a single-purpose deny-all policy; filled its minimum height with numbered lines; kept controls and caret aligned; formatted and reset JSON; reported inline errors; and completed effect with allow and deny.",
 );
