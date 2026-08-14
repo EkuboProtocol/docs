@@ -11,7 +11,23 @@ The server is **non-custodial and read-only with respect to keys**. It never hol
 
 ## Connecting
 
-The server speaks Streamable HTTP and requires no authentication. Add it to any MCP-capable client:
+The server speaks Streamable HTTP and requires no authentication.
+
+### Claude Desktop
+
+Claude Desktop manages remote MCP servers as account-level custom connectors. Do not add the hosted Ekubo server to `claude_desktop_config.json`; that file is for local stdio servers.
+
+1. In Claude Desktop, open **Customize → Connectors**.
+2. Click **+**, then select **Add custom connector**.
+3. Name the connector **Ekubo**.
+4. Enter **`https://mcp.ekubo.org/mcp`** as its remote MCP server URL.
+5. Click **Add**, then enable Ekubo for the conversations where you want to use it.
+
+On Team and Enterprise plans, an Owner or Primary Owner must first add the custom connector under **Organization settings → Connectors**. Members can then connect and enable it from **Customize → Connectors**. See [Anthropic's custom connector guide](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp) for the current account and organization flows.
+
+### Other MCP clients
+
+For clients that accept remote MCP servers in a local configuration file, add:
 
 ```json
 {
@@ -24,7 +40,7 @@ The server speaks Streamable HTTP and requires no authentication. Add it to any 
 }
 ```
 
-Most clients also accept it from the command line — for example, `claude mcp add --transport http ekubo https://mcp.ekubo.org/mcp`.
+Most clients also accept it from the command line. For example, Claude Code uses `claude mcp add --transport http ekubo https://mcp.ekubo.org/mcp`.
 
 ## What it can do
 
