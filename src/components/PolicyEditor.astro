@@ -1,0 +1,632 @@
+---
+import schemaJson from "../data/ekubo-wallet-policy.schema.json?raw";
+
+const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
+---
+
+<section
+  class="policy-workbench not-content"
+  aria-labelledby="policy-workbench-title"
+>
+  <div class="policy-workbench-header">
+    <div>
+      <h3 id="policy-workbench-title">Policy JSON editor</h3>
+      <p id="policy-editor-help">
+        Press <kbd>Ctrl</kbd>+<kbd>Space</kbd> to see properties and values from the
+        schema. Errors are underlined and listed in the diagnostics panel.
+      </p>
+    </div>
+  </div>
+
+  <div class="policy-example-picker">
+    <div class="policy-example-field">
+      <label for="policy-example">Example policy</label>
+      <div class="policy-example-select">
+        <select
+          id="policy-example"
+          aria-describedby="policy-example-description"
+        >
+          <option value="review">Review every transaction (Default)</option>
+          <option value="deny-all">Deny every transaction</option>
+          <option value="deny-native-value">Deny calls with native value</option
+          >
+          <option value="constrained-call">Constrain a contract call</option>
+          <option value="single-purpose">Single-purpose wallet</option>
+        </select>
+      </div>
+    </div>
+    <p id="policy-example-description">
+      An empty policy leaves every transaction for owner review.
+    </p>
+  </div>
+
+  <div id="policy-json-editor" aria-busy="true"></div>
+  <p id="policy-editor-status" role="status" aria-live="polite">
+    Loading the policy schema…
+  </p>
+
+  <noscript>
+    <p>
+      The interactive editor requires JavaScript. The schema remains available
+      from the download link below.
+    </p>
+  </noscript>
+</section>
+
+<p class="schema-download">
+  <a href={schemaUrl} download="ekubo-wallet-policy.schema.json">
+    Download the Ekubo Wallet policy JSON Schema
+  </a>
+</p>
+
+<details class="policy-schema-source">
+  <summary>View the complete JSON Schema</summary>
+  <pre
+    aria-label="Ekubo Wallet policy JSON Schema"><code>{schemaJson}</code></pre>
+</details>
+
+<script>
+  import type { Diagnostic } from "@codemirror/lint";
+  import type { EditorView as EditorViewType } from "@codemirror/view";
+  import type { ErrorObject } from "ajv";
+  import policySchema from "../data/ekubo-wallet-policy.schema.json";
+
+  const [
+    { json, jsonLanguage, jsonParseLinter },
+    { HighlightStyle, syntaxHighlighting },
+    { tags },
+    { diagnosticCount, forceLinting, linter, lintGutter },
+    { EditorState },
+    { EditorView },
+    { default: Ajv2020 },
+    { basicSetup },
+    { jsonCompletion, stateExtensions },
+    { parse: parseJsonWithPointers },
+  ] = await Promise.all([
+    import("@codemirror/lang-json"),
+    import("@codemirror/language"),
+    import("@lezer/highlight"),
+    import("@codemirror/lint"),
+    import("@codemirror/state"),
+    import("@codemirror/view"),
+    import("ajv/dist/2020"),
+    import("codemirror"),
+    import("@valtown/codemirror-json-schema"),
+    import("json-source-map"),
+  ]);
+
+  const schemaUrl =
+    "https://docs.ekubo.org/schemas/ekubo-wallet-policy.schema.json";
+  const minimumEditorLines = 14;
+  const examplePolicies = {
+    review: {
+      description: "An empty policy leaves every transaction for owner review.",
+      policy: { $schema: schemaUrl, version: 1, rules: [] },
+    },
+    "deny-all": {
+      description:
+        "A matcherless deny rule rejects every transaction requested by an agent.",
+      policy: {
+        $schema: schemaUrl,
+        version: 1,
+        rules: [{ effect: "deny", label: "Deny every transaction" }],
+      },
+    },
+    "deny-native-value": {
+      description:
+        "Reject calls carrying native value; calls with no native value still require owner review.",
+      policy: {
+        $schema: schemaUrl,
+        version: 1,
+        rules: [
+          {
+            effect: "deny",
+            label: "Deny calls with native value",
+            native_value: { gt: "0" },
+          },
+        ],
+      },
+    },
+    "constrained-call": {
+      description:
+        "Allow one method with constrained arguments. Replace both example addresses before proposing this policy.",
+      policy: {
+        $schema: schemaUrl,
+        version: 1,
+        rules: [
+          {
+            effect: "allow",
+            label: "Example constrained approval",
+            to: { eq: "0x1111111111111111111111111111111111111111" },
+            native_value: { eq: "0" },
+            calldata: {
+              selector: {
+                abi: "approve(address spender, uint256 amount)",
+                args: {
+                  spender: {
+                    eq: "0x2222222222222222222222222222222222222222",
+                  },
+                  amount: { lte: "100" },
+                },
+              },
+            },
+          },
+        ],
+      },
+    },
+    "single-purpose": {
+      description:
+        "Allow one constrained agent action and reject every other agent transaction. Owner controls remain available.",
+      policy: {
+        $schema: schemaUrl,
+        version: 1,
+        rules: [
+          {
+            effect: "allow",
+            label: "Only permitted agent action",
+            to: { eq: "0x1111111111111111111111111111111111111111" },
+            native_value: { eq: "0" },
+            calldata: {
+              selector: {
+                abi: "approve(address spender, uint256 amount)",
+                args: {
+                  spender: {
+                    eq: "0x2222222222222222222222222222222222222222",
+                  },
+                  amount: { lte: "100" },
+                },
+              },
+            },
+          },
+          {
+            effect: "deny",
+            label: "Deny every other agent transaction",
+          },
+        ],
+      },
+    },
+  } as const;
+  type ExamplePolicyKey = keyof typeof examplePolicies;
+
+  function withMinimumEditorLines(document: string) {
+    const missingLines = minimumEditorLines - document.split("\n").length;
+    return missingLines > 0
+      ? `${document}${"\n".repeat(missingLines)}`
+      : document;
+  }
+
+  const starterPolicy = withMinimumEditorLines(
+    `${JSON.stringify({ $schema: schemaUrl, version: 1, rules: [] }, null, 2)}\n`,
+  );
+
+  const editorHost = document.querySelector<HTMLElement>("#policy-json-editor");
+  const status = document.querySelector<HTMLElement>("#policy-editor-status");
+  const exampleSelect =
+    document.querySelector<HTMLSelectElement>("#policy-example");
+  const exampleDescription = document.querySelector<HTMLElement>(
+    "#policy-example-description",
+  );
+
+  function escapePointerSegment(value: string) {
+    return value.replaceAll("~", "~0").replaceAll("/", "~1");
+  }
+
+  function diagnosticMessage(error: ErrorObject) {
+    if (error.keyword === "required") {
+      return `Missing required property “${error.params.missingProperty}”.`;
+    }
+    if (error.keyword === "additionalProperties") {
+      return `Property “${error.params.additionalProperty}” is not allowed here.`;
+    }
+    if (error.keyword === "const") {
+      return `Expected ${JSON.stringify(error.params.allowedValue)}.`;
+    }
+    return error.message
+      ? `${error.instancePath || "Document"} ${error.message}.`
+      : "Value does not match the policy schema.";
+  }
+
+  function schemaPointer(root: unknown, pointer: string): unknown {
+    if (!pointer.startsWith("#/")) return undefined;
+    return pointer
+      .slice(2)
+      .split("/")
+      .map((part) => part.replaceAll("~1", "/").replaceAll("~0", "~"))
+      .reduce<unknown>((value, part) => {
+        if (!value || typeof value !== "object") return undefined;
+        return (value as Record<string, unknown>)[part];
+      }, root);
+  }
+
+  // The completion extension does not follow `$ref` while collecting value
+  // proposals. Expand local references for completion only. Cyclic Predicate
+  // branches retain their back-reference; AJV still validates against the
+  // original, canonical schema below.
+  function completionSchema(
+    value: unknown,
+    root: unknown,
+    resolving = new Set<string>(),
+  ): unknown {
+    if (Array.isArray(value)) {
+      return value.map((item) => completionSchema(item, root, resolving));
+    }
+    if (!value || typeof value !== "object") return value;
+
+    const object = value as Record<string, unknown>;
+    const reference = typeof object.$ref === "string" ? object.$ref : undefined;
+    if (reference && !resolving.has(reference)) {
+      const target = schemaPointer(root, reference);
+      if (target && typeof target === "object") {
+        const nextResolving = new Set(resolving).add(reference);
+        const { $ref: _, ...siblings } = object;
+        return completionSchema(
+          { ...(target as Record<string, unknown>), ...siblings },
+          root,
+          nextResolving,
+        );
+      }
+    }
+
+    return Object.fromEntries(
+      Object.entries(object).map(([key, item]) => [
+        key,
+        completionSchema(item, root, new Set(resolving)),
+      ]),
+    );
+  }
+
+  if (editorHost && status && exampleSelect && exampleDescription) {
+    const ajv = new Ajv2020({
+      allErrors: true,
+      strict: true,
+      validateFormats: false,
+    });
+    const validatePolicy = ajv.compile(policySchema);
+    const policyCompletionSchema = completionSchema(policySchema, policySchema);
+
+    const policySchemaLinter = (view: EditorViewType): Diagnostic[] => {
+      const text = view.state.doc.toString();
+      let parsed;
+      try {
+        parsed = parseJsonWithPointers(text);
+      } catch {
+        return [];
+      }
+
+      if (validatePolicy(parsed.data)) return [];
+
+      return (validatePolicy.errors ?? []).slice(0, 40).map((error) => {
+        let pointer = error.instancePath;
+        if (error.keyword === "additionalProperties") {
+          pointer += `/${escapePointerSegment(error.params.additionalProperty)}`;
+        }
+        const mapping =
+          parsed.pointers[pointer] ??
+          parsed.pointers[error.instancePath] ??
+          parsed.pointers[""];
+        const useKey = error.keyword === "additionalProperties" && mapping?.key;
+        const start = useKey ? mapping.key : mapping?.value;
+        const end = useKey ? mapping.keyEnd : mapping?.valueEnd;
+        const from = Math.min(start?.pos ?? 0, text.length);
+        const to = Math.max(from, Math.min(end?.pos ?? from + 1, text.length));
+
+        return {
+          from,
+          to,
+          severity: "error",
+          source: "Ekubo Wallet policy schema",
+          message: diagnosticMessage(error),
+        };
+      });
+    };
+
+    const editorHighlighting = HighlightStyle.define([
+      {
+        tag: [tags.propertyName, tags.name],
+        color: "var(--sl-color-white)",
+      },
+      {
+        tag: [tags.string, tags.number, tags.bool, tags.null, tags.escape],
+        color: "var(--sl-color-text-accent)",
+      },
+      {
+        tag: [tags.bracket, tags.separator],
+        color: "var(--sl-color-gray-2)",
+      },
+      {
+        tag: tags.invalid,
+        color: "var(--sl-color-white)",
+        textDecoration: "underline wavy var(--sl-color-red-high, #d33)",
+      },
+    ]);
+
+    const editorTheme = EditorView.theme({
+      "&": {
+        backgroundColor: "var(--sl-color-black)",
+        color: "var(--sl-color-white)",
+      },
+      ".cm-content": {
+        caretColor: "var(--sl-color-text-accent)",
+      },
+      ".cm-cursor, .cm-dropCursor": {
+        borderLeftColor: "var(--sl-color-text-accent)",
+      },
+      ".cm-gutters": {
+        backgroundColor: "var(--sl-color-gray-7)",
+        color: "var(--sl-color-gray-3)",
+        borderRightColor: "var(--sl-color-gray-5)",
+      },
+      ".cm-activeLine, .cm-activeLineGutter": {
+        backgroundColor: "var(--sl-color-accent-low)",
+      },
+      ".cm-selectionBackground, ::selection": {
+        backgroundColor: "var(--sl-color-accent-low) !important",
+      },
+      ".cm-tooltip": {
+        backgroundColor: "var(--sl-color-gray-7)",
+        color: "var(--sl-color-white)",
+        borderColor: "var(--sl-color-gray-5)",
+      },
+      ".cm-tooltip-autocomplete ul li[aria-selected]": {
+        backgroundColor: "var(--sl-color-accent-low)",
+        color: "var(--sl-color-white)",
+      },
+      ".cm-panels": {
+        backgroundColor: "var(--sl-color-gray-7)",
+        color: "var(--sl-color-white)",
+      },
+    });
+
+    let view: EditorViewType;
+    const updateStatus = () => {
+      const count = diagnosticCount(view.state);
+      status.dataset.state = count ? "invalid" : "valid";
+      status.textContent = count
+        ? `${count} schema or JSON ${count === 1 ? "error" : "errors"}.`
+        : "Valid JSON matching the published policy schema.";
+    };
+
+    const state = EditorState.create({
+      doc: starterPolicy,
+      extensions: [
+        basicSetup,
+        EditorState.transactionFilter.of((transaction) => {
+          const missingLines = minimumEditorLines - transaction.newDoc.lines;
+          if (missingLines <= 0) return transaction;
+
+          return [
+            transaction,
+            {
+              sequential: true,
+              changes: {
+                from: transaction.newDoc.length,
+                insert: "\n".repeat(missingLines),
+              },
+            },
+          ];
+        }),
+        json(),
+        syntaxHighlighting(editorHighlighting),
+        jsonLanguage.data.of({ autocomplete: jsonCompletion() }),
+        linter(jsonParseLinter(), { delay: 150 }),
+        linter(policySchemaLinter, { delay: 150 }),
+        lintGutter(),
+        stateExtensions(policyCompletionSchema as typeof policySchema),
+        editorTheme,
+        EditorView.contentAttributes.of({
+          "aria-label": "Policy JSON",
+          "aria-describedby": "policy-editor-help policy-editor-status",
+        }),
+        EditorView.updateListener.of((update) => {
+          if (update.docChanged || update.transactions.length) updateStatus();
+        }),
+      ],
+    });
+
+    view = new EditorView({ state, parent: editorHost });
+    view.scrollDOM.tabIndex = 0;
+    view.scrollDOM.setAttribute("role", "region");
+    view.scrollDOM.setAttribute("aria-label", "Policy JSON editor scroll area");
+    void document.fonts.ready.then(() => view.requestMeasure());
+    editorHost.ariaBusy = "false";
+    editorHost.dataset.ready = "true";
+    forceLinting(view);
+    window.setTimeout(updateStatus, 0);
+
+    const replaceDocument = (document: string, focusEditor = true) => {
+      view.dispatch({
+        changes: { from: 0, to: view.state.doc.length, insert: document },
+      });
+      if (focusEditor) view.focus();
+      forceLinting(view);
+    };
+
+    const formatDocument = () => {
+      try {
+        const formatted = withMinimumEditorLines(
+          `${JSON.stringify(JSON.parse(view.state.doc.toString()), null, 2)}\n`,
+        );
+        if (formatted !== view.state.doc.toString()) {
+          replaceDocument(formatted, false);
+        }
+      } catch {
+        // Keep invalid JSON untouched so the inline diagnostics can guide the edit.
+      }
+    };
+
+    exampleSelect.addEventListener("change", () => {
+      const example = examplePolicies[exampleSelect.value as ExamplePolicyKey];
+      if (!example) return;
+      exampleDescription.textContent = example.description;
+      replaceDocument(
+        withMinimumEditorLines(`${JSON.stringify(example.policy, null, 2)}\n`),
+      );
+    });
+    view.dom.addEventListener("focusout", (event) => {
+      const nextTarget = event.relatedTarget;
+      if (!(nextTarget instanceof Node) || !view.dom.contains(nextTarget)) {
+        formatDocument();
+      }
+    });
+  }
+</script>
+
+<style is:global>
+  .policy-workbench {
+    margin-block: 1.5rem;
+    overflow: hidden;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.65rem;
+    background: var(--sl-color-gray-7);
+  }
+
+  .policy-workbench-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid var(--sl-color-gray-5);
+  }
+
+  .policy-workbench-header h3,
+  .policy-workbench-header p {
+    margin: 0;
+  }
+
+  .policy-workbench-header p {
+    margin-top: 0.35rem;
+    color: var(--sl-color-gray-2);
+    font-size: var(--sl-text-sm);
+  }
+
+  .policy-example-picker {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--sl-color-gray-5);
+    background: var(--sl-color-black);
+  }
+
+  .policy-example-field {
+    display: grid;
+    gap: 0.3rem;
+  }
+
+  .policy-example-field label {
+    color: var(--sl-color-white);
+    font-size: var(--sl-text-sm);
+    font-weight: 600;
+  }
+
+  .policy-example-select {
+    position: relative;
+  }
+
+  .policy-example-select::after {
+    position: absolute;
+    top: 50%;
+    right: 0.85rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-right: 2px solid var(--sl-color-gray-2);
+    border-bottom: 2px solid var(--sl-color-gray-2);
+    content: "";
+    pointer-events: none;
+    transform: translateY(-70%) rotate(45deg);
+  }
+
+  .policy-example-field select {
+    width: 100%;
+    min-height: 2.5rem;
+    appearance: none;
+    padding: 0.4rem 2.75rem 0.4rem 0.65rem;
+    border: 1px solid var(--sl-color-gray-4);
+    border-radius: 0.35rem;
+    background: var(--sl-color-gray-7);
+    color: var(--sl-color-white);
+    font: inherit;
+  }
+
+  .policy-example-field select:focus-visible {
+    outline: 2px solid var(--sl-color-accent);
+    outline-offset: 2px;
+  }
+
+  #policy-example-description {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: var(--sl-color-gray-2);
+    font-size: var(--sl-text-sm);
+  }
+
+  #policy-json-editor .cm-editor {
+    min-height: 17rem;
+    max-height: 34rem;
+    font-family: var(--sl-font-mono);
+    font-size: var(--sl-text-sm);
+    line-height: 1.4;
+  }
+
+  #policy-json-editor .cm-scroller {
+    overflow: auto;
+  }
+
+  #policy-json-editor .cm-gutters {
+    align-self: stretch;
+    padding-block: 4px;
+  }
+
+  #policy-json-editor .cm-lineNumbers > .cm-gutterElement:not(:first-child) {
+    height: 1.4em !important;
+    line-height: 1.4;
+  }
+
+  #policy-json-editor .cm-editor.cm-focused {
+    outline: none;
+  }
+
+  #policy-json-editor .cm-diagnosticText {
+    overflow-wrap: anywhere;
+  }
+
+  #policy-editor-status {
+    margin: 0;
+    padding: 0.7rem 1rem;
+    border-top: 1px solid var(--sl-color-gray-5);
+    color: var(--sl-color-gray-2);
+    font-size: var(--sl-text-sm);
+  }
+
+  #policy-editor-status[data-state="valid"] {
+    color: var(--sl-color-green-high, var(--sl-color-text-accent));
+  }
+
+  #policy-editor-status[data-state="invalid"] {
+    color: var(--sl-color-red-high, #d33);
+  }
+
+  .schema-download {
+    margin-block: 1rem;
+  }
+
+  .policy-schema-source {
+    margin-block: 1rem 2rem;
+  }
+
+  .policy-schema-source summary {
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .policy-schema-source pre {
+    max-height: 32rem;
+    overflow: auto;
+  }
+
+  @media (max-width: 35rem) {
+    .policy-workbench-header {
+      flex-direction: column;
+    }
+  }
+</style>

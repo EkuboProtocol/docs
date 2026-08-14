@@ -5,4 +5,5 @@ public/_headers
 public/_redirects
 public/assets/
 public/openapi/
+src/data/ekubo-wallet-policy.schema.json
 schemas/

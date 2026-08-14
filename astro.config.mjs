@@ -173,6 +173,18 @@ export default defineConfig({
           ],
         },
         {
+          label: "Wallet",
+          items: [
+            { label: "Overview", slug: "wallet" },
+            { label: "Install", slug: "wallet/install" },
+            { label: "AI agents", slug: "wallet/agents" },
+            { label: "Review requests", slug: "wallet/approvals" },
+            { label: "Signing policies", slug: "wallet/policies" },
+            { label: "WalletConnect", slug: "wallet/walletconnect" },
+            { label: "Security and privacy", slug: "wallet/security" },
+          ],
+        },
+        {
           label: "Concepts",
           items: [
             { label: "Key concepts", slug: "concepts/key-concepts" },
