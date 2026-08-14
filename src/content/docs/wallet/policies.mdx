@@ -19,7 +19,9 @@ Every call in a batch must be allowed before the batch can proceed automatically
 
 Open **Policies** in Ekubo Wallet to use the guided editor. A rule can constrain the network, destination, native value, and calldata. Conditions in one rule are combined; leaving a field unrestricted broadens what the rule matches.
 
-For contract calls, prefer a full function signature and constraints on its typed arguments. Put narrow exceptions before broader rules because order is part of the policy's authority. The wallet rejects rules that are provably unreachable behind an earlier rule.
+For contract calls, prefer a full function signature whose top-level parameters are all named, such as `approve(address spender, uint256 amount)`, and constrain arguments by those names. Put narrow exceptions before broader rules because order is part of the policy's authority. The wallet rejects rules that are provably unreachable behind an earlier rule.
+
+Tuple arguments use a positional `tuple` predicate. Its array must have exactly the tuple's ABI arity; a predicate constrains that position and `null` leaves only that position unrestricted. Tuple predicates can nest, and an array of tuples uses `{"each":{"tuple":[...]}}`. For example, `{"tuple":[{"eq":"1"},null,{"eq":"true"}]}` constrains the first and third values of a three-element tuple.
 
 :::danger
 An unrestricted allow rule permits any transaction the agent can request from that account. Use the narrowest rule that expresses the recurring action you intend.
