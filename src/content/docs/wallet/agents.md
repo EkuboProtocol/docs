@@ -60,7 +60,7 @@ Harness providers apply their own tool-use rules before a request reaches Ekubo 
 
 - “`/loop` Manage my USDC/USDG liquidity position on Ethereum. Claim fees, rebalance when the range drifts, and ask before every transaction.”
 - “Claim all fees from my ve33 votes, sell balances worth more than their gas, and max stake the STONX proceeds.”
-- “Fork current state and simulate moving half my ETH/USDC liquidity into USDC/USDG. Compare balances, gas, and range risk.”
+- “Compare moving half my ETH/USDC liquidity into USDC/USDG using current pool data. Show expected balances, gas, and range risk before preparing anything.”
 - “Find every nonzero token approval from my company wallet, rank the risky spenders, and prepare revocations for the ones I choose.”
 - “Propose a policy that only permits this recurring action, including exact constraints on its tuple arguments.”
 
