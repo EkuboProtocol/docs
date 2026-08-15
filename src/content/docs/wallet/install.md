@@ -13,11 +13,13 @@ Anyone who obtains an imported or exported private key can control that account.
 
 ## Connect a supported AI agent
 
-Open **Settings** in Ekubo Wallet. The **Detected agents** section shows Codex, Claude Code, Claude Desktop, Gemini CLI, Cursor, and OpenCode when they are present on the same computer. Choose **Install for all agents** to add the local wallet and, where the harness configuration supports remote MCP, the public Ekubo service.
+Open **Settings** in Ekubo Wallet. The **Detected agents** section shows Codex, Claude Code, Claude Desktop, Gemini CLI, Cursor, OpenCode, and Grok Build when they are present on the same computer. A check or X shows whether each detected agent is configured. Choose **Install** or **Remove** on that row to change only that agent. Installation adds the local wallet and, where the harness configuration supports remote MCP, the public Ekubo service.
+
+Installation status describes the managed configuration entry, not whether an agent process is currently running. A configured agent starts its credential-free stdio bridge when it needs the wallet, and that bridge may connect and disconnect as the agent starts or exits.
 
 The wallet writes an exact `ekubo_wallet` entry containing only the absolute path of its versioned bridge and the fixed `--client <harness>` argument. Where supported, it also writes an `ekubo` entry containing only `https://mcp.ekubo.org/mcp`. Neither entry contains an access token, refresh token, authorization header, client secret, or wallet key. Creating or repairing these credential-free entries does not require owner authentication.
 
-Keep Ekubo Wallet running while an agent uses wallet tools. The installed bridge reconnects when the wallet opens or restarts, so the harness can remain open. Closing the wallet window keeps the application available from its tray or menu-bar icon; on macOS, clicking the Dock icon opens the wallet window again.
+Keep Ekubo Wallet running while an agent uses wallet tools. The installed bridge reconnects when the same wallet version opens or restarts, so the harness can remain open. If the wallet and bridge versions differ during initialization, the bridge exits instead of retrying. Repair that agent's installation in Settings and start a new agent session so the harness launches the matching helper. Closing the wallet window keeps the application available from its tray or menu-bar icon; on macOS, clicking the Dock icon opens the wallet window again.
 
 See [Use Ekubo Wallet with AI agents](/wallet/agents/) for the request flow and trust boundary.
 
