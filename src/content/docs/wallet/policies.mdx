@@ -39,7 +39,7 @@ The optional `$schema` property is only an editor hint. Ekubo Wallet does not fe
 
 ## Agent proposals
 
-An authorized agent can read the active policy and propose a complete replacement based on its current revision. A proposal does not change permissions. The owner must inspect the permission diff in the native wallet and authenticate before installation.
+An authorized agent can read the active policy and propose a complete replacement based on its current revision. A proposal does not change permissions, and an agent cannot install it. The owner must inspect the permission diff in the native wallet. A transition that widens or ambiguously changes authority requires operating-system authentication; a transition that the wallet proves only tightens the active policy can be installed from the owner UI without an additional operating-system challenge.
 
 Do not broaden policy merely to finish the request currently waiting. A one-time action can use the ordinary native review path without changing future permissions.
 

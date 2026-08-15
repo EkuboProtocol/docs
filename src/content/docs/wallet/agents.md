@@ -20,6 +20,8 @@ A simulation is not approval. If a request is waiting on the owner, review it in
 
 Typed-data and personal-message signatures always require native owner review. An agent cannot export a key, accept legal terms, approve its own request, or install a proposed policy.
 
+A transaction allowed by policy can reach the wallet's core signer without a native review. That gives the local server a narrow signing operation, not the key itself: the agent never receives raw key material or an owner-authentication capability. Read [Security and privacy](/wallet/security/) for the complete local boundary.
+
 When a producer returns an `artifact_reference`, the agent must pass that JSON object to the wallet verbatim. It must not encode the object as a JSON string, rename fields, or reconstruct the execution plan. The wallet fetches the body itself and verifies the declared integrity and byte count.
 
 The `reference` argument is an object, never quoted JSON text. Its execution-plan shape is:
