@@ -15,7 +15,7 @@ Selecting **Approve** starts operating-system owner authentication. After authen
 
 Closing a review records no decision. Reopening or refreshing it starts safely on **Reject** again. Cancelling owner authentication leaves the request pending.
 
-Notifications and tray menus do not contain approval actions. Return to the native wallet to make a decision.
+Notifications and tray menus do not contain approval actions. Detailed notifications are the default: they name the account and network, while a private preview tells you to open Ekubo Wallet. Neither form shows the request identifier or exact payload. Return to the native wallet to make a decision.
 
 ## What policies change
 

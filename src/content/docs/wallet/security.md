@@ -15,11 +15,23 @@ Agent configuration written by the wallet contains fixed connection settings, no
 
 Reviews begin on **Reject**, expose the exact payload, require the complete document to be viewed, and use operating-system authentication for approval. The wallet rechecks the request and policy after authentication before signing. Read [Review requests](/wallet/approvals/) for the full flow.
 
+## Owner-only settings
+
+Changes that can widen signing authority or replace trusted inputs require operating-system owner authentication. This includes widening or ambiguously changing a signing policy, adding or editing a network, enabling a disabled network, and adding or replacing trusted token metadata.
+
+Three native owner actions are fail-safe reductions and do not open a fresh operating-system challenge: installing a policy that the wallet proves only tightens the active policy, disabling the exact network currently displayed, and removing the exact trusted-token row currently displayed. The wallet verifies current state again at its encrypted persistence boundary and commits the change atomically. Agents cannot invoke any of these owner-only settings operations.
+
 ## Local agent boundary
 
 Supported harnesses start the installed MCP bridge over stdio. The bridge connects to same-user local IPC: a private Unix socket on macOS and Linux, or a current-user named pipe on Windows. The wallet verifies the local peer identity and gives the connection only the restricted agent API. Installing the connection entry does not itself grant an agent owner capabilities.
 
+Restricted does not mean read-only. The local MCP server can read and persist the typed wallet state needed for proposals and transaction lifecycles, and it can ask the wallet's core authority to use an operating-system-held key when the active policy allows an exact transaction automatically. It cannot obtain raw key material, export a key, decide a native review, authenticate as the owner, install policy, accept legal terms, or change owner-only settings.
+
 This boundary protects against accidental and unauthorized local clients. Same-user local IPC cannot protect the wallet from malicious software already running as the same operating-system user. Keep the operating system and local agent software trusted and up to date.
+
+## Notifications
+
+Transaction notifications use detailed previews by default. Their titles disclose lifecycle state, and their bodies name the local account and configured network. They do not contain request identifiers, exact calldata, or approval and rejection actions. When private previews are in effect, the account and network are replaced by an instruction to open Ekubo Wallet. The operating system controls whether either form appears on a lock screen or remains in notification history.
 
 ## External services
 
