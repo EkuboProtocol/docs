@@ -25,6 +25,17 @@ Claude Desktop manages remote MCP servers as account-level custom connectors. Do
 
 On Team and Enterprise plans, an Owner or Primary Owner must first add the custom connector under **Organization settings → Connectors**. Members can then connect and enable it from **Customize → Connectors**. See [Anthropic's custom connector guide](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp) for the current account and organization flows.
 
+### Grok Build
+
+Ekubo Wallet detects Grok Build and can install both its local wallet bridge and
+this hosted companion into `~/.grok/config.toml`. To configure only the hosted
+server manually, use Grok Build's native TOML shape:
+
+```toml
+[mcp_servers.ekubo]
+url = "https://mcp.ekubo.org/mcp"
+```
+
 ### Other MCP clients
 
 For clients that accept remote MCP servers in a local configuration file, add:
@@ -71,7 +82,7 @@ The rules that keep the boundary safe:
 - **Relay the reference, not the body.** The agent passes the envelope unchanged to the wallet, which fetches the body over HTTPS, recomputes the integrity digest, checks the byte count, and refuses a mismatch. The agent in between never fetches, restates, or reconstructs the plan itself.
 - **No timestamps travel in the envelope.** A plan's validity is expressed by the deadline inside its calldata and enforced by the wallet's simulation against current chain state. An expired reference simply 404s on fetch, and the fix is to re-run the preparation for fresh state and calldata.
 - **Bind the sender first.** Choose the signing account before preparing, and pass that exact address. After preparation, the envelope summary's `chain_id` and sender must match the wallet's observed chain and account — a mismatch invalidates the plan rather than being silently rewritten.
-- **Let the wallet own execution.** The wallet simulates the exact plan, presents the simulated result, collects authorization, and submits — preserving step order (a plan may require atomic batching), following the plan's simulation-failure policy on reverts, and applying each step's bundled custom-error ABI when decoding failures. An agent should not add a second confirmation on top.
+- **Let the wallet own execution.** Before signing, the wallet freshly validates the exact plan, simulates current chain state, prepares the transaction, and evaluates its current policy. It then presents any required review and submits — preserving step order (a plan may require atomic batching), following the plan's simulation-failure policy on reverts, and applying each step's bundled custom-error ABI when decoding failures. Simulation IDs and previews are short-lived handles, not durable authorization. An agent should not add a second confirmation on top.
 
 Prepared on-chain reads travel the same way, as `read_calls_reference` envelopes whose stored body is an exact batch-call argument object. The full contract is published as the server's `ekubo://docs/execution-plan` resource.
 
@@ -80,7 +91,7 @@ Prepared on-chain reads travel the same way, as `read_calls_reference` envelopes
 1. Resolve the tokens by symbol or address, and show the user the chains and addresses chosen.
 2. Convert the user's amount to base units without floating-point arithmetic.
 3. Once the user has decided to swap, request quotes in a single call with the sender and slippage tolerance. Every available source is returned — the server does not pick one — and each option already carries the execution plan that executes it, so the quote the user compared is the quote that executes. Individual provider failures are reported separately without invalidating the quotes that succeeded.
-4. Choose an option and hand its `execution_plan_reference` to the wallet unchanged. The wallet fetches and verifies the plan body, simulates it, presents the result, and submits after authorization.
+4. Choose an option and hand its `execution_plan_reference` to the wallet unchanged. The wallet fetches and verifies the plan body, then freshly simulates, prepares, and checks current policy before any signature; it presents required review and submits after authorization.
 5. Re-quote only after an expiry, a revert, or a change to the request — never to "refresh" a plan already in hand, which would replace the quote the user approved.
 
 For "swap my entire balance" requests there is an extra step: read the exact on-chain balance first, rather than trusting a displayed number. And for a purely indicative "what would I get" comparison, omit the sender and slippage — quotes come back with no calldata attached.
