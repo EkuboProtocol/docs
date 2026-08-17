@@ -181,6 +181,7 @@ export default defineConfig({
             { label: "Supported protocols", slug: "wallet/protocols" },
             { label: "Review requests", slug: "wallet/approvals" },
             { label: "Signing policies", slug: "wallet/policies" },
+            { label: "Automations", slug: "wallet/automations" },
             { label: "WalletConnect", slug: "wallet/walletconnect" },
             { label: "Security and privacy", slug: "wallet/security" },
           ],
