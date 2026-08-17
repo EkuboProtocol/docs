@@ -21,7 +21,7 @@ That separation is why the wallet's protocol coverage is not a property of the v
 | **Sky Savings**     | USDS and sUSDS deposits, withdrawals, and redemptions on Ethereum                                                                                                                                                                   |
 | **Lido**            | ETH staking, wstETH wrapping and unwrapping, and withdrawal requests and claims on Ethereum                                                                                                                                         |
 
-More protocols are being added, and the list above is the one worth checking rather than this page: `https://mcp.ekubo.org/tools` returns the current tool catalog, uncached, with the server version and catalog revision it came from.
+More protocols are being added, so the live catalog is worth checking rather than this table: `https://mcp.ekubo.org/tools` returns the current tools, uncached, with the server version and catalog revision they came from.
 
 For the non-Ekubo protocols the server prepares transactions but is deliberately not in the data path. Live market, vault, queue, and balance state is read by the agent from each protocol's own public API or from your wallet's RPC, and the wallet's simulation of the exact calls is what decides whether an action succeeds.
 
