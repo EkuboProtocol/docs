@@ -9,15 +9,18 @@ A signing policy controls recurring transaction requests from agents. It does no
 
 New accounts begin with an empty policy, so transactions ordinarily wait for owner review. Policy rules are evaluated from top to bottom, and the first matching rule decides each call:
 
-- **Allow** lets a matching transaction proceed without asking the owner again.
-- **Deny** rejects a matching transaction without an approval override.
-- No match sends the transaction to the owner for [native review](/wallet/approvals/).
+- **Allow** lets a matching call proceed without asking the owner again.
+- **Review** requires explicit owner approval for a matching call.
+- **Deny** rejects a matching call without queuing it, and cannot be overridden from the review screen.
+- No match also requires [native review](/wallet/approvals/).
 
-Every call in a batch must be allowed before the batch can proceed automatically.
+Every call is evaluated, and the transaction takes the least permissive result among them, ordering deny below review below allow. So a batch proceeds automatically only when every call in it is allowed, and a single denied call rejects the whole batch.
 
 ## Build a narrow rule
 
-Open **Policies** in Ekubo Wallet to use the guided editor. A rule can constrain the network, destination, native value, and calldata. Conditions in one rule are combined; leaving a field unrestricted broadens what the rule matches.
+Open **Policies** in Ekubo Wallet to use the guided editor. A rule can constrain the network, destination, native value, and calldata of each call. Conditions in one rule are combined; leaving a field unrestricted broadens what the rule matches.
+
+A rule can also constrain the exact prepared transaction envelope that carries those calls: its `transaction_type`, `nonce`, `gas_limit`, `max_fee_per_gas`, `max_priority_fee_per_gas`, the `delegation` target of a signed EIP-7702 authorization, and the envelope's own `envelope_to` and `envelope_native_value`. Per-call native value and envelope native value are distinct, and neither is a cumulative spending budget. The fee matchers are the ones worth setting on any rule that signs without a review, because they bound what a misreporting endpoint can cause that signature to pay.
 
 For contract calls, prefer a full function signature whose top-level parameters are all named, such as `approve(address spender, uint256 amount)`, and constrain arguments by those names. Put narrow exceptions before broader rules because order is part of the policy's authority. The wallet rejects rules that are provably unreachable behind an earlier rule.
 

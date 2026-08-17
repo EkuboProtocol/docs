@@ -31,6 +31,6 @@ Message signatures lead with the fact that nothing moves and that the signature 
 
 ## What policies change
 
-A matching allow rule can let a transaction proceed without a native review. A matching deny rule rejects it and cannot be overridden from the review screen. If no rule matches, the request follows the ordinary owner-review path.
+A matching allow rule can let a call proceed without a native review. A matching review rule sends it here instead. A matching deny rule rejects it and cannot be overridden from the review screen. If no rule matches, the request follows the ordinary owner-review path. A transaction takes the least permissive result across all of its calls, so one call needing review brings the whole batch here.
 
 Typed-data and personal-message signatures always require native review because they can create reusable authority outside a transaction. Read [Signing policies](/wallet/policies/) before allowing recurring agent actions.

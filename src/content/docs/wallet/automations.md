@@ -64,7 +64,7 @@ Very frequent expressions are therefore self-limiting. An automation asking to f
 
 For a per-block cadence, a network configured to treat a transaction as settled after a single confirmation lets the next tick proceed sooner. The exposure that accepts is that a reorg can un-mine the transaction the next tick was planned on top of; bytecode that re-derives its intent from live state every tick self-corrects when that happens. A network carrying reviewed transfers may prefer a deeper confirmation setting.
 
-Owners running automations should also set the network's maximum fee per gas. It bounds what a dishonest endpoint can cost an unreviewed automatic send, and automations add no separate fee cap of their own.
+Because an automation's transactions send without a review, the rule that allows them is worth constraining beyond its calls. A policy rule can match the exact prepared envelope as well, including `max_fee_per_gas`, `gas_limit`, and `max_priority_fee_per_gas`, which is what bounds the fee a dishonest endpoint can cause an unreviewed send to pay. Automations add no separate fee cap of their own.
 
 ## Installing one
 
@@ -86,18 +86,18 @@ An automation is likewise bound to one wallet and one network. It does not follo
 
 Nothing retries. Every terminal disappointment stops the automation and records why, because bytecode that emitted a reverting or disallowed call will emit it again on the next tick, and stopping is the only response that does not burn gas or fill the approval queue in a loop.
 
-| Reason                                                                  | State           |
-| ----------------------------------------------------------------------- | --------------- |
-| The policy did not allow every call, or the batch's simulation failed   | disabled        |
-| The batch reverted on chain                                             | disabled        |
-| The batch did not mine within 30 minutes                                | disabled        |
-| Ten consecutive failed ticks (RPC error, revert, or undecodable return) | disabled        |
-| The owner pressed **Stop**, or an agent disabled it                     | disabled        |
-| The signing policy revision changed                                     | awaiting relink |
+| Reason                                                                                      | State           |
+| ------------------------------------------------------------------------------------------- | --------------- |
+| The policy did not allow every call, or the batch's simulation failed                       | disabled        |
+| The batch reverted on chain                                                                 | disabled        |
+| The batch did not mine within 30 minutes                                                    | disabled        |
+| Ten consecutive failed ticks (RPC error, revert, undecodable return, or a failed broadcast) | disabled        |
+| The owner pressed **Stop**, or an agent disabled it                                         | disabled        |
+| The signing policy revision changed                                                         | awaiting relink |
 
 When a policy rejects the batch, the request that was left waiting for review is the diagnostic: it shows exactly which call the policy did not permit. Exactly one such request survives, rather than one per tick, precisely because the automation stops.
 
-To start a stopped automation again, use **Run again** in the Automations tab, which rebinds it to the current policy revision after showing what it is. An agent can also reinstall it under the same key, which replaces the bytecode and restarts it against the active revision. There is no separate re-enable operation for an agent, so restarting always states exactly what will run.
+To start a stopped automation again, use **Run again** on its card in the Automations tab, which rebinds it to the current policy revision. The card is where the bytecode hash, size, schedule, bound revision, and stop reason are shown, so what is being restarted is on screen next to the control that restarts it. An agent can also reinstall it under the same key, which replaces the bytecode and restarts it against the active revision. There is no separate re-enable operation for an agent, so restarting always states exactly what will run.
 
 ## The Automations tab
 
