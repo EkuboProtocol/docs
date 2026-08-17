@@ -411,7 +411,14 @@ const schemaUrl = "/schemas/ekubo-wallet-policy.schema.json";
         linter(jsonParseLinter(), { delay: 150 }),
         linter(policySchemaLinter, { delay: 150 }),
         lintGutter(),
-        stateExtensions(policyCompletionSchema as typeof policySchema),
+        // A JSON import widens `type` to `string`, so the generated schema does
+        // not structurally satisfy `JSONSchema7` even though it is one. Cast to
+        // the function's own parameter type rather than to the JSON import's.
+        stateExtensions(
+          policyCompletionSchema as unknown as Parameters<
+            typeof stateExtensions
+          >[0],
+        ),
         editorTheme,
         EditorView.contentAttributes.of({
           "aria-label": "Policy JSON",
