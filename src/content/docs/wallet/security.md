@@ -27,11 +27,13 @@ Supported harnesses start the installed MCP bridge over stdio. The bridge connec
 
 Restricted does not mean read-only. The local MCP server can read and persist the typed wallet state needed for proposals and transaction lifecycles, and it can ask the wallet's core authority to use an operating-system-held key when the active policy allows an exact transaction automatically. It cannot obtain raw key material, export a key, decide a native review, authenticate as the owner, install policy, accept legal terms, or change owner-only settings.
 
+It can also install an [automation](/wallet/automations/), which schedules bytecode the wallet polls and whose returned calls enter that same guarded path. An automation adds a source of proposed transactions and no signing or authorization path, so it cannot exceed the policy already installed; it is additionally bound to the policy revision it was installed against, and a later policy change stops it until the owner looks at it again.
+
 This boundary protects against accidental and unauthorized local clients. Same-user local IPC cannot protect the wallet from malicious software already running as the same operating-system user. Keep the operating system and local agent software trusted and up to date.
 
 ## Notifications
 
-Transaction notifications use detailed previews by default. Their titles disclose lifecycle state, and their bodies name the local account and configured network. They do not contain request identifiers, exact calldata, or approval and rejection actions. When private previews are in effect, the account and network are replaced by an instruction to open Ekubo Wallet. The operating system controls whether either form appears on a lock screen or remains in notification history.
+Notifications use detailed previews by default, and are raised for transactions, message and typed-data signature requests, and WalletConnect pairing proposals. Their titles disclose lifecycle state, and their bodies name the local account and configured network, except for a pairing proposal, which names the dapp because no account or network has been chosen yet. They do not contain request identifiers, exact calldata, or approval and rejection actions. When private previews are in effect, the identifying details are replaced by an instruction to open Ekubo Wallet. Opening a notification takes you to that request's own review. The operating system controls whether either form appears on a lock screen or remains in notification history.
 
 ## External services
 

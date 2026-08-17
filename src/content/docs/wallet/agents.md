@@ -20,6 +20,8 @@ A simulation is not approval. If a request is waiting on the owner, review it in
 
 Typed-data and personal-message signatures always require native owner review. An agent cannot export a key, accept legal terms, approve its own request, or install a proposed policy.
 
+An agent can also install an [automation](/wallet/automations/): bytecode the wallet polls on a schedule and whose returned calls take this same path. That is a way to suggest transactions without staying awake, not a way to gain authority — the policy still decides whether any of them send, and an automation whose calls the policy does not allow stops on its first tick.
+
 A transaction allowed by policy can reach the wallet's core signer without a native review. That gives the local server a narrow signing operation, not the key itself: the agent never receives raw key material or an owner-authentication capability. Read [Security and privacy](/wallet/security/) for the complete local boundary.
 
 When a producer returns an `artifact_reference`, the agent must pass that JSON object to the wallet verbatim. It must not encode the object as a JSON string, rename fields, or reconstruct the execution plan. The wallet fetches the body itself and verifies the declared integrity and byte count.
@@ -56,7 +58,7 @@ The hosted service is not the only possible producer, and its protocol coverage 
 
 ## Harness limitations
 
-Supported harnesses include Codex, Claude Code, Claude Desktop, Gemini CLI, Cursor, and OpenCode. The ChatGPT desktop app can use the installed local MCP connection from its **Work** or **Code** tab; there is no ChatGPT wallet plugin.
+Supported harnesses include Codex, Claude Code, Claude Desktop, Gemini CLI, Cursor, OpenCode, and Grok Build. The ChatGPT desktop app can use the installed local MCP connection from its **Work** or **Code** tab; there is no ChatGPT wallet plugin.
 
 Harness providers apply their own tool-use rules before a request reaches Ekubo Wallet. Some clients classify transaction submission as financial activity and refuse to call the wallet even though the wallet would require its own policy check or native review. Claude Desktop is a known example: use **Code** mode for the best chance of reaching wallet tools. If a harness still refuses, move the task to another supported harness. Changing harnesses does not weaken Ekubo Wallet's local policy, simulation, or owner-review boundary.
 

@@ -11,7 +11,7 @@ This section is the canonical landing page for Ekubo Wallet information, setup, 
 
 ## What the wallet does
 
-Ekubo Wallet can hold multiple accounts, show balances across enabled networks, simulate and submit transactions, sign messages and typed data, connect to dapps through WalletConnect, and serve as a local wallet for supported AI agents.
+Ekubo Wallet can hold multiple accounts, show balances across enabled networks, simulate and submit transactions, sign messages and typed data, connect to dapps through WalletConnect, run scheduled [automations](/wallet/automations/) that react to on-chain conditions, and serve as a local wallet for supported AI agents.
 
 An agent can inspect public wallet state, obtain exact actions from producer services, ask the wallet to simulate and submit them, and wait for the result. The wallet does not prepare transfers, protocol actions, or calldata. An agent cannot approve a request, export a private key, install a signing policy, or change security-sensitive settings. Those actions stay in the native application and require the owner where appropriate.
 

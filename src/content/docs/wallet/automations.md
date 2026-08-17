@@ -47,12 +47,12 @@ Because the poll uses `eth_simulateV1`, the network's endpoint has to support th
 
 A schedule is a six-field cron expression, seconds first, evaluated in UTC. Six fields rather than the usual five because minute resolution cannot express "about every block", which is the cadence this feature exists for. A five-field expression pasted from a crontab is rejected rather than reinterpreted, and an expression that names no real moment, such as the 31st of February, is refused at install time instead of displaying a next run that never arrives.
 
-| Expression      | Meaning                    |
-| --------------- | -------------------------- |
-| `*/12 * * * * *` | roughly every block        |
-| `0 */5 * * * *`  | every five minutes         |
-| `0 0 * * * *`    | hourly, on the hour        |
-| `0 30 13 * * *`  | daily at 13:30 UTC         |
+| Expression       | Meaning             |
+| ---------------- | ------------------- |
+| `*/12 * * * * *` | roughly every block |
+| `0 */5 * * * *`  | every five minutes  |
+| `0 0 * * * *`    | hourly, on the hour |
+| `0 30 13 * * *`  | daily at 13:30 UTC  |
 
 Schedules are UTC because a local-time schedule has to answer what happens to an 02:30 job during a daylight-saving transition. Write the UTC hour you mean.
 
@@ -86,14 +86,14 @@ An automation is likewise bound to one wallet and one network. It does not follo
 
 Nothing retries. Every terminal disappointment stops the automation and records why, because bytecode that emitted a reverting or disallowed call will emit it again on the next tick, and stopping is the only response that does not burn gas or fill the approval queue in a loop.
 
-| Reason                                                              | State            |
-| ------------------------------------------------------------------- | ---------------- |
-| The policy did not allow every call, or the batch's simulation failed | disabled         |
-| The batch reverted on chain                                          | disabled         |
-| The batch did not mine within 30 minutes                             | disabled         |
-| Ten consecutive failed ticks (RPC error, revert, or undecodable return) | disabled       |
-| The owner pressed **Stop**, or an agent disabled it                  | disabled         |
-| The signing policy revision changed                                  | awaiting relink  |
+| Reason                                                                  | State           |
+| ----------------------------------------------------------------------- | --------------- |
+| The policy did not allow every call, or the batch's simulation failed   | disabled        |
+| The batch reverted on chain                                             | disabled        |
+| The batch did not mine within 30 minutes                                | disabled        |
+| Ten consecutive failed ticks (RPC error, revert, or undecodable return) | disabled        |
+| The owner pressed **Stop**, or an agent disabled it                     | disabled        |
+| The signing policy revision changed                                     | awaiting relink |
 
 When a policy rejects the batch, the request that was left waiting for review is the diagnostic: it shows exactly which call the policy did not permit. Exactly one such request survives, rather than one per tick, precisely because the automation stops.
 
@@ -130,17 +130,17 @@ Because the poll's writes are thrown away, probing is the intended pattern rathe
 
 ## Limits
 
-| Limit                                      | Value          |
-| ------------------------------------------ | -------------- |
-| Bytecode                                   | 49,152 bytes   |
-| Config                                     | 8,192 bytes    |
-| Name and key                               | 120 characters |
-| Automations per wallet and network         | 32             |
-| Calls returned by one tick                 | 4,096          |
-| Calldata across one batch                  | 8 MiB          |
-| Run records kept per automation            | 2,000          |
-| Consecutive failed ticks before it stops   | 10             |
-| Time a sent batch may go unmined           | 30 minutes     |
-| Time one tick's RPC conversation may take  | 20 seconds     |
+| Limit                                     | Value          |
+| ----------------------------------------- | -------------- |
+| Bytecode                                  | 49,152 bytes   |
+| Config                                    | 8,192 bytes    |
+| Name and key                              | 120 characters |
+| Automations per wallet and network        | 32             |
+| Calls returned by one tick                | 4,096          |
+| Calldata across one batch                 | 8 MiB          |
+| Run records kept per automation           | 2,000          |
+| Consecutive failed ticks before it stops  | 10             |
+| Time a sent batch may go unmined          | 30 minutes     |
+| Time one tick's RPC conversation may take | 20 seconds     |
 
 The call and calldata limits are the execution plan's own, not a second set, so a batch this rejects is one the plan would have rejected a moment later.

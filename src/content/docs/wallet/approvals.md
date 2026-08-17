@@ -15,7 +15,19 @@ Selecting **Approve** starts operating-system owner authentication. After authen
 
 Closing a review records no decision. Reopening or refreshing it starts safely on **Reject** again. Cancelling owner authentication leaves the request pending.
 
-Notifications and tray menus do not contain approval actions. Detailed notifications are the default: they name the account and network, while a private preview tells you to open Ekubo Wallet. Neither form shows the request identifier or exact payload. Return to the native wallet to make a decision.
+Notifications and tray menus do not contain approval actions. Detailed notifications are the default: they name the account and network, while a private preview tells you to open Ekubo Wallet. Neither form shows the request identifier or exact payload. Transactions, message signatures, typed-data signatures, and WalletConnect pairing proposals all raise one, and opening a notification takes you to that request's own review rather than to a transaction review. A pairing proposal names the dapp, because at that point there is no account or network to name yet. Return to the native wallet to make a decision.
+
+## Signature reviews
+
+A signature review opens the same way a transaction review does, by stating what approving it lets someone else do, and then shows the exact payload unaltered beneath that reading.
+
+For typed data, an **Effects** section leads. When the payload is a recognized token permit — ERC-2612, a DAI-style permit, a Permit2 allowance, or a Permit2 signature transfer — the review names the amount and token, who may draw it, and the two lifetimes separately: how long the allowance itself lasts and how long the signature stays usable. Showing only the second can make an allowance that effectively never lapses look like one that expires within the hour. A deadline set to a sentinel beyond any readable date is reported as never rather than printed as digits.
+
+Token names and amounts in that reading come from the owner-confirmed token database alone, never from the contract being signed for, so an unlisted token stays unnamed. An effectively unlimited allowance is called unlimited and carries a warning. A Permit2 signature transfer is flagged as one, because the signature itself moves the tokens once and needs no further transaction from the owner. Every recognized permit carries the standing warning that it moves tokens exactly as an on-chain approval does, is redeemed by whoever holds it rather than by this wallet, and will not appear in this wallet's activity when it is used.
+
+A payload the wallet does not recognize as a permit says so plainly, and says that this is not a promise the payload grants nothing — the types and values below are the only authority on what it means. A payload shaped like a permit that names some other account as the owner is still rendered, with a warning saying it is signed for somebody else's benefit; refusing to display it would leave the owner deciding from raw JSON.
+
+Message signatures lead with the fact that nothing moves and that the signature proves control of the signing address to whoever holds it, for as long as they hold it. An ERC-4361 sign-in message is read field by field, including the domain it signs you in to, rather than left as prose. Recognition is structural, so a message that merely mentions signing in is not given a login's framing.
 
 ## What policies change
 

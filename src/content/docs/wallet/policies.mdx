@@ -44,3 +44,7 @@ An authorized agent can read the active policy and propose a complete replacemen
 Do not broaden policy merely to finish the request currently waiting. A one-time action can use the ordinary native review path without changing future permissions.
 
 Display labels, token symbols, RPC simulation output, and other network-provided facts are review context, not policy inputs. Policy matching uses exact transaction fields.
+
+## Installing a policy stops automations
+
+Each [automation](/wallet/automations/) is bound to the policy revision that was active when it was installed. Installing any policy therefore stops every automation on that account until you review each one and choose to run it again. That is deliberate: without it, widening a policy for some unrelated reason would silently re-arm a scheduled job under a rule written for something else.

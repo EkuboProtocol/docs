@@ -10,7 +10,7 @@ Ekubo Wallet accepts WalletConnect pairing URIs copied from a dapp's connect-wal
 3. Review the dapp identity and requested networks, then choose the account to expose.
 4. Approve or reject later signing and transaction requests in Ekubo Wallet.
 
-The wallet validates the pairing before connecting. Multiple dapps can be connected at the same time, and each live session can be disconnected from the **WalletConnect** screen.
+The wallet validates the pairing before connecting. An arriving proposal raises the wallet window and a notification naming the dapp, because a pairing is as much a decision as any other request. Multiple dapps can be connected at the same time, and each live session can be disconnected from the **WalletConnect** screen.
 
 Account and chain requests, message signing, typed data, transactions, and supported batched-call requests enter the same native review path as other dapp requests. A connected dapp cannot approve its own request or change the wallet's signing policy.
 
