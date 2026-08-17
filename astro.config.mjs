@@ -178,6 +178,7 @@ export default defineConfig({
             { label: "Overview", slug: "wallet" },
             { label: "Install", slug: "wallet/install" },
             { label: "AI agents", slug: "wallet/agents" },
+            { label: "Supported protocols", slug: "wallet/protocols" },
             { label: "Review requests", slug: "wallet/approvals" },
             { label: "Signing policies", slug: "wallet/policies" },
             { label: "WalletConnect", slug: "wallet/walletconnect" },

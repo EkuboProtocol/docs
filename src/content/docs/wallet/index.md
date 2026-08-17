@@ -25,6 +25,8 @@ An agent can inspect public wallet state, obtain exact actions from producer ser
 
 The public [Ekubo MCP server](/products/mcp-server/) complements the wallet. It can resolve tokens, compare swap quotes, read Ekubo pools and positions, and prepare unsigned execution plans. The wallet independently retrieves the selected plan, simulates it against current chain state, and owns signing and submission.
 
+Because the wallet executes plans rather than implementing protocols, its coverage extends well past Ekubo — currently 0x, Across, Aave V3, Morpho, Sky, and Lido as well — and grows without a wallet update. See [Supported protocols](/wallet/protocols/), which also covers what makes a third-party MCP server compatible.
+
 ## Get started
 
 1. [Install Ekubo Wallet](/wallet/install/) and create or import an account.

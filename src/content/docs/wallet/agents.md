@@ -52,6 +52,8 @@ The hosted service can temporarily store exact execution plans and other artifac
 
 Claude Desktop's configuration file receives only the local entry. Add the public service separately as an account-level custom connector through **Customize → Connectors**.
 
+The hosted service is not the only possible producer, and its protocol coverage changes without a wallet release. [Supported protocols](/wallet/protocols/) lists what it prepares today and states the contract a third-party MCP server satisfies to produce plans this wallet will execute.
+
 ## Harness limitations
 
 Supported harnesses include Codex, Claude Code, Claude Desktop, Gemini CLI, Cursor, and OpenCode. The ChatGPT desktop app can use the installed local MCP connection from its **Work** or **Code** tab; there is no ChatGPT wallet plugin.
