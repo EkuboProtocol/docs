@@ -3,13 +3,29 @@ description: Understand Ekubo Wallet's custody, local-agent, storage, and networ
 title: "Security and privacy"
 ---
 
-Ekubo Wallet keeps private keys and signing inside its core wallet authority. The native application retains owner-only capabilities, while agents receive a narrower interface that cannot approve requests, export keys, install policies, accept legal terms, or change security-sensitive settings.
+Within the wallet process and its supported MCP interface, Ekubo Wallet keeps private keys and signing inside its core wallet authority. The native application retains owner-only capabilities, while agents receive a narrower interface that cannot approve requests, export keys, install policies, accept legal terms, or change security-sensitive settings. The current Windows and Linux credential backends have a separate same-user extraction weakness described below.
 
 ## Keys and local storage
 
-Wallet state is stored in an encrypted local database. Private keys are placed in the operating system's secure credential service rather than an agent configuration file. Exporting a private key requires owner authentication and an explicit action in the native application.
+Wallet state is stored in an encrypted local database. Private keys and the database key are placed in the operating system's credential service rather than an agent configuration file. Exporting a private key through Ekubo Wallet requires owner authentication and an explicit action in the native application.
 
 Agent configuration written by the wallet contains fixed connection settings, not wallet credentials. The local bridge has no OAuth flow, bearer token, or client secret.
+
+## Windows and Linux credential-store limitation
+
+:::caution[Current Windows and Linux builds do not provide application-scoped key custody]
+Malware running as the same operating-system user can extract raw account private keys and the SQLCipher database key without using Ekubo Wallet or satisfying owner authentication. Once extracted, a private key can sign elsewhere and bypass wallet policy, native review, and wallet audit records.
+:::
+
+The Windows build uses generic Windows Credential Manager entries. Microsoft documents that [generic credentials can be read and written by user processes](https://learn.microsoft.com/en-us/windows/win32/secauthn/kinds-of-credentials). The service and account names identify an entry; they do not restrict it to Ekubo Wallet.
+
+The Linux build uses the Secret Service default collection. The [Secret Service specification](https://specifications.freedesktop.org/secret-service/latest/ch10.html) does not require application access controls, and GNOME states that [any application with the same user's privileges can read secrets in an unlocked keyring](https://wiki.gnome.org/Projects%282f%29GnomeKeyring%282f%29SecurityFAQ.html). Other Secret Service implementations may differ, but Ekubo Wallet does not establish or verify an application-specific restriction on Linux.
+
+A prompt-injected agent is relevant when its harness can run shell commands, programs, or arbitrary code as the desktop user. Such an agent can call the operating-system credential API directly. This is not a key export through MCP: the MCP server never returns raw key material, but its restrictions cannot govern an attacker that bypasses the wallet process. Closing the wallet does not delete the persistent credential entries.
+
+SQLCipher still protects a copied database when the database key is unavailable, and the operating-system credential service protects against other users and offline disk access. Those controls do not protect a live Windows or Linux session from same-user malware. Until the custody mechanism changes, use valuable accounts on those platforms only if you trust every process and local agent allowed to run as the wallet user.
+
+The current macOS build uses Keychain item access controls. Apple documents that [the creating application is automatically trusted and access is tracked using its code-signing requirement](https://developer.apple.com/library/archive/documentation/Security/Conceptual/CodeSigningGuide/AboutCS/AboutCS.html). This is a stronger application boundary, but it does not protect a compromised wallet process, signing identity, authenticated owner session, or operating system.
 
 ## Native approval boundary
 
@@ -29,7 +45,7 @@ Restricted does not mean read-only. The local MCP server can read and persist th
 
 It can also install an [automation](/wallet/automations/), which schedules bytecode the wallet polls and whose returned calls enter that same guarded path. An automation adds a source of proposed transactions and no signing or authorization path, so it cannot exceed the policy already installed; it is additionally bound to the policy revision it was installed against, and a later policy change stops it until the owner looks at it again.
 
-This boundary protects against accidental and unauthorized local clients. Same-user local IPC cannot protect the wallet from malicious software already running as the same operating-system user. Keep the operating system and local agent software trusted and up to date.
+This boundary protects against accidental and unauthorized local clients. It does not protect against malicious software already running as the same operating-system user. On Windows and Linux, that software can also use the [credential-store limitation](#windows-and-linux-credential-store-limitation) to retrieve keys directly, including after prompt injection into an agent harness with local code-execution capability. Keep the operating system and local agent software trusted and up to date.
 
 ## Notifications
 

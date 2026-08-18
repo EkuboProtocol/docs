@@ -24,6 +24,10 @@ An agent can also install an [automation](/wallet/automations/): bytecode the wa
 
 A transaction allowed by policy can reach the wallet's core signer without a native review. That gives the local server a narrow signing operation, not the key itself: the agent never receives raw key material or an owner-authentication capability. Read [Security and privacy](/wallet/security/) for the complete local boundary.
 
+:::caution[Windows and Linux prompt-injection boundary]
+The statement above describes the MCP interface. On Windows and Linux, a prompt-injected harness that can execute shell commands or programs as the logged-in user can bypass MCP and query the current per-user credential backend directly for raw keys. Wallet policy and review cannot govern an external signer created from an extracted key. Read the [credential-store limitation](/wallet/security/#windows-and-linux-credential-store-limitation).
+:::
+
 When a producer returns an `artifact_reference`, the agent must pass that JSON object to the wallet verbatim. It must not encode the object as a JSON string, rename fields, or reconstruct the execution plan. The wallet fetches the body itself and verifies the declared integrity and byte count.
 
 The `reference` argument is an object, never quoted JSON text. Its execution-plan shape is:

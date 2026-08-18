@@ -5,7 +5,11 @@ description: >-
 title: "Ekubo Wallet"
 ---
 
-Ekubo Wallet is a native desktop wallet for Ethereum and EVM-compatible networks. It gives people, local AI agents, and WalletConnect dapps one place to use accounts while keeping private keys and owner-only decisions inside the wallet application.
+Ekubo Wallet is a native desktop wallet for Ethereum and EVM-compatible networks. It gives people, local AI agents, and WalletConnect dapps one place to use accounts. Within the wallet's own interfaces, private keys and owner-only decisions stay in the native application.
+
+:::caution[Windows and Linux key-storage warning]
+The current Windows and Linux credential backends do not isolate raw private keys from other processes running as the same logged-in user. Same-user malware, including a prompt-injected local agent that can execute code, can extract a key outside the wallet and bypass policy and review. Read the [platform limitation](/wallet/security/#windows-and-linux-credential-store-limitation) before installing.
+:::
 
 This section is the canonical landing page for Ekubo Wallet information, setup, and security documentation.
 

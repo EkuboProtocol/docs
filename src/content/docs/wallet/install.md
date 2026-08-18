@@ -1,11 +1,15 @@
 ---
-description: Install Ekubo Wallet, create an account, and set up desktop integrations
+description: Install Ekubo Wallet, understand platform key storage, and set up desktop integrations
 title: "Install Ekubo Wallet"
 ---
 
+:::caution[Windows and Linux key-storage warning]
+The current Windows and Linux builds store raw account private keys and the encrypted database key in a per-user credential service that does not isolate them to Ekubo Wallet. Malware running as the same logged-in user can extract those keys without wallet approval. This includes a prompt-injected local AI agent or harness that is allowed to execute shell commands or programs as you. An extracted key can be used outside the wallet, bypassing every signing policy and native review. Read the [platform limitation](/wallet/security/#windows-and-linux-credential-store-limitation) before downloading either build.
+:::
+
 Download the current stable package from [wallet.ekubo.org](https://wallet.ekubo.org/). The release provides an Apple Silicon DMG for macOS, an x86-64 installer for Windows, and x86-64 AppImage and DEB packages for Linux. The Windows installer is not Authenticode-signed, so Windows can display an Unknown publisher or Microsoft Defender SmartScreen warning.
 
-After installation, open Ekubo Wallet and accept the legal documents shown by the application. Create a new account or import an existing private key from the **Accounts** screen before connecting an agent or dapp. New keys go directly to the operating system's secure credential storage and are not shown by the wallet.
+After installation, open Ekubo Wallet and accept the legal documents shown by the application. Create a new account or import an existing private key from the **Accounts** screen before connecting an agent or dapp. New keys go directly to the operating system's credential service and are not shown by the wallet UI. On Windows and Linux, that service encrypts credentials at rest but does not protect them from other processes running as the same user. The current macOS Keychain backend applies application code-signature access controls.
 
 :::caution
 Anyone who obtains an imported or exported private key can control that account. Never paste a private key into a website, chat, issue, log, or agent prompt.
