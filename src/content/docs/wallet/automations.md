@@ -15,7 +15,7 @@ An automation is a source of proposed transactions, not a permission. It supplie
 
 That is why installing one is not a widening of authority, and why it does not open an approval dialog. Bytecode can only emit calls; every call is evaluated against the installed policy at send time, and a batch that does not resolve to allow for every call never reaches the signer. An automation that an owner installs and then forgets is bounded by the policy they installed, in the same way an agent they leave running is.
 
-Automations run only while the application is running and the wallet is unlocked. There is no headless or background service mode, and nothing runs after you quit.
+Automations run only while the application is running. There is no separate application-level lock state, headless mode, or background service, and nothing runs after you quit. An automatic signature also depends on the operating system's credential service allowing the wallet process to read the key.
 
 ## What one tick does
 

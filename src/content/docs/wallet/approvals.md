@@ -13,9 +13,11 @@ Check the account, network, destination, value, and exact operation. Treat token
 
 Selecting **Approve** starts operating-system owner authentication. After authentication, the wallet reloads the request and active policy and verifies that the reviewed document still matches what will be signed. If anything relevant changed, it does not sign the stale review.
 
+For a transaction, approval also submits the exact signed envelope before the review closes; no agent or dapp has to return and ask the wallet to broadcast it. If every configured endpoint refuses those bytes, the activity remains **Signed** and the wallet reports the failure so **Send now** can retry the same envelope.
+
 Closing a review records no decision. Reopening or refreshing it starts safely on **Reject** again. Cancelling owner authentication leaves the request pending.
 
-Notifications and tray menus do not contain approval actions. Detailed notifications are the default: they name the account and network, while a private preview tells you to open Ekubo Wallet. Neither form shows the request identifier or exact payload. Transactions, message signatures, typed-data signatures, and WalletConnect pairing proposals all raise one, and opening a notification takes you to that request's own review rather than to a transaction review. A pairing proposal names the dapp, because at that point there is no account or network to name yet. Return to the native wallet to make a decision.
+Notifications and tray menus do not contain approval actions. Detailed notifications are the default: they name the account and network, while a private preview tells you to open Ekubo Wallet. Neither form shows the request identifier or exact payload. Transactions, message signatures, typed-data signatures, and WalletConnect pairing proposals all raise notifications. Opening a waiting request goes to its exact review; opening a decided or lifecycle update goes to its Activity record. A pairing proposal names the dapp, because at that point there is no account or network to name yet. Return to the native wallet to make a decision.
 
 ## Signature reviews
 
@@ -31,6 +33,8 @@ Message signatures lead with the fact that nothing moves and that the signature 
 
 ## What policies change
 
-A matching allow rule can let a call proceed without a native review. A matching review rule sends it here instead. A matching deny rule rejects it and cannot be overridden from the review screen. If no rule matches, the request follows the ordinary owner-review path. A transaction takes the least permissive result across all of its calls, so one call needing review brings the whole batch here.
+A matching allow rule can let a call proceed without a native review. A local agent can also ask for one otherwise allowed submission to be reviewed, which adds this screen without changing policy. A matching review rule sends it here instead. A matching deny rule rejects it and cannot be overridden from the review screen. If no rule matches, the request follows the ordinary owner-review path. A transaction takes the least permissive result across all of its calls, so one call needing review brings the whole batch here.
+
+Policy rules do not distinguish the requesting agent, automation, or WalletConnect dapp. The same allow rule applies to the same matching transaction from any of those sources; the source shown in the review and activity history is context, not an authorization input.
 
 Typed-data and personal-message signatures always require native review because they can create reusable authority outside a transaction. Read [Signing policies](/wallet/policies/) before allowing recurring agent actions.

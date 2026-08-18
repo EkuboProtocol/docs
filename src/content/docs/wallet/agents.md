@@ -18,11 +18,15 @@ Follow the [installation guide](/wallet/install/) to configure a supported harne
 
 A simulation is not approval. If a request is waiting on the owner, review it in Ekubo Wallet's **Inbox**. The agent should continue waiting rather than returning a request identifier and treating the task as finished.
 
+If you ask to inspect one transaction that your policy would otherwise send automatically, the agent can submit it with `must_review` enabled. That adds native review to this submission only; it does not change policy, approve anything, or make a denied transaction sendable.
+
 Typed-data and personal-message signatures always require native owner review. An agent cannot export a key, accept legal terms, approve its own request, or install a proposed policy.
 
 An agent can also install an [automation](/wallet/automations/): bytecode the wallet polls on a schedule and whose returned calls take this same path. That is a way to suggest transactions without staying awake, not a way to gain authority — the policy still decides whether any of them send, and an automation whose calls the policy does not allow stops on its first tick.
 
 A transaction allowed by policy can reach the wallet's core signer without a native review. That gives the local server a narrow signing operation, not the key itself: the agent never receives raw key material or an owner-authentication capability. Read [Security and privacy](/wallet/security/) for the complete local boundary.
+
+Signing policy belongs to the wallet account rather than to one agent connection. The same allow rule also applies to an equivalent transaction requested by an installed automation or a connected WalletConnect dapp. Read [Signing policies](/wallet/policies/) before granting unattended authority.
 
 :::caution[Windows and Linux prompt-injection boundary]
 The statement above describes the MCP interface. On Windows and Linux, a prompt-injected harness that can execute shell commands or programs as the logged-in user can bypass MCP and query the current per-user credential backend directly for raw keys. Wallet policy and review cannot govern an external signer created from an extracted key. Read the [credential-store limitation](/wallet/security/#windows-and-linux-credential-store-limitation).

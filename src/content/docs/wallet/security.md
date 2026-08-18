@@ -37,6 +37,12 @@ Changes that can widen signing authority or replace trusted inputs require opera
 
 Three native owner actions are fail-safe reductions and do not open a fresh operating-system challenge: installing a policy that the wallet proves only tightens the active policy, disabling the exact network currently displayed, and removing the exact trusted-token row currently displayed. The wallet verifies current state again at its encrypted persistence boundary and commits the change atomically. Agents cannot invoke any of these owner-only settings operations.
 
+## Transaction policy scope
+
+Signing policy belongs to a wallet account rather than to a particular requester. Rules match exact calls and prepared transaction fields; they do not match the MCP client, harness, automation, dapp, WalletConnect session, or displayed plan source. The same allow rule therefore applies to an equivalent transaction requested by a local agent, an installed automation, or a connected WalletConnect dapp. Source labels remain useful review and audit context, but they grant and restrict nothing.
+
+Personal-message and typed-data signatures always require native review. For transactions, a local agent may ask for one otherwise allowed submission to receive review; that can only add a prompt and cannot override a deny or approve anything.
+
 ## Local agent boundary
 
 Supported harnesses start the installed MCP bridge over stdio. The bridge connects to same-user local IPC: a private Unix socket on macOS and Linux, or a current-user named pipe on Windows. The wallet verifies the local peer identity and gives the connection only the restricted agent API. Installing the connection entry does not itself grant an agent owner capabilities.
@@ -49,7 +55,7 @@ This boundary protects against accidental and unauthorized local clients. It doe
 
 ## Notifications
 
-Notifications use detailed previews by default, and are raised for transactions, message and typed-data signature requests, and WalletConnect pairing proposals. Their titles disclose lifecycle state, and their bodies name the local account and configured network, except for a pairing proposal, which names the dapp because no account or network has been chosen yet. They do not contain request identifiers, exact calldata, or approval and rejection actions. When private previews are in effect, the identifying details are replaced by an instruction to open Ekubo Wallet. Opening a notification takes you to that request's own review. The operating system controls whether either form appears on a lock screen or remains in notification history.
+Notifications use detailed previews by default, and are raised for transactions, message and typed-data signature requests, and WalletConnect pairing proposals. Their titles disclose lifecycle state, and their bodies name the local account and configured network, except for a pairing proposal, which names the dapp because no account or network has been chosen yet. They do not contain request identifiers, exact calldata, or approval and rejection actions. When private previews are in effect, the identifying details are replaced by an instruction to open Ekubo Wallet. A waiting request opens its exact review; a decided request or transaction lifecycle update opens Activity. The operating system controls whether either form appears on a lock screen or remains in notification history.
 
 ## External services
 
