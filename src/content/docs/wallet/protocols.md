@@ -36,7 +36,7 @@ Your [signing policy](/wallet/policies/) is the other side of this. Policies mat
 
 ## Third-party producers
 
-Nothing about the wallet's execution boundary is specific to Ekubo's server. Any MCP server that returns plans in the published shape works, and third parties are free to build them.
+Nothing about the wallet's execution boundary is specific to Ekubo's server. Any MCP server that returns plans in the published shape works, and third parties are free to build them. [Build a plan producer](/wallet/producers/) is the full contract, with worked examples; what follows is its outline.
 
 A compatible producer returns a reference rather than the plan itself:
 
