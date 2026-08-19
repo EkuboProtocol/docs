@@ -39,7 +39,14 @@ export const legacyFiles = [
   "user-guides/governance.md",
 ];
 
+// GitBook published a page at its position in the table of contents, not at its
+// file path, so a page nested under a parent it did not live beside got a URL
+// no file name predicts. `concepts/extensions-vs-v4-hooks.md` sat under
+// Extensions and was served at `/concepts/extensions/extensions-vs-v4-hooks`,
+// which is the URL that was linked and shared.
 export const movedRoutes = {
+  "concepts/extensions/extensions-vs-v4-hooks":
+    "concepts/extensions-vs-v4-hooks.md",
   "products/wallet": "wallet/README.md",
   "integration-guides/till-pattern": "concepts/architecture.md",
   "concepts/till-pattern": "concepts/architecture.md",

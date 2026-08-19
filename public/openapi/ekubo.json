@@ -2347,6 +2347,248 @@
         }
       }
     },
+    "/price/{chainId}/{baseToken}/{quoteToken}/ohlc": {
+      "get": {
+        "tags": [
+          "Prices"
+        ],
+        "summary": "Get pair OHLC price history",
+        "description": "Returns open, high, low, close and volume candles for a pair, aggregated across every pool of that pair. Prices are the prices swaps actually executed at, so the four values carry their traditional meaning, and dust swaps are excluded so a negligible trade cannot set a candle's open or close. Buckets in which nothing traded are omitted rather than carried forward, so every candle returned describes real trading. Prices are expressed in the quote token's smallest unit per the base token's smallest unit, so a client holding the two token decimals must scale them for display.",
+        "operationId": "get_GetPairOhlcHistory",
+        "parameters": [
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^0x[a-fA-F0-9]+$",
+                  "description": "A hexadecimal number"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^\\d+e?\\d*$",
+                  "description": "A decimal number"
+                }
+              ],
+              "title": "Numeric",
+              "description": "A number represented in hexadecimal or decimal",
+              "example": "1"
+            },
+            "required": true,
+            "description": "A number represented in hexadecimal or decimal",
+            "name": "chainId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^0x[a-fA-F0-9]+$",
+                  "description": "A hexadecimal number"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^\\d+e?\\d*$",
+                  "description": "A decimal number"
+                }
+              ],
+              "title": "Address",
+              "description": "An address on the specified blockchain network",
+              "example": "0x0"
+            },
+            "required": true,
+            "description": "An address on the specified blockchain network",
+            "name": "baseToken",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^0x[a-fA-F0-9]+$",
+                  "description": "A hexadecimal number"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^\\d+e?\\d*$",
+                  "description": "A decimal number"
+                }
+              ],
+              "title": "Address",
+              "description": "An address on the specified blockchain network",
+              "example": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+            },
+            "required": true,
+            "description": "An address on the specified blockchain network",
+            "name": "quoteToken",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 60,
+              "default": 3600,
+              "description": "Bucket size in seconds"
+            },
+            "required": false,
+            "description": "Bucket size in seconds",
+            "name": "interval",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "description": "Unix timestamp (seconds) of the first bucket"
+            },
+            "required": false,
+            "description": "Unix timestamp (seconds) of the first bucket",
+            "name": "start",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "description": "Unix timestamp (seconds) of the last bucket"
+            },
+            "required": false,
+            "description": "Unix timestamp (seconds) of the last bucket",
+            "name": "end",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The OHLC price history of the pair",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "timestamp": {
+                      "type": "integer"
+                    },
+                    "start": {
+                      "type": "integer"
+                    },
+                    "end": {
+                      "type": "integer"
+                    },
+                    "interval": {
+                      "type": "integer"
+                    },
+                    "base_token": {
+                      "type": "string"
+                    },
+                    "quote_token": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "start": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "string",
+                                "format": "date-time"
+                              }
+                            ]
+                          },
+                          "open": {
+                            "type": "number"
+                          },
+                          "high": {
+                            "type": "number"
+                          },
+                          "low": {
+                            "type": "number"
+                          },
+                          "close": {
+                            "type": "number"
+                          },
+                          "volume_base": {
+                            "type": "string"
+                          },
+                          "volume_quote": {
+                            "type": "string"
+                          },
+                          "swap_count": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "start",
+                          "open",
+                          "high",
+                          "low",
+                          "close",
+                          "volume_base",
+                          "volume_quote",
+                          "swap_count"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "timestamp",
+                    "start",
+                    "end",
+                    "interval",
+                    "base_token",
+                    "quote_token",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid tokens or range",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "HTTP status code for the error"
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable description of the error"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "error"
+                  ],
+                  "additionalProperties": {},
+                  "description": "Standard error response payload",
+                  "example": {
+                    "status": 404,
+                    "error": "Token not found"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/pools/{chainId}/{coreAddress}/{poolId}/price/history": {
       "get": {
         "tags": [
