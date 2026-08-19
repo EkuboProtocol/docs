@@ -20,6 +20,7 @@ That separation is why the wallet's protocol coverage is not a property of the v
 | **Morpho Vault V2** | Vault deposits, withdrawals, and redemptions on Ethereum and Base                                                                                                                                                                   |
 | **Sky Savings**     | USDS and sUSDS deposits, withdrawals, and redemptions on Ethereum                                                                                                                                                                   |
 | **Lido**            | ETH staking, wstETH wrapping and unwrapping, and withdrawal requests and claims on Ethereum                                                                                                                                         |
+| **Merkl**           | Incentive reward claims, for campaigns on any protocol Merkl covers, on the 22 chains where the Distributor deployment has been verified                                                                                            |
 
 More protocols are being added, so the live catalog is worth checking rather than this table: `https://mcp.ekubo.org/tools` returns the current tools, uncached, with the server version and catalog revision they came from.
 

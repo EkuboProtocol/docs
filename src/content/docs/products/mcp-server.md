@@ -1,11 +1,14 @@
 ---
 description: >-
   Connect an AI agent to Ekubo: quotes, pool and position data, and unsigned
-  execution plans over the Model Context Protocol
+  execution plans for Ekubo, Aave, Morpho, Sky, Lido, and Merkl over the Model
+  Context Protocol
 title: "MCP server"
 ---
 
 Ekubo runs a public [Model Context Protocol](https://modelcontextprotocol.io/) server at **`https://mcp.ekubo.org/mcp`**. It gives AI agents first-class access to Ekubo — resolving tokens, quoting swaps, reading pools and positions, and building transactions — without scraping a web interface.
+
+Because an execution plan is signer-neutral calldata rather than an Ekubo-specific document, the server's coverage does not stop at Ekubo: it also prepares Aave V3, Morpho Vault V2, Sky Savings, Lido, and Merkl actions, and quotes swaps from 0x and bridges from Across alongside Ekubo's own.
 
 The server is **non-custodial and read-only with respect to keys**. It never holds funds, never signs, and never submits. Tools that produce a transaction return a reference to an unsigned _execution plan_; signing and submission happen in the user's own wallet tooling.
 
@@ -55,7 +58,7 @@ Most clients also accept it from the command line. For example, Claude Code uses
 
 ## What it can do
 
-Roughly fifty tools, grouped by what you're trying to accomplish:
+More than seventy tools, grouped by what you're trying to accomplish. The catalog grows on its own schedule, so `https://mcp.ekubo.org/tools` — which returns the live list along with the server version and catalog revision it came from — is authoritative wherever this page has drifted.
 
 | Area                                         | Capabilities                                                                                                                                                                                                     |
 | -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -66,10 +69,36 @@ Roughly fifty tools, grouped by what you're trying to accomplish:
 | **DCA / TWAMM**                              | Place, collect, and stop orders, and execute virtual orders.                                                                                                                                                     |
 | **[Ve33](/products/ve33/)**                  | Stake, vote, reallocate, extend, split, merge, increase, withdraw, reinvest, and claim fees — plus current allocations and a STONX allocation recommendation.                                                    |
 | **[Auctions](/reference/contracts/evm-v3/)** | Create an auction, complete it, and collect creator proceeds.                                                                                                                                                    |
-| **Rewards**                                  | List claimable [rewards](/products/rewards/) for an owner and prepare claims, including recovery fund claims; surface boosted-fee, incentive, and projected ve(3,3) opportunities ranked by APR.                 |
-| **Utilities**                                | Revoke approvals, wrap and unwrap tokens, boost a pool manually, expand oracle capacity, unwrap old gEKUBO, and trigger revenue buybacks.                                                                        |
+| **Rewards**                                  | List claimable Ekubo [rewards](/products/rewards/) for an owner and prepare claims, including recovery fund claims; surface boosted-fee, incentive, and projected ve(3,3) opportunities ranked by APR.           |
+| **Other protocols**                          | Aave V3, Morpho Vault V2, Sky Savings, Lido, and Merkl — see [Protocols beyond Ekubo](#protocols-beyond-ekubo).                                                                                                  |
+| **Transfers**                                | Prepare one ordered plan of 1 to 4,096 native, ERC-20, ERC-721, and ERC-1155 transfers on a chain, mixed freely.                                                                                                 |
+| **Utilities**                                | Revoke approvals, wrap and unwrap tokens, boost a pool manually, expand oracle capacity, unwrap old gEKUBO, trigger revenue buybacks, and export the token list to a wallet by reference.                        |
 
 It also publishes **resources** that document its own conventions — the canonical agent workflow, the LP position workflow, the Ve33 workflow, quote semantics across providers, the execution-plan handoff, the data API's OpenAPI spec, and a chain-indexed directory of deployed contract addresses. Agents can read these directly rather than guessing at usage.
+
+Alongside those it publishes **skills** — `ekubo://skills/use-morpho`, `ekubo://skills/use-sky`, `ekubo://skills/use-lido`, and `ekubo://skills/use-merkl`, each with a `references/discovery.md` child naming the official endpoints and reads. They are also plain files over HTTPS, at `https://mcp.ekubo.org/skills/use-merkl/SKILL.md` and its siblings, so a client that does not speak MCP resources can still load them.
+
+## Protocols beyond Ekubo
+
+For Aave V3, Morpho Vault V2, Sky Savings, Lido, and Merkl the server prepares transactions but is deliberately **not in the data path**. It holds a fixed, locally maintained deployment catalog — the addresses and the chains they were verified on — and returns unsigned calls against it. Live market, vault, queue, reward, and balance state is read by the agent from each protocol's own public API or through your wallet's RPC, never proxied, cached, or replayed by this server. What decides whether an action succeeds is the wallet's simulation of the exact calls.
+
+[Supported protocols](/wallet/protocols/) lists the actions and chains for each.
+
+### Merkl reward claims
+
+[Merkl](https://merkl.xyz/) distributes incentive campaigns for hundreds of protocols. Rewards accrue off chain, are published as a Merkle root to a Distributor contract, and are claimed against a proof — so a claim's inputs necessarily come from Merkl's own API rather than from a chain.
+
+The agent fetches them directly, from `https://api.merkl.xyz/v4/users/{address}/rewards/summary`, which is public and needs no key. What makes that safe is not trust in the response. `prepare_merkl_claim` folds every supplied proof into the Merkle root it implies, refuses a batch whose proofs fold to more than one root, and returns a read bundle asking the wallet for the root the chain is currently enforcing along with each already-claimed total and any claim-recipient override. A proof for a rotated tree, or for one still inside its dispute period, fails before anything is signed. Neither the server nor the wallet has to believe Merkl.
+
+Three properties of Merkl's data are worth stating, because getting them wrong misreports what a user is owed:
+
+- **`amount` is cumulative, not a delta.** The Distributor transfers `amount` minus what that address already claimed for that token, so the claimable figure is `amount - claimed`. Presenting `amount` overstates it, sometimes by everything already collected.
+- **`pending` is not claimable.** It is earned but not yet in any published root, and adding it to `amount` double-counts.
+- **Claiming for yourself needs no authorization.** Anyone may call `claim()` for a user and the tokens still go to that user, so enabling Merkl's autoclaim operator delegates gas and timing rather than custody.
+
+`get_merkl_deployment` returns the Distributor address and the chains preparation is allowed on. Merkl lists 67 chains; the server pins the subset that answered `getMerkleRoot()` with a live root at that address, so an unverified chain is refused rather than served a plan nobody checked — ZKsync Era, which has no code at the address the other chains share, is the reason that check exists. One claim covers up to 32 reward tokens on a single chain.
+
+This is distinct from `prepare_rewards_claim`, which claims Ekubo's own [incentive drops](/products/rewards/).
 
 ## The execution plan boundary
 
@@ -96,6 +125,16 @@ Prepared on-chain reads travel the same way, as `read_calls_reference` envelopes
 
 For "swap my entire balance" requests there is an extra step: read the exact on-chain balance first, rather than trusting a displayed number. And for a purely indicative "what would I get" comparison, omit the sender and slippage — quotes come back with no calldata attached.
 
+## Jurisdiction restrictions
+
+Some assets may not be traded from some countries. The Ekubo interface disables its action buttons for those; this server has no interface to disable, so it refuses to produce the execution plan at all. The restriction data mirrors the interface's, and today covers the tokenized equities on Robinhood Chain.
+
+The country comes from the connecting IP as Cloudflare resolves it, the same source the interface reads, so a caller cannot supply or override it. A refusal is an ordinary tool error with code `restricted_jurisdiction` naming the offending assets, and it is raised before any upstream quote is bought.
+
+What is gated is acquiring or disposing of a restricted asset: quoting a swap, placing a TWAMM order, depositing liquidity, creating an auction, expanding oracle capacity, correcting a pool price, and the swap phase of a ve(3,3) reinvestment. **Exits are never gated** — withdrawing liquidity, collecting fees or proceeds, transferring a position, and revoking approvals stay available to everyone, as they do in the interface. Discovery is untouched: restricted assets are still listed and priced.
+
+An unresolved country fails closed, but only for assets that are restricted somewhere; it never blocks trading generally. A request arriving over Tor counts as unresolved rather than as a country code that can never match.
+
 ## Rate limits
 
 The server is public and unauthenticated, so there is no API key to raise a quota against. Limits apply per caller, where a caller is one IPv4 address or one IPv6 /64. No fixed quota is guaranteed and the thresholds are not published, so an agent should react to what the server tells it rather than pace itself against a constant it has memorized.
@@ -109,7 +148,7 @@ The part worth designing around is that requests are not all counted the same. F
 | `tool_units`        | The weighted cost of tool calls over a minute                                          |
 | `metered_providers` | Calls over a minute to the tools that buy quotes or recommendations from a third party |
 
-`tool_units` is the one that catches integrators out. A tool call is charged by what it costs the server to answer, not as one request: `ekubo_derive_pool_id` hashes a struct locally and costs nothing at all, an ordinary token or pool read is the unit of measure, and a call that fans out across several upstream requests or buys a firm quote costs several times that. Two clients making an identical number of calls per minute can get very different answers, and the cheapest way to stay inside the budget is usually to ask for more per call rather than to call more often.
+`tool_units` is the one that catches integrators out. A tool call is charged by what it costs the server to answer, not as one request: `derive_pool_id` hashes a struct locally and costs nothing at all, an ordinary token or pool read is the unit of measure, and a call that fans out across several upstream requests or buys a firm quote costs several times that. Two clients making an identical number of calls per minute can get very different answers, and the cheapest way to stay inside the budget is usually to ask for more per call rather than to call more often.
 
 `metered_providers` is deliberately a separate and much smaller budget rather than a share of the same one, because those calls spend real money with third parties. Sitting comfortably inside `tool_units` does not buy you headroom for quotes.
 
@@ -141,9 +180,9 @@ Enforcement is approximate, and it is measured close to where your request lands
 
 ### Staying inside the budget
 
-Batch instead of iterating. `ekubo_get_tokens` resolves up to 1,000 chain and address pairs in a single call and is charged once; the same thousand lookups issued individually are charged a thousand times. Where a tool offers a search or a filter, narrowing is far cheaper than paging the whole catalog and filtering client-side.
+Batch instead of iterating. `get_tokens` resolves up to 1,000 chain and address pairs in a single call and is charged once; the same thousand lookups issued individually are charged a thousand times. Where a tool offers a search or a filter, narrowing is far cheaper than paging the whole catalog and filtering client-side.
 
-Reuse the quote you already hold. `ekubo_get_quotes_with_plans` buys firm quotes from providers, and each option it returns already carries the execution plan that executes it. Re-quoting to refresh a plan you already have spends the metered budget a second time and replaces the quote the user approved. Re-quote after an expiry, a revert, or a change to the request, not on a timer.
+Reuse the quote you already hold. `get_quotes_with_plans` buys firm quotes from providers, and each option it returns already carries the execution plan that executes it. Re-quoting to refresh a plan you already have spends the metered budget a second time and replaces the quote the user approved. Re-quote after an expiry, a revert, or a change to the request, not on a timer.
 
 Respect the freshness windows. Protocol data is cached upstream, and pool state, pool keys, and tick liquidity do not change on every request. The server publishes the specific intervals as `polling_guidance` alongside the rate limit contract; polling faster than those windows spends budget without producing fresher data.
 
