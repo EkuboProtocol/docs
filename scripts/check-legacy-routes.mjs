@@ -4,6 +4,7 @@ import {
   fileToTarget,
   isExternalTarget,
   legacyFiles,
+  retiredRoutes,
 } from "./legacy-routes.mjs";
 
 const failures = [];
@@ -29,6 +30,19 @@ for (const file of legacyFiles) {
       : new URL(`../dist${route}index.html`, import.meta.url);
   if (!existsSync(output))
     failures.push(`${file}: missing built route ${route}`);
+}
+
+const builtRoute = (target) => {
+  const route = new URL(target, "https://docs.ekubo.org").pathname;
+  return route === "/"
+    ? new URL("../dist/index.html", import.meta.url)
+    : new URL(`../dist${route}index.html`, import.meta.url);
+};
+
+for (const [source, target] of Object.entries(retiredRoutes)) {
+  if (isExternalTarget(target)) continue;
+  if (!existsSync(builtRoute(target)))
+    failures.push(`${source}: retired route points at missing ${target}`);
 }
 
 for (const [source, target] of buildRedirects()) {

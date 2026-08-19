@@ -80,6 +80,70 @@ export const movedRoutes = {
   "user-guides/governance/ekubo-inc": "products/governance.md",
 };
 
+/**
+ * URLs the GitBook site served for pages that were retired before the current
+ * structure existed, mapped to whatever now covers the subject. These have no
+ * file in `legacyFiles` because the file was deleted years ago; the URL is what
+ * survives, in old blog posts, Discord messages, and search results.
+ *
+ * Each target was chosen by reading the retired page, not by matching names.
+ */
+export const retiredRoutes = {
+  // Section prefixes with no index page of their own.
+  concepts: "/concepts/key-concepts/",
+  reference: "/reference/contracts/",
+  "user-guides": "/user-guides/add-liquidity/",
+
+  // "Background" and its "Key concepts" successor both explained the same
+  // primitives the current key concepts page covers.
+  "about-ekubo/background": "/concepts/key-concepts/",
+  "about-ekubo/key-concepts": "/concepts/key-concepts/",
+  "introduction/key-concepts": "/concepts/key-concepts/",
+  "key-concepts": "/concepts/key-concepts/",
+  "about-ekubo/roadmap": "/about-ekubo/vision/",
+  "introduction/features": "/about-ekubo/features/",
+  features: "/about-ekubo/features/",
+
+  // The FAQs were folded into the pages that answer their questions.
+  faq: "/",
+  "about-ekubo/faq": "/",
+  "introduction/faq": "/",
+  "integration-guides/reference/frequently-asked-questions-faq": "/",
+
+  // Starknet DeFi Spring was an incentive campaign; incentives are documented
+  // as rewards now.
+  "about-ekubo/starknet-defi-spring": "/products/rewards/",
+  "integration-guides/reference/starknet-defi-spring": "/products/rewards/",
+  "user-guides/incentives": "/products/rewards/",
+  "user-guides/incentives/methodology": "/products/rewards/",
+  "user-guides/incentives/starknet-defi-spring": "/products/rewards/",
+  "user-guides/leaderboard": "/products/rewards/",
+  "user-guides/swap": "/products/trading/",
+
+  // The till pattern and the core interfaces are the architecture page.
+  "integration-guides/core-interfaces": "/concepts/architecture/",
+  "integration-guides/core-interfaces/using-the-till-pattern":
+    "/concepts/architecture/",
+  "integration-guides/reference/core-interfaces": "/concepts/architecture/",
+  "integration-guides/reference/core-interfaces/using-the-till-pattern":
+    "/concepts/architecture/",
+  "integration-guides/reference/till-pattern": "/concepts/architecture/",
+
+  // An example extension, and the pages that preceded the current structure.
+  "integration-guides/extensions/oracle": "/concepts/extensions/",
+  "integrations/extensions": "/concepts/extensions/",
+  "integrations/aggregators": "/integration-guides/aggregators/",
+  "integration-guides/swapping/by-example": "/integration-guides/swapping/",
+
+  // Contract and API reference pages, under the names they had at the time.
+  "integration-guides/contract-addresses": "/reference/contracts/",
+  "integration-guides/reference/error-codes": "/reference/contracts/",
+  "integration-guides/reference/evm-contracts": "/reference/contracts/evm-v3/",
+  "integration-guides/reference/evm-contracts-v2":
+    "/reference/contracts/evm-v2/",
+  "integration-guides/reference/ekubo-api/api-endpoints": "/api/",
+};
+
 export function fileToRoute(file) {
   if (file === "README.md") return "/";
   if (file.endsWith("/README.md")) {
@@ -129,6 +193,17 @@ export function buildRedirects() {
 
   for (const [source, targetFile] of Object.entries(movedRoutes)) {
     const target = fileToTarget(targetFile);
+    for (const variant of [
+      `/${source}`,
+      `/${source}/`,
+      `/${source}.md`,
+      `/${source}.md/`,
+    ]) {
+      add(variant, target);
+    }
+  }
+
+  for (const [source, target] of Object.entries(retiredRoutes)) {
     for (const variant of [
       `/${source}`,
       `/${source}/`,
