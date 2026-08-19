@@ -1,13 +1,15 @@
 ---
 description: >-
   Write an MCP server that prepares execution plans Ekubo Wallet will fetch,
-  verify, simulate, and sign
+  verify, simulate, and sign, and that gives an agent what it needs to decide
 title: "Build a plan producer"
 ---
 
 Ekubo Wallet does not build transactions. It resolves an execution plan somebody else prepared, verifies it byte for byte, simulates the exact calls, evaluates the owner's [signing policy](/wallet/policies/), presents any required [review](/wallet/approvals/), signs, and submits. Everything upstream of that — reading protocol state, choosing a route, encoding calldata, deciding how many calls the action takes — belongs to a _producer_: a Model Context Protocol server the agent talks to alongside the wallet.
 
-The [public Ekubo server](/products/mcp-server/) is one producer. Nothing about the boundary is specific to it, and this page is the contract a new one satisfies. Satisfy it and the wallet executes your plans without a wallet release, because a plan naming Aave calldata and a plan naming Ekubo calldata are the same kind of document to the wallet: it never learns what protocol it just used.
+The [public Ekubo server](/products/mcp-server/) is one producer. Nothing about the boundary is specific to it, and the first half of this page is the contract a new one satisfies. Satisfy it and the wallet executes your plans without a wallet release, because a plan naming Aave calldata and a plan naming Ekubo calldata are the same kind of document to the wallet: it never learns what protocol it just used.
+
+Validating is not the same as being useful, though, so the second half covers what nothing enforces: how to surface the data behind a decision rather than only its outcome, and how to publish the workflow knowledge that makes a protocol safe to use at all.
 
 ## The shape of the exchange
 
@@ -297,6 +299,55 @@ Some consequences worth designing around:
 
 Simulation, policy, and native review are what contain a producer. Your good behavior is not the mechanism, which is exactly why a third party can build one.
 
+## Surface the decision, not just the plan
+
+Everything above this point is enforced. Break it and the wallet rejects your plan with a specific error. Nothing in the rest of this page is checked by anything, which is exactly why it is worth writing down: it is the difference between a producer whose plans validate and a producer an agent can actually use well.
+
+A plan is the end of a decision. If the only thing your server returns is calldata, the agent has to reconstruct the reasoning from somewhere else, and it will guess. Eight conventions the hosted Ekubo server follows, each visible in its public tool results and its discovery document at `https://mcp.ekubo.org/`:
+
+**Return options, not an answer.** A swap request comes back with every available quote across every provider, normalized into comparable fields, and the server picks none of them. Ranking on the user's behalf inside the server hides the trade-off they wanted to see; returning the raw set and a comparable denominator lets the agent present it.
+
+**Attach the plan to each option.** Every quote already carries the `execution_plan_reference` that executes it, so choosing is the whole flow and there is no second preparation step. This is worth copying for the property it produces: the option the user compared is the option that executes. A design where the agent compares quotes and then calls `prepare` reopens a window in which state moves, and if preparation costs a metered upstream quote it pays for the same information twice.
+
+**Bind preparation to the state that was reviewed.** Where a decision depends on indexed state, return a `state_id` with the read and require it back on the prepare call. When the underlying state has moved, refuse with a structured error naming both values rather than preparing against the new world:
+
+```json
+{
+  "code": "ve33_state_changed",
+  "message": "The indexed VeToken allocation changed after it was reviewed; fetch the current allocation again",
+  "data": {
+    "expected_state_id": "0x…",
+    "actual_state_id": "0x…"
+  }
+}
+```
+
+This is the decision-integrity twin of the reference's integrity digest. The digest guarantees the wallet executes the bytes you built; the snapshot id guarantees you built them from the state the user was shown.
+
+**Say when a ranking is provisional.** Some numbers cannot be computed server-side without becoming the data path. Return the ranking you can compute with `ranking_complete: false` and a `local_read_requirement` the agent executes through the owner's own wallet and passes back decoded, then rank properly on the second call. The read travels as a `read_calls` reference exactly as described under [prepared reads](#prepared-reads), so you get the number without ever touching the owner's RPC or holding their credentials.
+
+**Say when a result is a prefix.** A limit that silently truncates reads as the complete set. Return the count before the limit, or a `complete: false`, and let the agent tell the user it is looking at part of the picture.
+
+**Stay out of the data path for protocols you do not operate.** The hosted server publishes `external_market_data.server_role` as `"none"`: agents read Aave, Morpho, Sky, and Lido state from those protocols' own official APIs and from the owner's RPC directly, and the server contributes a fixed deployment catalog and transaction preparation. It does not proxy, cache, authenticate to, or replay them, and it refuses to receive an on-chain read result back for authoritative decoding. Not being in the middle of live protocol data is a smaller server, a smaller trust surface, and one fewer thing that can be stale at signing time.
+
+**Refuse in a shape an agent can branch on.** An asset that cannot be traded from the caller's country fails with a `restricted_jurisdiction` code rather than an empty result, so the agent tells the user instead of retrying through another route. A rate limit answers with the exhausted scope and a retry delay rather than prose. Every refusal an agent might reasonably retry should carry the machine-readable reason it should not.
+
+**Publish your freshness windows.** The discovery document carries a `polling_guidance` block giving the interval at which each kind of data actually changes. Without it a client either polls far too fast, spending budget on identical answers, or too slowly to be correct. Publishing the number means nobody has to guess it, and you can change it without a client release.
+
+## Ship the workflow, not just the tools
+
+A tool description explains one call. It cannot explain that Lido withdrawals are an irreversible asynchronous queue rather than a swap, that a ve(3,3) vote change discards pending fees unless they are claimed first, or which three reads must happen before a deposit is safe. That knowledge is what makes a protocol usable, and if you do not publish it the agent invents it.
+
+Publish it as MCP resources, in two flavors.
+
+**Workflow resources** document your own conventions: the canonical end-to-end sequence, how the plan handoff works, how a particular product's state should be read. The hosted server publishes several under `ekubo://docs/`, including `ekubo://docs/execution-plan`. An agent reads them directly instead of inferring conventions from tool names.
+
+**Skills** cover a protocol. The shape is a `SKILL.md` with `name` and `description` front matter, a short numbered workflow, and a set of operation-specific gates — the conditions that make each action safe, written as reads with thresholds rather than as advice. Lido's, for example, requires reading `isStakingPaused()` and `getCurrentStakeLimit()` before a stake, bounds a withdrawal request between 100 wei and 1000 stETH, and requires `ownerOf` and `getWithdrawalStatus` to confirm a claim is owned, finalized, and unclaimed. Alongside it, a `references/discovery.md` names the canonical documentation URLs and the exact contract reads to perform, so the agent goes to the protocol's own sources rather than to yours.
+
+Serve each skill twice: as an MCP resource at a stable URI such as `ekubo://skills/use-lido`, and as plain HTTP at a path such as `/skills/use-lido/SKILL.md`. The resource is what an agent reads mid-conversation; the HTTP file is what a harness with filesystem skills can install ahead of time. Advertise `listChanged` for both tools and resources so clients learn when the surface moves.
+
+Finally, publish a discovery document at your root that ties it together: the MCP endpoint and transport, the tool catalog and its revision, the resource URIs, the skills map, the freshness and rate-limit contract, and a safety block stating plainly that the server does not sign, does not submit, and requires wallet validation. A client can read all of that before it opens the MCP transport, and a reviewer can read it without running anything.
+
 ## Writing the tool descriptions
 
 The agent between you and the wallet is a model reading two servers' tool descriptions at once, and most integration failures are description failures rather than schema failures. Four things are worth saying explicitly in yours:
@@ -314,6 +365,10 @@ Before pointing a wallet at a new producer:
 - No `simulation_failure_policy` branch tells an agent to resend calldata that reverted.
 - `required_capabilities` is omitted unless the plan genuinely needs `atomic_batch`.
 - Producer-specific data lives in `extensions`, under 64 KiB, and nothing depends on the wallet reading it.
+- Every option you return carries the plan that executes it, so the thing compared is the thing signed.
+- A prepare tool whose correctness depends on state the user reviewed takes that snapshot's id back and refuses when it has moved.
+- Every protocol whose safe use needs more than a tool description has a skill, with its gates written as reads and thresholds.
+- Truncated results, provisional rankings, and refusals say so in a field, not in prose the agent has to parse.
 
 ## The authoritative contract
 
