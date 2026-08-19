@@ -81,11 +81,18 @@ export function fileToRoute(file) {
   return `/${file.slice(0, -".md".length)}/`;
 }
 
+// Targets may be absolute URLs when a page moved off the documentation site.
 const legacyTargetOverrides = {
   "reference/ekubo-api/README.md": "/api/",
   "reference/ekubo-api/endpoints.md": "/api/",
   "reference/quoter-api.md": "/api/#quoter",
+  "concepts/extensions-vs-v4-hooks.md":
+    "https://blog.ekubo.org/ekubo-extensions-vs-uniswap-v4-hooks/",
 };
+
+export function isExternalTarget(target) {
+  return /^https?:\/\//.test(target);
+}
 
 export function fileToTarget(file) {
   return legacyTargetOverrides[file] ?? fileToRoute(file);

@@ -10,8 +10,10 @@
 /about-ekubo/vision.md/ /about-ekubo/vision/ 301
 /concepts/architecture.md /concepts/architecture/ 301
 /concepts/architecture.md/ /concepts/architecture/ 301
-/concepts/extensions-vs-v4-hooks.md /concepts/extensions-vs-v4-hooks/ 301
-/concepts/extensions-vs-v4-hooks.md/ /concepts/extensions-vs-v4-hooks/ 301
+/concepts/extensions-vs-v4-hooks.md https://blog.ekubo.org/ekubo-extensions-vs-uniswap-v4-hooks/ 301
+/concepts/extensions-vs-v4-hooks.md/ https://blog.ekubo.org/ekubo-extensions-vs-uniswap-v4-hooks/ 301
+/concepts/extensions-vs-v4-hooks https://blog.ekubo.org/ekubo-extensions-vs-uniswap-v4-hooks/ 301
+/concepts/extensions-vs-v4-hooks/ https://blog.ekubo.org/ekubo-extensions-vs-uniswap-v4-hooks/ 301
 /concepts/extensions.md /concepts/extensions/ 301
 /concepts/extensions.md/ /concepts/extensions/ 301
 /concepts/key-concepts.md /concepts/key-concepts/ 301

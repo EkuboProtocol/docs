@@ -200,7 +200,7 @@ export default defineConfig({
               items: [
                 {
                   label: "Compared to Uniswap v4 hooks",
-                  slug: "concepts/extensions-vs-v4-hooks",
+                  link: "https://blog.ekubo.org/ekubo-extensions-vs-uniswap-v4-hooks/",
                 },
               ],
             },

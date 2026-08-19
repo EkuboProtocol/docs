@@ -1,5 +1,10 @@
 import { existsSync, readFileSync } from "node:fs";
-import { buildRedirects, fileToTarget, legacyFiles } from "./legacy-routes.mjs";
+import {
+  buildRedirects,
+  fileToTarget,
+  isExternalTarget,
+  legacyFiles,
+} from "./legacy-routes.mjs";
 
 const failures = [];
 const redirects = new Map(
@@ -15,6 +20,8 @@ const redirects = new Map(
 
 for (const file of legacyFiles) {
   const target = fileToTarget(file);
+  // Pages that moved off this site cannot be checked against the build output.
+  if (isExternalTarget(target)) continue;
   const route = new URL(target, "https://docs.ekubo.org").pathname;
   const output =
     route === "/"
