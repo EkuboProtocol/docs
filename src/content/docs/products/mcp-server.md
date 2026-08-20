@@ -1,14 +1,14 @@
 ---
 description: >-
   Connect an AI agent to Ekubo: quotes, pool and position data, and unsigned
-  execution plans for Ekubo, Aave, Morpho, Sky, Lido, and Merkl over the Model
+  execution plans for Ekubo, Aave, Morpho, Sky, Lido, Merkl, and Aerodrome over the Model
   Context Protocol
 title: "MCP server"
 ---
 
 Ekubo runs a public [Model Context Protocol](https://modelcontextprotocol.io/) server at **`https://mcp.ekubo.org/mcp`**. It gives AI agents first-class access to Ekubo — resolving tokens, quoting swaps, reading pools and positions, and building transactions — without scraping a web interface.
 
-Because an execution plan is signer-neutral calldata rather than an Ekubo-specific document, the server's coverage does not stop at Ekubo: it also prepares Aave V3, Morpho Vault V2, Sky Savings, Lido, and Merkl actions, and quotes swaps from 0x and bridges from Across, LayerZero, and LI.FI alongside Ekubo's own.
+Because an execution plan is signer-neutral calldata rather than an Ekubo-specific document, the server's coverage does not stop at Ekubo: it also prepares Aave V3, Morpho Vault V2, Sky Savings, Lido, Merkl, and Aerodrome actions, and quotes swaps from 0x and bridges from Across, LayerZero, and LI.FI alongside Ekubo's own.
 
 The server is **non-custodial and read-only with respect to keys**. It never holds funds, never signs, and never submits. Tools that produce a transaction return a reference to an unsigned _execution plan_; signing and submission happen in the user's own wallet tooling.
 
@@ -70,17 +70,17 @@ More than seventy tools, grouped by what you're trying to accomplish. The catalo
 | **[Ve33](/products/ve33/)**                  | Stake, vote, reallocate, extend, split, merge, increase, withdraw, reinvest, and claim fees — plus current allocations and a STONX allocation recommendation.                                                                          |
 | **[Auctions](/reference/contracts/evm-v3/)** | Create an auction, complete it, and collect creator proceeds.                                                                                                                                                                          |
 | **Rewards**                                  | List claimable Ekubo [rewards](/products/rewards/) for an owner and prepare claims, including recovery fund claims; surface boosted-fee, incentive, and projected ve(3,3) opportunities ranked by APR.                                 |
-| **Other protocols**                          | Aave V3, Morpho Vault V2, Sky Savings, Lido, and Merkl — see [Protocols beyond Ekubo](#protocols-beyond-ekubo).                                                                                                                        |
+| **Other protocols**                          | Aave V3, Morpho Vault V2, Sky Savings, Lido, Merkl, and Aerodrome — see [Protocols beyond Ekubo](#protocols-beyond-ekubo).                                                                                                                        |
 | **Transfers**                                | Prepare one ordered plan of 1 to 4,096 native, ERC-20, ERC-721, and ERC-1155 transfers on a chain, mixed freely.                                                                                                                       |
 | **Utilities**                                | Revoke approvals, wrap and unwrap tokens, boost a pool manually, expand oracle capacity, unwrap old gEKUBO, trigger revenue buybacks, and export the token list to a wallet by reference.                                              |
 
 It also publishes **resources** that document its own conventions — the canonical agent workflow, the LP position workflow, the Ve33 workflow, quote semantics across providers, the execution-plan handoff, the data API's OpenAPI spec, and a chain-indexed directory of deployed contract addresses. Agents can read these directly rather than guessing at usage.
 
-Alongside those it publishes **skills** — `ekubo://skills/use-morpho`, `ekubo://skills/use-sky`, `ekubo://skills/use-lido`, and `ekubo://skills/use-merkl`, each with a `references/discovery.md` child naming the official endpoints and reads. They are also plain files over HTTPS, at `https://mcp.ekubo.org/skills/use-merkl/SKILL.md` and its siblings, so a client that does not speak MCP resources can still load them.
+Alongside those it publishes **skills** — `ekubo://skills/use-morpho`, `ekubo://skills/use-sky`, `ekubo://skills/use-lido`, `ekubo://skills/use-merkl`, and `ekubo://skills/use-aerodrome`, each with a `references/discovery.md` child naming the official endpoints and reads. They are also plain files over HTTPS, at `https://mcp.ekubo.org/skills/use-merkl/SKILL.md` and its siblings, so a client that does not speak MCP resources can still load them.
 
 ## Protocols beyond Ekubo
 
-For Aave V3, Morpho Vault V2, Sky Savings, Lido, and Merkl the server prepares transactions but is deliberately **not in the data path**. It holds a fixed, locally maintained deployment catalog — the addresses and the chains they were verified on — and returns unsigned calls against it. Live market, vault, queue, reward, and balance state is read by the agent from each protocol's own public API or through your wallet's RPC, never proxied, cached, or replayed by this server. What decides whether an action succeeds is the wallet's simulation of the exact calls.
+For Aave V3, Morpho Vault V2, Sky Savings, Lido, Merkl, and Aerodrome the server prepares transactions but is deliberately **not in the data path**. It holds a fixed, locally maintained deployment catalog — the addresses and the chains they were verified on — and returns unsigned calls against it. Live market, vault, queue, reward, and balance state is read by the agent from each protocol's own public API or through your wallet's RPC, never proxied, cached, or replayed by this server. What decides whether an action succeeds is the wallet's simulation of the exact calls.
 
 [Supported protocols](/wallet/protocols/) lists the actions and chains for each.
 
@@ -99,6 +99,16 @@ Three properties of Merkl's data are worth stating, because getting them wrong m
 `get_merkl_deployment` returns the Distributor address and the chains preparation is allowed on. Merkl lists 67 chains; the server pins the subset that answered `getMerkleRoot()` with a live root at that address, so an unverified chain is refused rather than served a plan nobody checked — ZKsync Era, which has no code at the address the other chains share, is the reason that check exists. One claim covers up to 32 reward tokens on a single chain.
 
 This is distinct from `prepare_rewards_claim`, which claims Ekubo's own [incentive drops](/products/rewards/).
+
+### Aerodrome
+
+[Aerodrome](https://aerodrome.finance/) is the ve(3,3) exchange on Base, and it is the case where the no-proxy boundary costs nothing at all — because Aerodrome publishes no data API to be kept out of. Its data pipeline is **Sugar**: lens contracts that fold what would otherwise be dozens of calls into a single `eth_call` returning whole structs of pools, positions, veNFTs, epochs, and rewards.
+
+So discovery here is an on-chain read, not an API call. `prepare_aerodrome_sugar_reads` returns the exact call bundle for one dataset, the wallet runs it against your own RPC, and the pool, gauge, fee, and bribe addresses it decodes are the required inputs to everything else. Those reward contracts are per pool and cannot be derived — a claim naming the wrong one succeeds while transferring nothing, which is why the server asks for them rather than guessing.
+
+The prepared actions cover v2 liquidity through the Router, gauge staking and emissions claims, veAERO locks, gauge votes, and voter fee, bribe, and rebase claims. Three protocol rules shape what is possible, and each is surfaced in the plan rather than discovered by paying gas: a veNFT votes once per weekly epoch and reverts on a second attempt, a vote replaces the entire allocation rather than adding to it, and staking an LP token into a gauge trades that position's trading fees for AERO emissions rather than adding to them.
+
+`get_aerodrome_deployment` returns the contracts, every one derived on chain from the Voter outward rather than copied from Velodrome's published SDKs. That distinction matters more than it sounds: those SDKs carry Optimism addresses, and their position struct has drifted from the deployed Base lens by two fields, so decoding a live response with it silently misreads every later field instead of failing. Aerodrome is Base-only; Velodrome is the same codebase elsewhere and is not prepared here. Swaps stay with `get_quotes_with_plans`, which compares sources before anything executes, and concentrated Slipstream positions are readable today but not yet mintable.
 
 ## The execution plan boundary
 
