@@ -15,7 +15,9 @@ That separation is why the wallet's protocol coverage is not a property of the v
 | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Ekubo**           | Swaps, liquidity deposits, withdrawals, and earnings claims, pool initialization, DCA and TWAMM orders, [ve(3,3)](/products/ve33/) staking, voting, reallocation and fee claims, auctions, and [rewards](/products/rewards/) claims |
 | **0x**              | Same-chain swap quotes, returned alongside Ekubo's for the same request so the two are compared before either is executed                                                                                                           |
-| **Across**          | Any-to-any bridging, used when a swap's origin and destination chains differ                                                                                                                                                        |
+| **Across**          | Any-to-any bridging, quoted alongside LayerZero and LI.FI whenever a swap's origin and destination chains differ                                                                                                                    |
+| **LayerZero**       | Any-to-any transfers through the Value Transfer API, priced for an exact input amount, and tracked from the origin transaction through to delivery                                                                                  |
+| **LI.FI**           | Any-to-any bridging priced in either direction, so an exact-output bridge is quoted twice, and tracked through to delivery                                                                                                          |
 | **Aave V3**         | Supply, withdraw, borrow, repay, collateral toggles, and eMode categories on Ethereum, Base, Arbitrum, Optimism, Polygon, and Avalanche                                                                                             |
 | **Morpho Vault V2** | Vault deposits, withdrawals, and redemptions on Ethereum and Base                                                                                                                                                                   |
 | **Sky Savings**     | USDS and sUSDS deposits, withdrawals, and redemptions on Ethereum                                                                                                                                                                   |
@@ -23,6 +25,8 @@ That separation is why the wallet's protocol coverage is not a property of the v
 | **Merkl**           | Incentive reward claims, for campaigns on any protocol Merkl covers, on the 22 chains where the Distributor deployment has been verified                                                                                            |
 
 More protocols are being added, so the live catalog is worth checking rather than this table: `https://mcp.ekubo.org/tools` returns the current tools, uncached, with the server version and catalog revision they came from.
+
+The three bridge sources are compared rather than chosen for you: one cross-chain request returns whichever of them can serve it, each option already carrying the plan that executes it. A bridge is also the one plan whose successful origin transaction does not mean the funds have arrived, so a LayerZero or LI.FI transfer is tracked through to delivery on the destination chain before it is reported as finished.
 
 For the non-Ekubo protocols the server prepares transactions but is deliberately not in the data path. Live market, vault, queue, and balance state is read by the agent from each protocol's own public API or from your wallet's RPC, and the wallet's simulation of the exact calls is what decides whether an action succeeds.
 

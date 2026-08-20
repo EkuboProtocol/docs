@@ -8,7 +8,7 @@ title: "MCP server"
 
 Ekubo runs a public [Model Context Protocol](https://modelcontextprotocol.io/) server at **`https://mcp.ekubo.org/mcp`**. It gives AI agents first-class access to Ekubo — resolving tokens, quoting swaps, reading pools and positions, and building transactions — without scraping a web interface.
 
-Because an execution plan is signer-neutral calldata rather than an Ekubo-specific document, the server's coverage does not stop at Ekubo: it also prepares Aave V3, Morpho Vault V2, Sky Savings, Lido, and Merkl actions, and quotes swaps from 0x and bridges from Across alongside Ekubo's own.
+Because an execution plan is signer-neutral calldata rather than an Ekubo-specific document, the server's coverage does not stop at Ekubo: it also prepares Aave V3, Morpho Vault V2, Sky Savings, Lido, and Merkl actions, and quotes swaps from 0x and bridges from Across, LayerZero, and LI.FI alongside Ekubo's own.
 
 The server is **non-custodial and read-only with respect to keys**. It never holds funds, never signs, and never submits. Tools that produce a transaction return a reference to an unsigned _execution plan_; signing and submission happen in the user's own wallet tooling.
 
@@ -60,19 +60,19 @@ Most clients also accept it from the command line. For example, Claude Code uses
 
 More than seventy tools, grouped by what you're trying to accomplish. The catalog grows on its own schedule, so `https://mcp.ekubo.org/tools` — which returns the live list along with the server version and catalog revision it came from — is authoritative wherever this page has drifted.
 
-| Area                                         | Capabilities                                                                                                                                                                                                     |
-| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Tokens**                                   | Search the canonical token list by symbol, or look up exact chain/address pairs in batches of up to 1,000. Ordered by visibility priority so the preferred token wins ambiguous symbol matches.                  |
-| **Swaps**                                    | One call returns every available quote — Ekubo and 0x for same-chain swaps, Across for cross-chain — each option already carrying the execution plan that executes it, so there is no separate preparation step. |
-| **Pools**                                    | Read pool state and liquidity, list pool keys, derive pool IDs, decode pool configs, initialize pools, and correct a mispriced pool.                                                                             |
-| **Liquidity positions**                      | List positions by owner, inspect a position, find candidate pools for a position, and prepare deposits, withdrawals, earnings claims, and transfers.                                                             |
-| **DCA / TWAMM**                              | Place, collect, and stop orders, and execute virtual orders.                                                                                                                                                     |
-| **[Ve33](/products/ve33/)**                  | Stake, vote, reallocate, extend, split, merge, increase, withdraw, reinvest, and claim fees — plus current allocations and a STONX allocation recommendation.                                                    |
-| **[Auctions](/reference/contracts/evm-v3/)** | Create an auction, complete it, and collect creator proceeds.                                                                                                                                                    |
-| **Rewards**                                  | List claimable Ekubo [rewards](/products/rewards/) for an owner and prepare claims, including recovery fund claims; surface boosted-fee, incentive, and projected ve(3,3) opportunities ranked by APR.           |
-| **Other protocols**                          | Aave V3, Morpho Vault V2, Sky Savings, Lido, and Merkl — see [Protocols beyond Ekubo](#protocols-beyond-ekubo).                                                                                                  |
-| **Transfers**                                | Prepare one ordered plan of 1 to 4,096 native, ERC-20, ERC-721, and ERC-1155 transfers on a chain, mixed freely.                                                                                                 |
-| **Utilities**                                | Revoke approvals, wrap and unwrap tokens, boost a pool manually, expand oracle capacity, unwrap old gEKUBO, trigger revenue buybacks, and export the token list to a wallet by reference.                        |
+| Area                                         | Capabilities                                                                                                                                                                                                                           |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Tokens**                                   | Search the canonical token list by symbol, or look up exact chain/address pairs in batches of up to 1,000. Ordered by visibility priority so the preferred token wins ambiguous symbol matches.                                        |
+| **Swaps**                                    | One call returns every available quote — Ekubo and 0x for same-chain swaps, Across, LayerZero, and LI.FI for cross-chain — each option already carrying the execution plan that executes it, so there is no separate preparation step. |
+| **Pools**                                    | Read pool state and liquidity, list pool keys, derive pool IDs, decode pool configs, initialize pools, and correct a mispriced pool.                                                                                                   |
+| **Liquidity positions**                      | List positions by owner, inspect a position, find candidate pools for a position, and prepare deposits, withdrawals, earnings claims, and transfers.                                                                                   |
+| **DCA / TWAMM**                              | Place, collect, and stop orders, and execute virtual orders.                                                                                                                                                                           |
+| **[Ve33](/products/ve33/)**                  | Stake, vote, reallocate, extend, split, merge, increase, withdraw, reinvest, and claim fees — plus current allocations and a STONX allocation recommendation.                                                                          |
+| **[Auctions](/reference/contracts/evm-v3/)** | Create an auction, complete it, and collect creator proceeds.                                                                                                                                                                          |
+| **Rewards**                                  | List claimable Ekubo [rewards](/products/rewards/) for an owner and prepare claims, including recovery fund claims; surface boosted-fee, incentive, and projected ve(3,3) opportunities ranked by APR.                                 |
+| **Other protocols**                          | Aave V3, Morpho Vault V2, Sky Savings, Lido, and Merkl — see [Protocols beyond Ekubo](#protocols-beyond-ekubo).                                                                                                                        |
+| **Transfers**                                | Prepare one ordered plan of 1 to 4,096 native, ERC-20, ERC-721, and ERC-1155 transfers on a chain, mixed freely.                                                                                                                       |
+| **Utilities**                                | Revoke approvals, wrap and unwrap tokens, boost a pool manually, expand oracle capacity, unwrap old gEKUBO, trigger revenue buybacks, and export the token list to a wallet by reference.                                              |
 
 It also publishes **resources** that document its own conventions — the canonical agent workflow, the LP position workflow, the Ve33 workflow, quote semantics across providers, the execution-plan handoff, the data API's OpenAPI spec, and a chain-indexed directory of deployed contract addresses. Agents can read these directly rather than guessing at usage.
 
@@ -124,6 +124,23 @@ Prepared on-chain reads travel the same way, as `read_calls_reference` envelopes
 5. Re-quote only after an expiry, a revert, or a change to the request — never to "refresh" a plan already in hand, which would replace the quote the user approved.
 
 For "swap my entire balance" requests there is an extra step: read the exact on-chain balance first, rather than trusting a displayed number. And for a purely indicative "what would I get" comparison, omit the sender and slippage — quotes come back with no calldata attached.
+
+## Cross-chain transfers
+
+When a request's destination chain differs from its origin, the same `get_quotes_with_plans` call goes out to three bridges instead of two same-chain aggregators: [Across](https://across.to/), [LayerZero](https://layerzero.network/)'s Value Transfer API, and [LI.FI](https://li.fi/). They come back as ordinary quote options, compared exactly the way an Ekubo quote is compared against a 0x one, and the server picks none of them. A provider that cannot serve the request says so in `unavailable_sources` without costing the others their quote.
+
+They do not all price the same question. LayerZero prices an exact source amount only, so an exact-output bridge — "leave me with exactly 1,000 USDC on Arbitrum" — reports `unsupported_quote_type` for LayerZero and is served by Across and LI.FI, which price both directions.
+
+The part worth building around is what happens after the plan is signed. A bridge is the one execution plan whose successful origin receipt does not mean the user has their funds, so a LayerZero or LI.FI option is not finished when the origin transaction confirms. `get_value_transfer_status` reports where the transfer has reached, keyed by that option's `source`:
+
+| Source      | Lookup key                                               |
+| ----------- | -------------------------------------------------------- |
+| `layerzero` | The option's `provider_quote_id`, plus the origin hash   |
+| `lifi`      | The origin transaction hash — a quote id is not accepted |
+
+Poll it every fifteen to thirty seconds while `settled` is false and stop as soon as it is true; transfers settle in minutes, and the call draws on the same metered budget as a quote. A status of `UNKNOWN` or `NOT_FOUND` in the first moments after submission means the transfer has not been indexed yet, not that it was lost. On a settled LI.FI transfer, read `substatus` before reporting delivery: `REFUNDED` and `PARTIAL` are both filed under status `DONE`, and only one of those means the money arrived.
+
+Across transfers execute the same way but are not tracked by this tool.
 
 ## Jurisdiction restrictions
 
