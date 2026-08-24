@@ -254,6 +254,10 @@ export default defineConfig({
               items: [
                 { label: "EVM (V3)", slug: "reference/contracts/evm-v3" },
                 { label: "Starknet", slug: "reference/contracts/starknet" },
+                {
+                  label: "Starknet Sepolia",
+                  slug: "reference/contracts/starknet-sepolia",
+                },
                 { label: "Governance", slug: "reference/contracts/governance" },
                 {
                   label: "EVM (V2, deprecated)",
