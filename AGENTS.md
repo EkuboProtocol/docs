@@ -94,3 +94,11 @@ Do not restate math that has canonical published references. Link the reference 
 - `bun run check` and `bun run build` pass, including live OpenAPI synchronization
 - `bun run check:legacy`, `bun run check:a11y`, `bun run check:overflow`, `bun run check:theme`, and `bun run check:api` pass against a local preview
 - No em dashes or entities introduced inside fenced code blocks; shell flags such as `--rm` intact
+
+## Complexity Policy
+- Run `bun run lint` before considering a change done. CI runs it on every push and
+  pull request.
+- The only rule is ESLint's `complexity`, capped at 10 per function.
+- Prefer splitting a function over adding `// eslint-disable-next-line complexity`.
+  If a disable really is the right call (a table-driven or numeric routine where the
+  branches are the point), put the reason on the line above it.
