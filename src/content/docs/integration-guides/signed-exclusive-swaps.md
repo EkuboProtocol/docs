@@ -56,7 +56,7 @@ With [`@ekubo/yul-router-sdk`](/integration-guides/yul-router/), `encodeSignedSw
 
 ## Why `minBalanceUpdate` matters
 
-`minBalanceUpdate` is a signed lower bound on both components of the final balance update, and it is part of the signed payload. One field gives the signer four protections at once:
+`minBalanceUpdate` is a signed lower bound on both components of the balance update Core returns for the swap — checked before the signed fee is applied, as in step 5 above — and it is part of the signed payload. One field gives the signer four protections at once:
 
 - **Direction enforcement** — requiring the expected leg to be positive or negative prevents a fill that moves value the wrong way
 - **Slippage tolerance** — the signer can allow a range ("at least X output") rather than an exact result
