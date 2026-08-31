@@ -35,6 +35,10 @@ The first version of the revenue buybacks contract was also audited.
 
 [Nethermind Security — revenue buybacks](/assets/NM_0282_FINAL_Ekubo_Revenue_Buybacks.pdf)
 
+The limit orders extension was audited over two weeks, concluding December 2nd, 2024. Note that this audit did not identify the access control flaw that was later exploited; limit order placement is now deprecated. See the [incident post-mortem](https://gist.github.com/moodysalem/63790287ff69bf43e163eebb001e9130) for details.
+
+[Nethermind Security — limit orders extension](/assets/NM0369_EKUBO_LIMIT_ORDERS.pdf)
+
 ## Governance
 
 The Starknet L1 proxy, which lets Starknet governance control contracts on Ethereum, was audited by Cairo Security Clan. The report is [on GitHub](https://github.com/EkuboProtocol/governance/blob/v2.8.0/l1_proxy/Ekubo_Governance_L1_Proxy.pdf).
