@@ -29,6 +29,10 @@ The Starknet contracts have been reviewed by Plainshift and, across several sepa
 | [Nethermind Security — revenue buybacks](/assets/NM_0282_FINAL_Ekubo_Revenue_Buybacks.pdf) | The first version of the revenue buybacks contract | September 2, 2024 |
 | [Nethermind Security — limit orders extension](/assets/NM0369_EKUBO_LIMIT_ORDERS.pdf) | The limit orders extension, for which order placement is now deprecated — a six engineer-week review of 568 lines | January 6, 2025 |
 
+The limit orders extension, for which order placement is now deprecated, was audited for six engineer-weeks, with the final report delivered January 6th, 2025. The review reported no Critical, High, Medium, or Low severity issues.
+
+[Nethermind Security — limit orders extension](/assets/NM0369_EKUBO_LIMIT_ORDERS.pdf)
+
 ## Governance
 
 | Report | Scope | Date |
