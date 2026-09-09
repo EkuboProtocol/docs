@@ -3,6 +3,8 @@ description: "Ekubo V3's shared liquidity architecture: a common AMM and settlem
 title: "Ekubo V3: Shared Liquidity as a Public Good"
 ---
 
+**Date:** <time datetime="2025-11-19">November 19, 2025</time> · **Last updated:** <time datetime="2026-09-09">September 9, 2026</time>
+
 ## Motivation
 
 Launching an automated market maker (AMM) often means deploying another copy of familiar contracts, attracting a separate base of liquidity, and rebuilding the integrations around it. Traders encounter fragmented markets, while liquidity providers and developers must decide which deployments to support. Each new brand or version can repeat much of the same work without improving the underlying market design.
