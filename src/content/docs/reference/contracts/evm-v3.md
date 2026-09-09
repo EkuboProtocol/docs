@@ -18,9 +18,45 @@ Ekubo Protocol V3 is the open-source EVM deployment of Ekubo. The source code li
 
 For the design rationale, read the [V3 whitepaper](/about-ekubo/v3-whitepaper/).
 
+## Supported chains
+
+Ekubo V3 is deployed on the chains below. This page is the authoritative address
+reference; the [GitHub releases](https://github.com/EkuboProtocol/evm-contracts/releases/latest)
+carry the source and ABIs.
+
+A chain needs two EVM features for the contracts to work:
+[EIP-1153](https://eips.ethereum.org/EIPS/eip-1153) (`TSTORE`/`TLOAD`, used for flash
+accounting) and [EIP-7939](https://eips.ethereum.org/EIPS/eip-7939) (`CLZ`, used in the
+pool math). Where `CLZ` is missing, the contracts deploy at the usual addresses but
+every swap and position update reverts. Such a chain becomes usable the moment it
+enables the opcode — no redeployment is needed.
+
+| Chain           | Chain ID | Status            | Position and order managers |
+| --------------- | -------- | ----------------- | --------------------------- |
+| Ethereum        | 1        | Live              | Original                    |
+| Optimism        | 10       | Live              | 192-bit IDs                 |
+| BNB Smart Chain | 56       | Live              | 192-bit IDs                 |
+| Gnosis          | 100      | Live              | 192-bit IDs                 |
+| Unichain        | 130      | Live              | 192-bit IDs                 |
+| Polygon         | 137      | Live              | 192-bit IDs                 |
+| Monad           | 143      | Live              | Original                    |
+| World Chain     | 480      | Awaiting EIP-7939 | 192-bit IDs                 |
+| MegaETH         | 4326     | Awaiting EIP-7939 | Original                    |
+| Robinhood Chain | 4663     | Live              | Original                    |
+| Base            | 8453     | Live              | Original                    |
+| Arbitrum        | 42161    | Live              | Original                    |
+| Ink             | 57073    | Live              | 192-bit IDs                 |
+
+**Live** means the contracts are deployed, both required opcodes are active, and the
+chain is selectable in the [Ekubo interface](https://ekubo.org). Deployments also exist
+on several testnets, which this page does not enumerate.
+
+Which manager generation applies per chain is explained under
+[Position and order managers](#position-and-order-managers).
+
 ## Shared deterministic deployments
 
-These contracts are deployed at the **same address on every supported chain** (Ethereum, Base, Arbitrum, MegaETH, Monad, Optimism, Ink, Robinhood Chain, Unichain, Polygon, and BNB Smart Chain). Anyone can deploy them to another compatible network with the [DeployAll script](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/script/DeployAll.s.sol). Note: chains must support [EIP-7939](https://eips.ethereum.org/EIPS/eip-7939) (`CLZ`) for the contracts to function.
+These contracts are deployed at the **same address on every chain listed above**. Anyone can deploy them to another compatible network with the [DeployAll script](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/script/DeployAll.s.sol).
 
 ### Core and extensions
 
@@ -51,12 +87,39 @@ These contracts are deployed at the **same address on every supported chain** (E
 
 ### Position and order managers
 
-Deployed on Ethereum, Base, Arbitrum, MegaETH, and Monad. The Positions deployment charges a 10% swap protocol fee for the Ekubo DAO (and no withdrawal fee).
+Unlike the contracts above, the managers do **not** share one address across all
+chains, because `v3.2.0` changed their source.
 
-| Contract                                                                                  | Address                                      | Description                                                                                                      |
-| ----------------------------------------------------------------------------------------- | -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| [Positions](https://github.com/EkuboProtocol/evm-contracts/blob/v3.1.1/src/Positions.sol) | `0x02D9876A21AF7545f8632C3af76eC90b5ad4b66D` | ERC-721 manager for [liquidity positions](/user-guides/add-liquidity/) (`v3.1.1` deployment — remains canonical) |
-| [Orders](https://github.com/EkuboProtocol/evm-contracts/blob/v3.1.1/src/Orders.sol)       | `0x3325428adB409c239E88ca472F50b0efe00E98B4` | ERC-721 manager for [DCA orders](/user-guides/dollar-cost-average-orders/) (`v3.1.1` deployment)                 |
+[`BasePositions`](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/base/BasePositions.sol)
+now overrides `saltToId` to truncate a generated NFT ID to `uint192`, so the whole token
+ID can be used directly as the Core position salt rather than a hashed-down version of
+it. Enabling that override meant marking `BaseNonfungibleToken.saltToId` as `virtual`,
+which changed the compiled `Orders` bytecode as well — so the Orders manager moved to a
+new deterministic address even though `Orders.sol` itself is unchanged. Both releases
+compile with solc 0.8.33; this is a source change, not a recompilation.
+
+There is no migration. Chains that already had the original managers kept them, and
+chains onboarded afterwards received the new ones.
+
+Both generations are live, and a position minted through either remains valid. To build
+a **new** transaction, use whichever generation the target chain has, per the
+[Supported chains](#supported-chains) table:
+
+| Generation                                                                                   | Positions                                    | Orders                                       | Canonical on                                                           |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------- | -------------------------------------------- | ---------------------------------------------------------------------- |
+| **Original** ([`v3.1.1`](https://github.com/EkuboProtocol/evm-contracts/tree/v3.1.1/src))    | `0x02D9876A21AF7545f8632C3af76eC90b5ad4b66D` | `0x3325428adB409c239E88ca472F50b0efe00E98B4` | Ethereum, Monad, MegaETH, Robinhood Chain, Base, Arbitrum              |
+| **192-bit IDs** ([`v3.2.0`](https://github.com/EkuboProtocol/evm-contracts/tree/v3.2.0/src)) | `0xA2971E0C37cFdb13aE8440A0C94Ef1A1af39e326` | `0x9bB520B6192F71ec3D015C8a74F914f9c94bF794` | Optimism, BNB Smart Chain, Gnosis, Unichain, Polygon, World Chain, Ink |
+
+Most chains in the first row carry **both** generations, because the `v3.2.0` managers
+were deployed everywhere afterwards; only Robinhood Chain has the original alone. Where
+both exist the original is canonical, which is what the Ekubo interface builds against.
+[Positions](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/Positions.sol)
+is the ERC-721 manager for [liquidity positions](/user-guides/add-liquidity/) and applies
+a 10% swap protocol fee for the Ekubo DAO (and no withdrawal fee);
+[Orders](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/Orders.sol) is the
+ERC-721 manager for [DCA orders](/user-guides/dollar-cost-average-orders/). A few chains
+also carry earlier manager deployments that are not canonical and should not be used for
+new transactions.
 
 ### Deployment-specific contracts
 
