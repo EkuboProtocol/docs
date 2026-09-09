@@ -1,227 +1,114 @@
 ---
-description: "Ekubo V3: Shared Liquidity as a Public Good — the whitepaper for the open-source, multichain V3 release"
+description: "Ekubo V3's shared liquidity architecture: a common AMM and settlement layer for independent products, integrations, and AI agents."
 title: "Ekubo V3: Shared Liquidity as a Public Good"
 ---
 
 ## Motivation
 
-Most AMMs today follow the same pattern:
+Launching an automated market maker (AMM) often means deploying another copy of familiar contracts, attracting a separate base of liquidity, and rebuilding the integrations around it. Traders encounter fragmented markets, while liquidity providers and developers must decide which deployments to support. Each new brand or version can repeat much of the same work without improving the underlying market design.
 
-- Each team forks or reimplements an AMM.
-- Each deployment holds its own liquidity and token balances.
-- Each “version” requires new integrations, new analytics, and new approvals.
+Ekubo V3 separates the market infrastructure from the products built on it. Its central contract, Core, implements the AMM, holds tokens, and accounts for swaps and liquidity positions. Independent teams can build their own interfaces, contracts, and revenue models around the same deployment. A new product can use existing pools instead of requiring users to move their liquidity to another fork.
 
-From users' and integrators' perspectives this leads to:
+The aim is to make liquidity and settlement common infrastructure. Teams can compete on distribution, execution workflows, asset curation, and user experience while contributing to a shared market. Tooling developed for that market can serve many products, and transactions that combine its pools can settle without transferring intermediate tokens between separate AMM contracts.
 
-- **Fragmented liquidity** – the same pair trades in many unrelated pools.
-- **Duplicated work** – every fork needs its own indexers, explorers, and tooling.
-- **Unnecessary gas costs** – tokens are transferred in and out of many different contracts that are all doing roughly the same thing.
-
-Ekubo Core is a response to this duplication. Instead of many unrelated AMM contracts, Ekubo defines **one canonical Core contract** that implements a high‑precision concentrated‑liquidity AMM. Multiple **licensees** (which you can think of as white‑labeled AMMs with their own revenue models and frontends) all share this same Core.
-
-The objectives are:
-
-- **One implementation, many brands.** Different teams can run their own “instance” of Ekubo as an extension or licensee, but all orders and liquidity ultimately settle in the same Core.
-- **Shared tooling and integrations.** Indexers, risk engines, analytics, and aggregators only need to integrate once.
-- **Gas efficiency across licensees.** When everything settles in one Core, you can avoid ERC‑20 transfers even when moving value between different licensees.
+This paper describes the V3 EVM architecture. Sharing occurs within a Core deployment on a particular chain; deploying the same code on another chain does not combine their balances or liquidity.
 
 ## The AMM Encoded in Core
 
-Ekubo Core encodes a concrete AMM design:
+Core implements concentrated liquidity using constant-product swap math. Liquidity providers choose price ranges, and their liquidity participates while the market price is inside those ranges. The underlying tick grid advances in increments of 0.01 basis points, with each pool's tick spacing determining the available position boundaries. This gives market makers fine control over where they supply liquidity.
 
-- A constant‑product (`x * y = k`) AMM.
-- With **concentrated liquidity** over price ranges, similar in spirit to Uniswap v3‑style positions.
-- At a **very fine tick size** of 1/100th of a basis point, enabling precise market‑maker control.
+Core also supports full-range and stableswap configurations. These configurations belong to the shared implementation, so a team can select the appropriate pool design without maintaining its own copy of the swap math. The implementation is available in the [Core contract](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/Core.sol) and [pool configuration code](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/types/poolConfig.sol).
 
-Core also supports additional pool configurations, such as stableswap‑style curves and full‑range pools. Across all of these configurations, the key point is that:
-
-- The **curve logic and pool mechanics live in Core itself.**
-- Licensees do **not** ship their own AMM math; they all rely on this shared implementation.
-
-This keeps the “hard part” – the AMM's correctness and efficiency – in one place that is audited for correctness, while still allowing many different products to be built on top of it.
+A pool is identified by its token pair and configuration, including its fee, pool type parameters, and extension. Products using the same pool key on the same Core access the same pool. Different configurations remain distinct markets, even though Core holds their tokens. Position ownership and accounting also remain separate: sharing a pool does not give one product control over another product's positions.
 
 ## Engineering for Gas Efficiency
 
-Ekubo Core is engineered under the assumption that **gas is the scarcest resource**. A central design objective was to make it extremely difficult to build a meaningfully more gas‑efficient AMM without sacrificing safety, features or developer experience.
+Core reduces the storage access and token movement needed to execute a trade. Frequently accessed state is packed into compact representations, and critical arithmetic uses low-level operations. These choices matter because every transaction pays for the work performed by the EVM.
 
-At a high level:
+The price representation illustrates this approach. Core stores the square-root price in a 96-bit dynamic fixed-point format whose two highest bits select the scale. This leaves room for the current tick and active liquidity in the same 256-bit storage word. The encoding and layout are defined in [SqrtRatio](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/types/sqrtRatio.sol) and [PoolState](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/types/poolState.sol).
 
-- Critical state is **bit‑packed into as few storage slots as possible**, reducing both reads and writes.
-- Hot paths are implemented using carefully written low‑level arithmetic, while respecting clear invariants.
-- Rounding is always chosen to favor the pool, preserving solvency even in edge cases.
+Compact state and careful arithmetic reduce overhead, but their effect depends on the transaction. Tick crossings, extension logic, token behavior, and the route itself still affect gas consumption. The design should be evaluated through measurements of comparable operations; it does not establish that further optimization is impossible.
 
-One concrete example is the way Core represents price:
+## Licensees and White-Labeled AMMs
 
-- Instead of using a fixed‑point type, Core defines a **custom floating‑point‑like representation with a 2‑bit exponent**, tailored specifically to AMM needs.
-- This encoding allows **liquidity and the square‑root price to be packed together into a single storage word**, dramatically reducing the cost of updating pool state.
-- The representation and arithmetic are designed so that any rounding error is biased toward the pool, ensuring that the system never pays out more than it should.
+Independent teams can build products around Core under the Ekubo DAO Shared Revenue License. These licensees choose how users access the market, which assets and pools they feature, and how they earn revenue. Their products may use routers, position managers, and extensions to compose the underlying operations into a particular trading or liquidity-management experience.
 
-Taken together, these choices mean that:
+The standard positions contract provides one way to manage user liquidity above Core. A licensee can deploy it with its own fee parameters, including a share of collected swap fees and a fee on liquidity withdrawals. In the reference [Positions implementation](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/Positions.sol), those parameters are set at construction and are immutable for that deployment. Different position managers can therefore offer different economics while supplying liquidity to the same Core pool.
 
-- The marginal gas cost of a swap or liquidity update is dominated by **economic necessities** (price discovery, fee accounting), not by avoidable overhead.
-- Competing designs that simply “re‑implement the same thing” are very likely to be more expensive on‑chain, because all of the possible optimizations have already been exhausted in Ekubo Core.
-
-## Licensees and White‑Labeled AMMs
-
-Under the Ekubo DAO Shared Revenue License, multiple independent teams can become **licensees** of the Core implementation. Each licensee can:
-
-- Operate its own frontend(s) and branding.
-- Choose its own revenue model and fee recipients.
-- Curate asset lists, default pools, and guardrails for their users.
-
-On‑chain, a licensee may interact with Core:
-
-- Directly from its frontend or contracts, calling the Core interface.
-- Via thin helper contracts that batch or wrap user flows.
-- Optionally, by opting into shared **extensions** that add features on top of the base AMM.
-
-In practice, many licensees will deploy the **standard positions contract** that ships with Ekubo V3:
-
-- It manages user liquidity positions on top of Core.
-- It exposes a configurable “protocol fee” parameter that lets a licensee take a share of LP fees without changing Core itself.
-- It can be deployed as‑is with different fee settings, giving each licensee its own revenue model on the same underlying AMM.
-
-All licensees:
-
-- Share the **same** pools, ticks, and positions inside Core.
-- Share the **same** token custody.
-- Share the **same** global state that integrators and tools observe.
-
-From a user's point of view:
-
-- Different licensees can feel like different “venues” or “frontends” with their own economic models and features.
-- At a low level, they are all trading against one shared set of pools in the same Core contract, which directly results in better pricing.
+This arrangement allows products to share liquidity without sharing their entire business model. A trader can reach a pool through several interfaces, and liquidity in that pool can serve the resulting order flow. The benefit depends on products actually selecting and routing into common pools; using the same Core alone does not eliminate fragmentation across configurations.
 
 ## Extensions: Shared Protocol Features
 
-Extensions are **separate contracts** that integrate with Core to add reusable features. They are not new AMMs and they are not tied one‑to‑one with licensees. Instead, they provide functionality that **any** licensee can use.
+Extensions are contracts that add behavior at defined points in Core's operations. They let builders reuse protocol features while keeping the underlying AMM implementation in one place. A pool's configuration selects its extension, so extension behavior is part of the identity and execution requirements of that pool.
 
-In the reference implementation of this version of the protocol, three extensions are shipped alongside Core (additional extensions can be added over time):
+The reference implementation includes an [Oracle](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/extensions/Oracle.sol) that records cumulative observations for supported pools, a [TWAMM](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/extensions/TWAMM.sol) that executes orders over time, and [MEV Capture](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/extensions/MEVCapture.sol), which collects additional swap fees based on price movement and accounts for them as pool fees. These features support different market requirements without requiring each licensee to reproduce them.
 
-- **Oracle** – efficiently records and exposes on‑chain price history for any token pair, perfect for bootstrapping new lending markets.
-- **TWAMM (Time‑Weighted AMM)** – lets users place orders that execute gradually over time, smoothing execution and reducing market impact.
-- **MEV Capture** – charges additional fees on swaps that move price significantly, directing that value back to liquidity providers.
-
-Licensees can:
-
-- Use these canonical extensions as‑is.
-- Combine them in different ways in their own products.
-- Optionally write additional extensions.
-
-Conceptually:
-
-- **Core** is the shared AMM engine and custody layer.
-- **Extensions** are shared feature modules that any licensee can call.
-- **Licensees** are off‑chain entities and/or contracts that choose how to assemble Core and extensions into a user‑facing product.
+Products can offer access to pools with different extensions or develop new extensions of their own. A single pool key contains one extension address; combining several behaviors in one pool requires an extension designed to compose them. Integrators must account for those behaviors when quoting and executing trades, even when they already support Core.
 
 ## Network Effects From a Singleton Core
 
-Having many licensees share a single Core contract creates several reinforcing network effects.
-
 ### Tooling and Analytics
 
-Because Core is the canonical place where all swaps and liquidity changes happen:
+A common contract interface and event model give indexers, analytics platforms, and monitoring tools a reusable foundation. Once an integration understands Core's pools, swaps, and liquidity accounting, it can support additional products using that deployment without indexing another fork of the AMM.
 
-- Indexers, explorers, and analytics platforms only need to understand Core's event stream.
-- Risk and monitoring tools can be written once and reused across every licensee.
-- New licensees can launch without waiting for custom integrations; they inherit the existing ecosystem “for free”.
-
-This is similar to the way a common L2 or common DEX becomes a focal point for tooling: once the infrastructure exists, new frontends and business models are cheap to add.
+Product-specific attribution, position managers, and extension behavior may still require additional work. The shared architecture concentrates that work around a common market model, allowing improvements to pool discovery and monitoring to benefit multiple teams.
 
 ### Integrations and Routing
 
-Aggregators, market makers, and other protocols only need to target Core's interface:
+Routers can discover and compare pools within Core using a common pool identity and accounting model. A new frontend that uses an existing pool does not create another venue for the router to integrate. A new pool configuration can be evaluated within the same framework, subject to any requirements imposed by its extension.
 
-- A single integration immediately supports all current and future licensees.
-- Routing strategies can reason about one pool per pair (per configuration), not a forest of forks with small differences of behavior.
-
-This reduces both engineering and operational complexity, and makes Ekubo a more attractive target for sophisticated routing logic.
+This makes it possible for distribution to grow independently of the number of AMM deployments. More products can bring order flow to existing liquidity, while more accessible liquidity can make those products useful to additional traders. The architecture enables this feedback; it does not guarantee deeper liquidity or better execution for every trade.
 
 ### Gas Efficiency Across Licensees
 
-When users create trades that execute swaps on multiple AMM protocols, moving tokens between them requires at least one additional transfer, but often in practice incurs multiple additional token transfers:
+A route spanning separate AMM contracts generally needs to transfer intermediate tokens between their custody addresses, either directly or through a router. Within a single Core, the output of one operation can instead offset the input obligation of another through internal accounting.
 
-- An ERC‑20 transfer out of AMM A to some intermediary router contract.
-- A separate ERC‑20 transfer from that intermediary into AMM B.
+For example, an A-to-B swap followed by a B-to-C swap can settle the intermediate B balance without an ERC-20 transfer of B out of Core and back in. Both swaps still execute and update their respective pools. The saving comes from netting token obligations, not from treating a route through two pools as one swap.
 
-Even though this happens in one transaction, those token transfers cost a lot of gas.
-
-When two Ekubo Protocol licensees use the same Core contract:
-
-- Tokens never need to leave Core just to move from “licensee A” logic to “licensee B” logic.
-- Different licensees can even point at the **exact same pool**, but set up different revenue models externally (for example, by configuring different protocol‑fee parameters on their positions contracts).
-- Licensee‑specific behavior can execute via direct Core calls or shared extensions, while balances stay in one place.
-
-From the protocol's point of view, that means **one swap instead of two**: a trader routed through multiple licensees still interacts with a single Core pool, and each licensee settles its own economics off the back of that shared swap. This is the key network effect on gas: once tokens are in Core, all licensees can work with them without additional transfers between one another or redundant AMM hops.
+The same principle applies when products operated by different licensees compose operations on a shared Core. Their branding does not require separate custody, and their use of different position managers need not introduce additional AMM hops.
 
 ## Flash Accounting as a Supporting Feature
 
-Ekubo Core also uses **flash accounting**: instead of transferring tokens in and out for every action, it keeps track of what each caller owes or is owed, and settles based on the net result.
+Flash accounting makes this settlement model possible. During a lock, Core tracks token obligations as operations execute, allowing swaps and liquidity changes to be combined before settlement. The EVM implementation uses transient storage for this accounting and reverts if any debt remains outstanding when the lock ends. These checks are implemented in [FlashAccountant](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/base/FlashAccountant.sol).
 
-This idea is not new in DeFi, but it is a good fit for a singleton AMM:
+Core also supports saved balances that contracts can retain and reuse across transactions. Those balances are accounted for by the locker address, token pair, and a salt; custody in the same contract does not make them freely accessible to other callers.
 
-- Users can sequence multiple actions (e.g., swaps, liquidity changes) and only handle ERC‑20 transfers once.
-- Power users and extensions can **save balances** in Core for later, reusing them across many operations.
+Together, net settlement and saved balances let builders compose operations with fewer token transfers. The singleton provides a common place for those operations to occur, and flash accounting provides the mechanism for settling them efficiently.
 
-Flash accounting is therefore best understood as **one of several mechanisms** that make the shared‑Core vision practical:
+## Permissionless, Ownerless, and Fee-Externalized
 
-- It complements the singleton design by minimizing ERC‑20 calls.
-- It makes it easier for licensees to compose complex flows without burdening users with many approvals and transfers.
+The V3 EVM Core has no owner role or administrative switch for imposing a global protocol fee. Pool creation and extension registration are governed by contract validation rather than a discretionary approval process. These properties concern Core itself; position managers, extensions, and other contracts must be evaluated separately.
 
-It is important, but not the central conceptual novelty; the more fundamental idea is that many licensees share a single AMM implementation and liquidity layer.
+The code can be deployed and integrated under the [Ekubo DAO Shared Revenue License](https://github.com/EkuboProtocol/evm-contracts/blob/main/LICENSE). The license governs revenue sharing and other obligations, including notices and distribution terms. Its definition of Protocol Revenue is broader than the fee setting on a particular positions contract, so a zero setting alone does not establish that a product has no revenue-sharing obligation.
 
-## Permissionless, Ownerless, and Fee‑Externalized
+Core's accounting is separate from those licensing obligations. Products can implement their revenue models in contracts above Core, while the shared AMM continues to account for pool liquidity and trading fees. This separation places product economics at the integration layer and allows the same market infrastructure to support different commercial arrangements.
 
-Ekubo Core is designed to be:
+## Shared Liquidity for AI Agents
 
-- **Permissionless to deploy:** anyone can take the contracts in this repository and deploy them to any chain, at the same addresses, using the provided deploy scripts. Bringing Ekubo to a new chain does not require coordination with the Ekubo team or DAO.
-- **Permissionless to build on:** anyone can integrate Core, extensions, and the positions contract into their own product, subject only to the terms of the Ekubo license.
-- **Ownerless on‑chain:** there is no privileged actor that can confiscate funds or reroute global protocol fees at the Core level.
+AI systems can now discover tools dynamically and orchestrate their calls through generated code, enabling workflows that combine data retrieval, computation, and external actions. These capabilities are documented in Anthropic's work on [advanced tool use](https://www.anthropic.com/engineering/advanced-tool-use). Interoperability is also progressing: the [July 2026 Model Context Protocol specification](https://blog.modelcontextprotocol.io/posts/2026-07-28/) adds a stateless protocol core, cacheable discovery results, and stronger authorization handling for services used by agents.
 
-Legally, the only global requirement is **revenue sharing** as defined in the Ekubo DAO Shared Revenue License:
+For Ekubo, the architectural implication is that a product's interface can be an agent as well as a website. An agent could compare quotes, monitor liquidity positions, or prepare a rebalance through structured tools. A shared Core gives such tools a common pool and settlement model to target, allowing different assistants and strategies to use the same markets. These are integration possibilities, not new capabilities or privileges inside Core.
 
-- Licensees that collect protocol revenue (for example, by setting a non‑zero protocol‑fee share on the positions contract) share a portion of that revenue with Ekubo DAO.
-- This revenue‑sharing arrangement can be negotiated with the Ekubo DAO when necessary.
-- If a licensee chooses **not** to collect any protocol revenue (e.g., allows LPs to keep 100% of fees), then there is no protocol revenue to share with Ekubo DAO.
-- Core does not enforce that a user's positions must pay any protocol fees; there can be completely free deployments of Ekubo Protocol, but the user must depend on the tooling offered by such deployment
+An agent integration should keep transaction authority explicit. Model-generated plans need fresh state, transaction simulation, and checks on the chain, assets, recipients, amounts, and execution limits. Signing should remain subject to the user's approval or a previously authorized policy enforced outside the model. Access to an MCP tool does not itself authorize a wallet transaction, and successful simulation cannot guarantee execution against later market state.
 
-Crucially, the notion of a **“protocol fee”** is **externalized** from Core itself:
-
-- Core does not force a single global fee recipient or tax.
-- Each licensee (through its chosen contracts and frontends, possibly via extensions) can define its own fee model and revenue split—for example, by configuring the protocol‑fee parameter on the shared positions contract it deploys.
-- Communities can choose or fork the licensee logic that matches their values.
-
-This separation lets Core focus on being a neutral, efficient, and durable AMM implementation, while economic policies live at the edges and are governed by license terms rather than on‑chain privileges. In this sense, the Core contracts function as **public infrastructure** for AMMs: a shared, well‑engineered base layer that anyone can deploy, integrate, and build on, so long as they respect the simple revenue‑sharing rules of the license.
+The same separation that lets human-facing products share an AMM can therefore support agent-driven products: software chooses and prepares actions, while contracts enforce settlement rules. More capable models can make those products easier to build and use, but they do not replace contract verification or ensure profitable trading decisions.
 
 ## How It Feels to Use Ekubo
 
 ### For Traders
 
-- You interact with a frontend (often tied to a specific licensee) and trade as usual.
-- Under the hood, your trades settle against the same shared pools inside Core that other licensees use.
-- You benefit from deeper liquidity and, over time, lower gas overhead per unit of volume as more activity concentrates in the singleton.
+Traders choose an interface and submit a trade against the pools it supports. Several interfaces can reach the same liquidity, so choosing a different product need not mean moving to a different market. Execution still depends on the selected route, available liquidity, fees, and transaction limits.
 
 ### For Liquidity Providers
 
-- You provide liquidity once into a Core pool.
-- That liquidity can serve order flow from many different licensees.
-- Your capital is not fragmented across multiple forks of the same AMM.
-
-As more licensees launch on Ekubo, the same positions can see more order flow, without any extra management overhead from LPs.
+A liquidity provider's position can serve trades arriving from any product that routes into its pool. Supporting another frontend does not inherently require creating another position or migrating funds. Concentrating liquidity increases exposure to fees while the position is in range, but also increases divergence-loss exposure and the likelihood of going out of range; shared distribution does not remove those tradeoffs.
 
 ### For Licensees and Builders
 
-- You focus on product, UX, and economics rather than re‑implementing AMM internals.
-- You inherit existing liquidity, tooling, and integrations by plugging into Core.
-- You can differentiate on fees, governance, curation, and user experience, while sharing a common, battle‑tested AMM engine.
+Builders can focus on the product around the market: how users discover opportunities, express their intentions, manage positions, and authorize transactions. They can reuse Core and compatible integrations while taking responsibility for their own contracts, extension choices, and economics.
 
 ## Summary
 
-Ekubo Core is a **singleton AMM implementation** that multiple licensees share—a public good for concentrated‑liquidity markets:
+Ekubo V3 gives independent products a common AMM and settlement layer. Concentrated liquidity, configurable pool designs, and extensions support different market needs within a shared Core deployment. Compact state and flash accounting reduce overhead, while common interfaces make tooling reusable across products.
 
-- The AMM itself is a high‑precision, concentrated‑liquidity constant‑product design encoded directly in Core.
-- Licensees act as white‑labeled AMMs on top, with their own frontends and revenue models, but common liquidity and custody.
-- Shared state produces strong network effects for tooling, integrations, and gas efficiency—even when value flows between different licensees.
-- Flash accounting and saved balances support this vision by reducing ERC‑20 transfers and simplifying multi‑step flows, without being the main conceptual innovation.
-
-The long‑term picture is a DeFi ecosystem where many brands and business models can coexist on top of a single, efficient, permissionless, and ownerless AMM Core, rather than a patchwork of incompatible forks all reinventing the same mechanics.
+The long-term opportunity is a market that can support many brands, business models, and automated agents without requiring each to recreate its liquidity infrastructure. Core supplies the shared foundation; the products around it determine how users participate.
