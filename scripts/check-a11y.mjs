@@ -35,6 +35,30 @@ for (const scheme of ["light", "dark"]) {
       continue;
     }
 
+    // Audit both the lightweight API landing state and the full explorer.
+    if (path === "/api/") {
+      const landingResults = await new AxeBuilder({ page })
+        .withTags(TAGS)
+        .analyze();
+      incomplete += landingResults.incomplete.length;
+      for (const violation of landingResults.violations) {
+        const target = violation.nodes[0]?.target.join(" > ") ?? "unknown";
+        failures.push(
+          `${scheme} ${path} landing: ${violation.id} (${violation.impact}) at ${target}`,
+        );
+      }
+      await page
+        .getByRole("button", { name: "Load interactive reference" })
+        .click();
+      await page
+        .locator("#scalar-reference > *")
+        .first()
+        .waitFor({ timeout: 20_000 });
+      // Scalar renders in several mutation batches. Let the final batch and
+      // the page's accessibility repair observer settle before auditing it.
+      await page.waitForTimeout(1_000);
+    }
+
     const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
     incomplete += results.incomplete.length;
     for (const violation of results.violations) {

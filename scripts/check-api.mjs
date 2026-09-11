@@ -16,6 +16,9 @@ for (const scheme of ["light", "dark"]) {
   } else {
     try {
       await page
+        .getByRole("button", { name: "Load interactive reference" })
+        .click({ timeout: 5_000 });
+      await page
         .locator("#scalar-reference > *")
         .first()
         .waitFor({ timeout: 20_000 });

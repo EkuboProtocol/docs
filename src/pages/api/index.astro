@@ -22,7 +22,22 @@ import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
 
   <span id="quoter" class="api-spec-anchor" aria-hidden="true"></span>
   <div class="api-reference-frame">
-    <div id="scalar-reference" aria-label="Interactive API reference"></div>
+    <div class="api-load-prompt">
+      <p>
+        Load the interactive explorer to search operations, inspect schemas, and
+        test requests.
+      </p>
+      <button id="load-api-reference" type="button">
+        Load interactive reference
+      </button>
+      <p id="api-load-status" class="api-load-status" aria-live="polite"></p>
+    </div>
+    <div
+      id="scalar-reference"
+      role="region"
+      aria-label="Interactive API reference"
+    >
+    </div>
   </div>
 
   <noscript>
@@ -32,13 +47,28 @@ import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
     </p>
   </noscript>
 
-  <script
-    is:inline
-    src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.64.1"></script>
   <script is:inline>
     const container = document.querySelector("#scalar-reference");
+    const loadPrompt = document.querySelector(".api-load-prompt");
+    const loadButton = document.querySelector("#load-api-reference");
+    const loadStatus = document.querySelector("#api-load-status");
 
-    if (container && !container.dataset.mounted && window.Scalar) {
+    function loadScalarScript() {
+      if (window.Scalar) return Promise.resolve();
+
+      return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src =
+          "https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.64.1";
+        script.onload = resolve;
+        script.onerror = () =>
+          reject(new Error("The interactive reference could not be loaded."));
+        document.head.append(script);
+      });
+    }
+
+    function mountScalar() {
+      if (!container || container.dataset.mounted || !window.Scalar) return;
       container.dataset.mounted = "true";
       window.Scalar.createApiReference(container, {
         sources: [
@@ -65,7 +95,28 @@ import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
         telemetry: false,
         agent: { disabled: true },
       });
+      loadPrompt?.remove();
     }
+
+    loadButton?.addEventListener("click", async () => {
+      loadButton.disabled = true;
+      loadButton.textContent = "Loading interactive reference…";
+      if (loadStatus) loadStatus.textContent = "Downloading the API explorer.";
+
+      try {
+        await loadScalarScript();
+        mountScalar();
+      } catch (error) {
+        loadButton.disabled = false;
+        loadButton.textContent = "Try loading again";
+        if (loadStatus) {
+          loadStatus.textContent =
+            error instanceof Error
+              ? error.message
+              : "The interactive reference could not be loaded.";
+        }
+      }
+    });
 
     let repairQueued = false;
     function repairAccessibility() {
@@ -188,12 +239,55 @@ import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
     overflow: clip;
   }
 
+  .api-load-prompt {
+    display: grid;
+    justify-items: start;
+    padding: clamp(1.25rem, 4vw, 3rem);
+  }
+
+  .api-load-prompt p {
+    margin-block: 0 1rem;
+    max-width: 42rem;
+  }
+
+  .api-load-prompt button {
+    min-height: 2.75rem;
+    padding: 0.625rem 1rem;
+    border: 1px solid var(--sl-color-accent);
+    border-radius: 0.5rem;
+    background: var(--sl-color-accent);
+    color: var(--sl-color-black);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+  }
+
+  .api-load-prompt button:hover:not(:disabled) {
+    background: var(--sl-color-accent-high);
+  }
+
+  .api-load-prompt button:disabled {
+    cursor: wait;
+    opacity: 0.75;
+  }
+
+  .api-load-prompt .api-load-status {
+    min-height: 1.75em;
+    margin-block: 0.5rem 0;
+    color: var(--sl-color-gray-2);
+    font-size: var(--sl-text-sm);
+  }
+
   .api-spec-anchor {
     display: block;
     scroll-margin-top: calc(var(--sl-nav-height) + 1rem);
   }
 
   #scalar-reference {
+    min-height: 0;
+  }
+
+  #scalar-reference[data-mounted="true"] {
     min-height: max(42rem, 100vh);
   }
 
@@ -252,6 +346,10 @@ import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
 
   #scalar-reference .sidebar-search-placeholder {
     color: var(--scalar-color-2);
+  }
+
+  #scalar-reference [class~="group/button-label"] {
+    color: var(--scalar-sidebar-color-1);
   }
 
   #scalar-reference .scalar-mcp-layer {
