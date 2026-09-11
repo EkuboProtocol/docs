@@ -260,6 +260,10 @@ export default defineConfig({
                 },
                 { label: "Governance", slug: "reference/contracts/governance" },
                 {
+                  label: "Governance Sepolia",
+                  slug: "reference/contracts/governance-sepolia",
+                },
+                {
                   label: "EVM (V2, deprecated)",
                   slug: "reference/contracts/evm-v2",
                 },
