@@ -79,7 +79,7 @@ contract MultiHopRouter is IUnlockCallback {
         returns (uint256 amountOut)
     {
         bytes memory result = manager.unlock(
-            abi.encode(hops, currencyIn, currencyOut, amountIn, msg.sender, address(this))
+            abi.encode(hops, currencyIn, currencyOut, amountIn, msg.sender, msg.sender)
         );
         amountOut = abi.decode(result, (uint256));
         uint256 ethBalance = address(this).balance;
@@ -140,7 +140,7 @@ contract V4GasTest is Test {
     uint256 constant LIQUIDITY_TOKEN_AMOUNT = 1_000_000 ether;
     int256 constant SWAP_AMOUNT = -1 ether;
 
-    function setUp() public {
+    function setUp() public virtual {
         manager = new PoolManager(address(this));
         swapRouter = new PoolSwapTest(manager);
         minRouter = new MinimalSwapRouter(manager);
@@ -221,6 +221,7 @@ contract V4GasTest is Test {
             ModifyLiquidityParams({tickLower: TICK_LOWER, tickUpper: TICK_UPPER, liquidityDelta: int256(uint256(_fullRangeLiquidity(LIQUIDITY_TOKEN_AMOUNT, LIQUIDITY_TOKEN_AMOUNT))), salt: bytes32(0)}),
             ""
         );
+
     }
 
     function _fullRangeLiquidity(uint256 amount0, uint256 amount1) internal pure returns (uint128) {
@@ -247,19 +248,6 @@ contract V4GasTest is Test {
         (t0, t1);
     }
 
-    function _coolAll() internal {
-        vm.cool(address(manager));
-        vm.cool(address(swapRouter));
-        vm.cool(address(mintRouter));
-        vm.cool(address(multiHopRouter));
-        vm.cool(address(minRouter));
-        vm.cool(address(tokenA));
-        vm.cool(address(tokenB));
-        vm.cool(address(tokenC));
-        vm.cool(address(tokenD));
-        vm.cool(address(this));
-    }
-
     function _v4Hops(PoolKey[] memory keys) internal pure returns (MultiHopRouter.Hop[] memory hops) {
         hops = new MultiHopRouter.Hop[](keys.length);
         for (uint256 i = 0; i < keys.length; i++) {
@@ -269,7 +257,7 @@ contract V4GasTest is Test {
 
     /// forge-config: default.isolate = true
     function test_gas_single_minimal_erc20() public {
-        _coolAll();
+        minRouter.swapExactIn(keyAB, true, SWAP_AMOUNT, TickMath.MIN_SQRT_PRICE + 1, address(this));
         uint256 out = minRouter.swapExactIn(keyAB, true, SWAP_AMOUNT, TickMath.MIN_SQRT_PRICE + 1, address(this));
         assertGt(out, 0);
         vm.snapshotGasLastCall("v4 single exact-input minimal locker token0->token1");
@@ -277,7 +265,7 @@ contract V4GasTest is Test {
 
     /// forge-config: default.isolate = true
     function test_gas_single_minimal_erc20_reverse() public {
-        _coolAll();
+        minRouter.swapExactIn(keyAB, false, SWAP_AMOUNT, TickMath.MAX_SQRT_PRICE - 1, address(this));
         uint256 out = minRouter.swapExactIn(keyAB, false, SWAP_AMOUNT, TickMath.MAX_SQRT_PRICE - 1, address(this));
         assertGt(out, 0);
         vm.snapshotGasLastCall("v4 single exact-input minimal locker token1->token0");
@@ -285,7 +273,12 @@ contract V4GasTest is Test {
 
     /// forge-config: default.isolate = true
     function test_gas_single_exactInput_erc20() public {
-        _coolAll();
+        swapRouter.swap(
+            keyAB,
+            SwapParams({zeroForOne: true, amountSpecified: SWAP_AMOUNT, sqrtPriceLimitX96: TickMath.MIN_SQRT_PRICE + 1}),
+            PoolSwapTest.TestSettings({takeClaims: false, settleUsingBurn: false}),
+            ""
+        );
         swapRouter.swap(
             keyAB,
             SwapParams({zeroForOne: true, amountSpecified: SWAP_AMOUNT, sqrtPriceLimitX96: TickMath.MIN_SQRT_PRICE + 1}),
@@ -297,7 +290,12 @@ contract V4GasTest is Test {
 
     /// forge-config: default.isolate = true
     function test_gas_single_exactInput_native() public {
-        _coolAll();
+        swapRouter.swap{value: 1 ether}(
+            keyNative,
+            SwapParams({zeroForOne: true, amountSpecified: SWAP_AMOUNT, sqrtPriceLimitX96: TickMath.MIN_SQRT_PRICE + 1}),
+            PoolSwapTest.TestSettings({takeClaims: false, settleUsingBurn: false}),
+            ""
+        );
         swapRouter.swap{value: 1 ether}(
             keyNative,
             SwapParams({zeroForOne: true, amountSpecified: SWAP_AMOUNT, sqrtPriceLimitX96: TickMath.MIN_SQRT_PRICE + 1}),
@@ -311,7 +309,7 @@ contract V4GasTest is Test {
     function test_gas_oneHop_exactInput() public {
         PoolKey[] memory keys = new PoolKey[](1);
         keys[0] = keyAB;
-        _coolAll();
+        multiHopRouter.multiHop(_v4Hops(keys), Currency.wrap(address(tokenA)), Currency.wrap(address(tokenB)), SWAP_AMOUNT);
         uint256 out = multiHopRouter.multiHop(_v4Hops(keys), Currency.wrap(address(tokenA)), Currency.wrap(address(tokenB)), SWAP_AMOUNT);
         assertGt(out, 0);
         vm.snapshotGasLastCall("v4 one-hop exact-input single lock");
@@ -322,7 +320,7 @@ contract V4GasTest is Test {
         PoolKey[] memory keys = new PoolKey[](2);
         keys[0] = keyAB;
         keys[1] = keyBC;
-        _coolAll();
+        multiHopRouter.multiHop(_v4Hops(keys), Currency.wrap(address(tokenA)), Currency.wrap(address(tokenC)), SWAP_AMOUNT);
         uint256 out = multiHopRouter.multiHop(_v4Hops(keys), Currency.wrap(address(tokenA)), Currency.wrap(address(tokenC)), SWAP_AMOUNT);
         assertGt(out, 0);
         vm.snapshotGasLastCall("v4 two-hop exact-input single lock");
@@ -334,7 +332,7 @@ contract V4GasTest is Test {
         keys[0] = keyAB;
         keys[1] = keyBC;
         keys[2] = keyCD;
-        _coolAll();
+        multiHopRouter.multiHop(_v4Hops(keys), Currency.wrap(address(tokenA)), Currency.wrap(address(tokenD)), SWAP_AMOUNT);
         uint256 out = multiHopRouter.multiHop(_v4Hops(keys), Currency.wrap(address(tokenA)), Currency.wrap(address(tokenD)), SWAP_AMOUNT);
         assertGt(out, 0);
         vm.snapshotGasLastCall("v4 three-hop exact-input single lock");
@@ -343,7 +341,11 @@ contract V4GasTest is Test {
     /// forge-config: default.isolate = true
     function test_gas_mint_fullRange() public {
         uint128 liq = _fullRangeLiquidity(LIQUIDITY_TOKEN_AMOUNT, LIQUIDITY_TOKEN_AMOUNT);
-        _coolAll();
+        mintRouter.modifyLiquidity(
+            keyAB,
+            ModifyLiquidityParams({tickLower: TICK_LOWER, tickUpper: TICK_UPPER, liquidityDelta: int256(uint256(liq)), salt: bytes32(uint256(2))}),
+            ""
+        );
         mintRouter.modifyLiquidity(
             keyAB,
             ModifyLiquidityParams({tickLower: TICK_LOWER, tickUpper: TICK_UPPER, liquidityDelta: int256(uint256(liq)), salt: bytes32(uint256(1))}),

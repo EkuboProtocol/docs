@@ -135,17 +135,9 @@ contract EkuboGasTest is Test {
         return PoolKey({token0: t0, token1: t1, config: createConcentratedPoolConfig(FEE_0_3, TICK_SPACING, address(0))});
     }
 
-    function _coolAll() internal {
-        vm.cool(address(core));
-        vm.cool(address(positions));
-        vm.cool(address(router));
-        vm.cool(address(bareMint));
-        vm.cool(address(tokenA));
-        vm.cool(address(tokenB));
-        vm.cool(address(tokenC));
-        vm.cool(address(tokenD));
-        vm.cool(address(this));
-    }
+    // Steady-state methodology: one identical unmeasured warm-up precedes every
+    // measurement, so pools, tokens, and approvals sit in warmed nonzero slots.
+    // isolate=true still gives each test a fresh chain for reproducibility.
 
     function _route(PoolKey[] memory keys) internal pure returns (RouteNode[] memory route) {
         route = new RouteNode[](keys.length);
@@ -156,7 +148,7 @@ contract EkuboGasTest is Test {
 
     /// forge-config: default.isolate = true
     function test_gas_single_exactInput_erc20() public {
-        _coolAll();
+        router.swapAllowPartialFill(keyAB, createSwapParameters(SqrtRatio.wrap(0), SWAP_AMOUNT, false, 0));
         router.swapAllowPartialFill(
             keyAB, createSwapParameters(SqrtRatio.wrap(0), SWAP_AMOUNT, false, 0)
         );
@@ -165,7 +157,7 @@ contract EkuboGasTest is Test {
 
     /// forge-config: default.isolate = true
     function test_gas_single_exactInput_erc20_reverse() public {
-        _coolAll();
+        router.swapAllowPartialFill(keyAB, createSwapParameters(SqrtRatio.wrap(0), SWAP_AMOUNT, true, 0));
         router.swapAllowPartialFill(
             keyAB, createSwapParameters(SqrtRatio.wrap(0), SWAP_AMOUNT, true, 0)
         );
@@ -174,7 +166,9 @@ contract EkuboGasTest is Test {
 
     /// forge-config: default.isolate = true
     function test_gas_single_exactInput_native() public {
-        _coolAll();
+        router.swapAllowPartialFill{value: uint128(SWAP_AMOUNT)}(
+            keyNative, createSwapParameters(SqrtRatio.wrap(0), SWAP_AMOUNT, false, 0)
+        );
         router.swapAllowPartialFill{value: uint128(SWAP_AMOUNT)}(
             keyNative, createSwapParameters(SqrtRatio.wrap(0), SWAP_AMOUNT, false, 0)
         );
@@ -185,7 +179,9 @@ contract EkuboGasTest is Test {
     function test_gas_oneHop_multihopPath() public {
         PoolKey[] memory keys = new PoolKey[](1);
         keys[0] = keyAB;
-        _coolAll();
+        router.multihopSwap(
+            Swap(_route(keys), TokenAmount({token: address(tokenA), amount: SWAP_AMOUNT})), type(int256).min
+        );
         router.multihopSwap(
             Swap(_route(keys), TokenAmount({token: address(tokenA), amount: SWAP_AMOUNT})), type(int256).min
         );
@@ -197,7 +193,9 @@ contract EkuboGasTest is Test {
         PoolKey[] memory keys = new PoolKey[](2);
         keys[0] = keyAB;
         keys[1] = keyBC;
-        _coolAll();
+        router.multihopSwap(
+            Swap(_route(keys), TokenAmount({token: address(tokenA), amount: SWAP_AMOUNT})), type(int256).min
+        );
         router.multihopSwap(
             Swap(_route(keys), TokenAmount({token: address(tokenA), amount: SWAP_AMOUNT})), type(int256).min
         );
@@ -210,7 +208,9 @@ contract EkuboGasTest is Test {
         keys[0] = keyAB;
         keys[1] = keyBC;
         keys[2] = keyCD;
-        _coolAll();
+        router.multihopSwap(
+            Swap(_route(keys), TokenAmount({token: address(tokenA), amount: SWAP_AMOUNT})), type(int256).min
+        );
         router.multihopSwap(
             Swap(_route(keys), TokenAmount({token: address(tokenA), amount: SWAP_AMOUNT})), type(int256).min
         );
@@ -219,14 +219,14 @@ contract EkuboGasTest is Test {
 
     /// forge-config: default.isolate = true
     function test_gas_mint_bare() public {
-        _coolAll();
+        bareMint.mint(keyAB, bytes24(uint192(776)), RANGE_LOWER, RANGE_UPPER, 1e24, address(this));
         bareMint.mint(keyAB, bytes24(uint192(777)), RANGE_LOWER, RANGE_UPPER, 1e24, address(this));
         vm.snapshotGasLastCall("ekubo mint bare core position");
     }
 
     /// forge-config: default.isolate = true
     function test_gas_mint_fullRange() public {
-        _coolAll();
+        positions.mintAndDeposit(keyAB, RANGE_LOWER, RANGE_UPPER, LIQUIDITY_AMOUNT, LIQUIDITY_AMOUNT, 0);
         positions.mintAndDeposit(keyAB, RANGE_LOWER, RANGE_UPPER, LIQUIDITY_AMOUNT, LIQUIDITY_AMOUNT, 0);
         vm.snapshotGasLastCall("ekubo mint concentrated position");
     }

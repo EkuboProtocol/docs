@@ -43,39 +43,51 @@ contract ForkSwapRouter is IUnlockCallback {
         Currency currencyOut = zeroForOne ? key.currency1 : key.currency0;
         int256 inDelta = manager.currencyDelta(address(this), currencyIn);
         int256 outDelta = manager.currencyDelta(address(this), currencyOut);
-        if (inDelta < 0) currencyIn.settle(manager, payer, uint256(-inDelta), false);
+        if (inDelta < 0) {
+            // tolerant settlement: low-level transferFrom so non-standard
+            // tokens (e.g. USDT, no returndata) work like on production routers
+            manager.sync(currencyIn);
+            (bool ok,) = Currency.unwrap(currencyIn).call(
+                abi.encodeWithSignature(
+                    "transferFrom(address,address,uint256)", payer, address(manager), uint256(-inDelta)
+                )
+            );
+            require(ok, "transferFrom failed");
+            manager.settle();
+        }
         if (outDelta > 0) currencyOut.take(manager, recipient, uint256(outDelta), false);
         return abi.encode(uint256(outDelta));
     }
 }
 
-interface IERC20Like {
-    function approve(address spender, uint256 amount) external returns (bool);
-    function balanceOf(address account) external view returns (uint256);
-}
-
-/// @notice Mainnet-fork validation: REAL PoolManager + REAL WETH/USDC pool,
-///         deepest-hooked pool at the pinned block (fee 500, found by probe).
+/// @notice Mainnet-fork validation: REAL PoolManager + REAL USDT/USDC fee-100 pool
+///         (deepest at the pinned block), 1000 USDT exact input, warmed with one
+///         identical unmeasured swap (steady state).
 ///         Run with: --fork-url <mainnet> --fork-block-number <pinned>
 contract ForkV4Test is Test {
     IPoolManager constant MANAGER = IPoolManager(0x000000000004444c5dc75cB358380D2e3dE08A90);
+    address constant USDT = 0xdAC17F958D2ee523a2206206994597C13D831ec7;
     address constant USDC = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
-    address constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 
-    function test_fork_single_exactInput_weth() public {
+    function test_fork_single_exactInput_usdt() public {
         ForkSwapRouter router = new ForkSwapRouter(MANAGER);
-        // WETH is currency1 (USDC < WETH): WETH->USDC is oneForZero
+        // USDT is currency1 (USDC < USDT): USDT->USDC is oneForZero
         PoolKey memory key = PoolKey({
             currency0: Currency.wrap(USDC),
-            currency1: Currency.wrap(WETH),
-            fee: 500,
-            tickSpacing: 10,
+            currency1: Currency.wrap(USDT),
+            fee: 100,
+            tickSpacing: 1,
             hooks: IHooks(address(0))
         });
-        deal(WETH, address(this), 10 ether);
-        IERC20Like(WETH).approve(address(router), type(uint256).max);
-        uint256 out = router.swap(key, false, -1 ether, TickMath.MAX_SQRT_PRICE - 1, address(this));
+        deal(USDT, address(this), 1000000000000);
+        (bool approved,) =
+            USDT.call(abi.encodeWithSignature("approve(address,uint256)", address(router), type(uint256).max));
+        assertTrue(approved, "usdt approve");
+        router.swap(key, false, -1000000000, TickMath.MAX_SQRT_PRICE - 1, address(this)); // warm-up
+        uint256 out = router.swap(key, false, -1000000000, TickMath.MAX_SQRT_PRICE - 1, address(this)); // measured
         assertGt(out, 0);
-        vm.snapshotGasLastCall("fork v4 PoolManager 1 WETH->USDC fee-500");
+        vm.snapshotGasLastCall("fork v4 PoolManager 1000 USDT->USDC fee-100");
+        assertGe(out, 990000000);
+        assertLe(out, 1005000000);
     }
 }

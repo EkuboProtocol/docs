@@ -17,6 +17,27 @@ contract ForkProbeTest is Test {
     IPoolManager constant MANAGER = IPoolManager(0x000000000004444c5dc75cB358380D2e3dE08A90);
     address constant USDC = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
     address constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+    address constant USDT = 0xdAC17F958D2ee523a2206206994597C13D831ec7;
+
+    function test_probe_usdt_usdc_pools() public view {
+        uint24[3] memory fees = [uint24(100), uint24(500), uint24(3000)];
+        int24[3] memory spacings = [int24(1), int24(10), int24(60)];
+        for (uint256 i = 0; i < 3; i++) {
+            PoolKey memory key = PoolKey({
+                currency0: Currency.wrap(USDC),
+                currency1: Currency.wrap(USDT),
+                fee: fees[i],
+                tickSpacing: spacings[i],
+                hooks: IHooks(address(0))
+            });
+            PoolId id = key.toId();
+            uint128 liq = MANAGER.getLiquidity(id);
+            (, int24 tick,,) = MANAGER.getSlot0(id);
+            console2.log("fee", fees[i]);
+            console2.log("liquidity", liq);
+            console2.log("tick", uint256(int256(tick)));
+        }
+    }
 
     function test_probe_weth_usdc_pools() public view {
         uint24[4] memory fees = [uint24(100), uint24(500), uint24(3000), uint24(10000)];

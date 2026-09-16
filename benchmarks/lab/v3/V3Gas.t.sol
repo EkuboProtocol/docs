@@ -80,10 +80,10 @@ contract V3GasTest is Test {
     uint160 constant INIT_SQRT_PRICE = 79347087983665984109010747392; // 1.0001**(30/2) * 2**96: tick 30, strictly inside (spacing 60)
     uint160 constant MIN_LIMIT = 4295128740; // MIN_SQRT_RATIO + 1
     uint160 constant MAX_LIMIT = 1461446703485210103287273052203988822378723970341; // MAX_SQRT_RATIO - 1
-    uint128 constant LIQUIDITY = 1e30;
+    uint128 constant LIQUIDITY = 998501199320305883812938; // liquidity for 1M/1M full-range at the init price (matches the v4/ekubo harnesses)
     int256 constant SWAP_AMOUNT = 1e18; // exact input
 
-    function setUp() public {
+    function setUp() public virtual {
         factory = IUniswapV3Factory(vm.deployCode("artifacts/UniswapV3Factory.json"));
 
         // One identical token artifact (solmate MockERC20) in every harness.
@@ -130,29 +130,18 @@ contract V3GasTest is Test {
         if (amount1Delta > 0) SharedToken(IUniswapV3Pool(msg.sender).token1()).transfer(msg.sender, uint256(amount1Delta));
     }
 
-    function _coolAll() internal {
-        vm.cool(address(factory));
-        vm.cool(address(poolAB));
-        vm.cool(address(poolBC));
-        vm.cool(address(poolCD));
-        vm.cool(address(multihopRouter));
-        vm.cool(address(tokenA));
-        vm.cool(address(tokenB));
-        vm.cool(address(tokenC));
-        vm.cool(address(tokenD));
-        vm.cool(address(this));
-    }
-
+    // Steady-state methodology: one identical unmeasured warm-up precedes every
+    // measurement, so pools, tokens, and approvals sit in warmed nonzero slots.
     /// forge-config: default.isolate = true
     function test_gas_single_exactInput_erc20() public {
-        _coolAll();
+        poolAB.swap(address(this), true, SWAP_AMOUNT, MIN_LIMIT, "");
         poolAB.swap(address(this), true, SWAP_AMOUNT, MIN_LIMIT, "");
         vm.snapshotGasLastCall("v3 single exact-input token0->token1 wide-range");
     }
 
     /// forge-config: default.isolate = true
     function test_gas_single_exactInput_erc20_reverse() public {
-        _coolAll();
+        poolAB.swap(address(this), false, SWAP_AMOUNT, MAX_LIMIT, "");
         poolAB.swap(address(this), false, SWAP_AMOUNT, MAX_LIMIT, "");
         vm.snapshotGasLastCall("v3 single exact-input token1->token0 wide-range");
     }
@@ -161,7 +150,7 @@ contract V3GasTest is Test {
     function test_gas_oneHop_routerPath() public {
         IUniswapV3Pool[] memory pools = new IUniswapV3Pool[](1);
         pools[0] = poolAB;
-        _coolAll();
+        multihopRouter.multiHop(pools, SWAP_AMOUNT, address(this));
         multihopRouter.multiHop(pools, SWAP_AMOUNT, address(this));
         vm.snapshotGasLastCall("v3 one-hop exact-input router path");
     }
@@ -171,7 +160,7 @@ contract V3GasTest is Test {
         IUniswapV3Pool[] memory pools = new IUniswapV3Pool[](2);
         pools[0] = poolAB;
         pools[1] = poolBC;
-        _coolAll();
+        multihopRouter.multiHop(pools, SWAP_AMOUNT, address(this));
         multihopRouter.multiHop(pools, SWAP_AMOUNT, address(this));
         vm.snapshotGasLastCall("v3 two-hop exact-input two pools");
     }
@@ -182,16 +171,16 @@ contract V3GasTest is Test {
         pools[0] = poolAB;
         pools[1] = poolBC;
         pools[2] = poolCD;
-        _coolAll();
+        multihopRouter.multiHop(pools, SWAP_AMOUNT, address(this));
         multihopRouter.multiHop(pools, SWAP_AMOUNT, address(this));
         vm.snapshotGasLastCall("v3 three-hop exact-input three pools");
     }
 
     /// forge-config: default.isolate = true
     function test_gas_mint_fullRange() public {
-        _coolAll();
-        // second position on the existing pool: same tier as the other harnesses'
-        // subsequent mints (no pool/tick initialization in the measured call)
+        // subsequent mint on the existing pool (ticks already initialized),
+        // preceded by an identical warm-up mint
+        poolAB.mint(address(this), TICK_LOWER, TICK_UPPER, LIQUIDITY, "");
         poolAB.mint(address(this), TICK_LOWER, TICK_UPPER, LIQUIDITY, "");
         vm.snapshotGasLastCall("v3 mint wide-range position");
     }

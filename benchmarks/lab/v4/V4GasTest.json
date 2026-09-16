@@ -1,3 +1,10 @@
 {
-  "v4 single exact-input minimal locker token0->token1": "120648"
+  "v4 mint wide-range position": "162188",
+  "v4 one-hop exact-input single lock": "107360",
+  "v4 single exact-input ERC20->ERC20 wide-range concentrated": "116827",
+  "v4 single exact-input minimal locker token0->token1": "103548",
+  "v4 single exact-input minimal locker token1->token0": "103373",
+  "v4 single exact-input native->ERC20 wide-range concentrated": "98953",
+  "v4 three-hop exact-input single lock": "176182",
+  "v4 two-hop exact-input single lock": "141771"
 }
