@@ -1,0 +1,12 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+# No `solc` pin: foundry auto-detects per file (0.8.26 driver files,
+# =0.8.33 ekubo sources). A pin would force one version on everything.
+optimizer = true
+optimizer_runs = 1000000
+via_ir = true
+evm_version = "osaka"
+verbosity = 2
+fs_permissions = [{ access = "read", path = "./" }]

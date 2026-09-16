@@ -195,6 +195,7 @@ export default defineConfig({
               label: "Protocol architecture",
               slug: "concepts/architecture",
             },
+            { label: "Gas efficiency", slug: "concepts/gas-efficiency" },
             {
               label: "Extensions",
               slug: "concepts/extensions",
