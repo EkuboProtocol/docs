@@ -20,13 +20,12 @@ the dependency pins below are what matter for reproduction.
 
 ## Lab methodology (all three harnesses)
 
-Steady state, warmed pools: each test runs on a fresh chain (`isolate`), then
-performs one identical unmeasured warm-up swap before the measured call, so
-pools, tokens, and approvals sit in warmed nonzero slots. (An earlier
-cold-access variant overstated v4/v3 single-hop costs by ~17k because their pool
-state is cold-sensitive; Ekubo's is nearly warmth-invariant, verified by
-identical totals with and without warm-up and with unrelated preceding
-operations.)
+Each test runs on a fresh chain (`isolate`). Pools are capitalized in setup;
+single-hop figures are cold-path measurements with no warm-up swap, the closest
+a harness gets to a real user's transaction (which always starts cold).
+Multihop scaling figures are warmed (one identical unmeasured route first),
+matching in-route conditions where later hops execute warm. `vm.cool` was
+verified to be a no-op in this setup and is not used.
 
 - Concentrated pools, 0.3% fee, range covering the whole tick space, so no swap
   crosses an initialized tick.
@@ -36,9 +35,11 @@ operations.)
   the equivalent liquidity (998501199320305883812938) computed for the same
   amounts.
 - 1-token exact-input swaps, both directions; multihop routers deliver output
-  to the calling user (never stranded in the router).
+  to the calling user (an earlier v4 router that retained output was fixed;
+  the numbers did not move).
 - Gas read with `vm.snapshotGasLastCall` immediately after the measured call;
-  `*.json` files are the raw snapshots.
+  `*.json` files are the raw snapshots. `Flame.t.sol` files capture one
+  cold-path call each for the flamegraphs.
 
 Scaling series (1/2/3 hops) use the same minimal single-lock router per protocol,
 so the per-hop marginal is apples-to-apples. Mint tests are subsequent mints

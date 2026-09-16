@@ -10,52 +10,52 @@ measured numbers — full methodology, harness sources, and flamegraphs included
 comparing Ekubo on EVM against Uniswap v4 and Uniswap v3 on identical workloads.
 
 All figures are execution gas for a 0.3% concentrated-liquidity pool with a
-wide-range position and no extension. Every measurement is taken on a warmed
-pool: each test runs on a fresh chain, performs one identical unmeasured swap
-first, then measures the second, so pools, tokens, and approvals sit in warmed
-nonzero slots — the steady state a real pool lives in. Percentages beside the
-tables add the 21,000 base fee plus exact calldata cost, i.e. full transaction
-gas (the post-Pectra calldata floor was checked and does not bind at these
-sizes).
+wide-range position and no extension. Percentages beside the tables add the
+21,000 base fee plus exact calldata cost, i.e. full transaction gas (the
+post-Pectra calldata floor was checked and does not bind at these sizes).
 
 ## Single swaps
 
 One token of input, exact-input, no tick crossings, 18-decimal plain ERC20 tokens
-(the identical token contract runs in every harness):
+(the identical token contract runs in every harness), both directions:
 
 | Swap                              | Ekubo      | Uniswap v4 | Uniswap v3                 |
 | --------------------------------- | ---------- | ---------- | -------------------------- |
-| ERC20 to ERC20                    | **87,416** | 103,548    | 87,553                     |
-| ERC20 to ERC20, reverse direction | **86,334** | 103,373    | 86,952                     |
-| Native ETH to ERC20               | **72,592** | 98,953     | — (v3 needs WETH wrapping) |
+| ERC20 to ERC20                    | **87,384** | 120,648    | 104,675                    |
+| ERC20 to ERC20, reverse direction | **86,334** | 120,473    | 106,870                    |
+| Native ETH to ERC20               | **72,560** | 116,053    | — (v3 needs WETH wrapping) |
 
-Warmed single hops are close: about **110k on Ekubo and v3 alike at the
-transaction level, 127k on v4** — roughly 14% less than v4 and parity with v3.
-The v4 figure uses a true-minimal locker (unlock, swap, settle net); v4's own
-test helper costs more, and the production Universal Router costs more still.
-The v3 figure is a direct pool call with zero router overhead, so it is a lower
-bound; the production SwapRouter adds on top. A single swap is the one place
-v3's heavier pool core (see below) is fully offset by having no router at all.
+These are cold-path measurements: each test runs on a fresh chain whose pools
+were capitalized in setup, with no warm-up swap before the measured call — the
+closest a harness gets to a real user's transaction, which always starts with
+cold access. At the transaction level the ERC20 swap costs about **110k on
+Ekubo, 144k on v4, and 127k on v3** — roughly 24% less than v4 and 14% less
+than v3. The v4 figure uses a true-minimal locker (unlock, swap, settle net);
+v4's own test helper costs more, and the production Universal Router costs more
+still. The v3 figure is a direct pool call with zero router overhead, so it is
+a lower bound; the production SwapRouter adds on top.
 
 ## How the gap scales with route length
 
 Routing through one, two, and three pools in a single transaction, each protocol
-using the same minimal single-lock router throughout, so the per-hop marginal is
-apples-to-apples:
+using the same minimal single-lock router throughout, warmed so every pool is
+touched before measurement:
 
-| Route length                     | Ekubo       | Uniswap v4  | Uniswap v3  |
-| -------------------------------- | ----------- | ----------- | ----------- |
-| 1 pool                           | 94,892      | 107,360     | 116,130     |
-| 2 pools                          | 119,333     | 141,771     | 178,760     |
-| 3 pools                          | 143,774     | 176,182     | 241,389     |
-| **Marginal cost per extra pool** | **~24,400** | **~34,400** | **~62,600** |
+| Route length                             | Ekubo       | Uniswap v4  | Uniswap v3  |
+| ---------------------------------------- | ----------- | ----------- | ----------- |
+| 1 pool                                   | 94,892      | 107,360     | 116,130     |
+| 2 pools                                  | 119,333     | 141,771     | 178,760     |
+| 3 pools                                  | 143,774     | 176,182     | 241,389     |
+| **Marginal cost per extra pool, warmed** | **~24,400** | **~34,400** | **~62,600** |
 
 The marginals are linear to the gas unit because each added hop hits an
-identically shaped fresh pool with its own distinct token contracts. At three
-pools Ekubo costs about 18% less than v4 and 40% less than v3 in execution gas.
-This is where the architecture compounds: each extra Ekubo hop is little more
-than one pool-math call, while v3 replays a full settle-and-callback cycle per
-pool.
+identically shaped fresh pool with its own distinct token contracts. Warmed
+marginals are the right measure inside a route — hops after the first execute
+with warm router and transient state — but note the first hop of a real route
+pays the cold path from the table above (about even for Ekubo, about 17k extra
+for v4 and v3). At three pools Ekubo costs about 18% less than v4 and 40% less
+than v3 in execution gas, before that first-hop adjustment widens both gaps
+further.
 
 Token transfers tell part of the story. Ekubo and v4 both settle net inside one
 lock, so a route of any length moves exactly 2 token transfers:
@@ -71,40 +71,43 @@ difference is inside the pool core.
 
 ## Where the savings come from
 
-Frame-level attribution of the warmed single-hop swap, from Foundry flamegraphs
-(each capture is one warmed swap call; frame widths are proportional to gas):
+Frame-level attribution of the cold-path single-hop swap, from Foundry
+flamegraphs (each capture is one swap call on a capitalized pool; frame widths
+are proportional to gas):
 
 ![Flamegraph of an Ekubo single-hop swap](/gas/flamegraph-ekubo-single.svg)
 _Flamegraph: Ekubo single-hop swap, 87,384 gas._
 
 ![Flamegraph of a Uniswap v4 single-hop swap](/gas/flamegraph-v4-single.svg)
-_Flamegraph: Uniswap v4 single-hop swap via a minimal locker, 103,548 gas._
+_Flamegraph: Uniswap v4 single-hop swap via a minimal locker, 120,648 gas._
 
 ![Flamegraph of a Uniswap v3 single-hop swap](/gas/flamegraph-v3-single.svg)
-_Flamegraph: Uniswap v3 single-hop swap via direct pool call, 87,575 gas._
+_Flamegraph: Uniswap v3 single-hop swap via direct pool call, 104,675 gas._
 
-| Component                              | Ekubo (87,416)              | Uniswap v4 (103,548)               | Uniswap v3 (87,553)               |
+| Component                              | Ekubo (87,384)              | Uniswap v4 (120,648)               | Uniswap v3 (104,675)              |
 | -------------------------------------- | --------------------------- | ---------------------------------- | --------------------------------- |
-| Pool math and state                    | Core swap: **20,331** (23%) | PoolManager swap: **28,884** (28%) | Pool internals: **~59,600** (68%) |
-| Settlement (transfers plus accounting) | ~45,600                     | ~39,700                            | ~27,900                           |
-| Router and lock overhead               | ~23,100                     | ~27,800                            | 0 (direct call)                   |
+| Pool math and state                    | Core swap: **20,331** (23%) | PoolManager swap: **45,984** (38%) | Pool internals: **~76,700** (73%) |
+| Settlement (transfers plus accounting) | ~45,700                     | ~40,700                            | ~28,000                           |
+| Router and lock overhead               | ~21,400                     | ~32,000                            | 0 (direct call)                   |
 
 Three observations:
 
 - **The pool core is where Ekubo wins.** One packed storage word and Q64
-  fixed-point math cost about 20k per swap, against 29k for v4's multi-slot
-  state with protocol-fee and donation bookkeeping, and about 60k for v3's
+  fixed-point math cost about 20k per swap, against 46k for v4's multi-slot
+  state with protocol-fee and donation bookkeeping, and about 77k for v3's
   slot0, fee-growth, and per-swap oracle writes.
-- **Ekubo spends the savings back on settlement and routing.** Flash-accounting
-  settlement (~46k) costs more than v4's (~40k) and v3's (~28k), and the
-  Solidity Router's ABI round-trip (~23k) matches v4's lock overhead. On a
-  single hop these cancel out against v3; the till pattern only pulls ahead as
-  routes grow (see the transfer and marginal tables above).
-- **Warmed pools matter.** An earlier cold-access variant of this comparison
-  overstated the single-hop gap by about 17k on v4 and v3, because their pool
-  state is cold-sensitive while Ekubo's is nearly warmth-invariant (verified:
-  identical totals with and without warm-up, and with unrelated preceding
-  operations). All figures above are warmed steady-state.
+- **Ekubo spends part of it back on settlement and routing.** Flash-accounting
+  settlement (~46k) costs slightly more than v4's (~41k) and v3's (~28k), and
+  the Solidity Router's ABI round-trip (~21k) nearly matches v4's lock
+  overhead. The net win comes from the pool core, and it compounds across
+  multi-pool routes, where Ekubo adds one cheap pool call per hop instead of
+  another full settle-and-callback cycle.
+- **Warm and cold were both measured.** Repeating any swap on an already-touched
+  pool costs about 17k less on v4 and v3 (cold fee, oracle, and donation slots),
+  while Ekubo measures identical to the gas unit either way — its swap path has
+  almost no cold-sensitive slots outside the common base. An earlier draft of
+  this page reported only warmed numbers, which understated v4 and v3 single-hop
+  costs by that 17k; the tables above use the cold path throughout.
 
 ## Mainnet-fork validation
 
@@ -124,7 +127,7 @@ through the real SwapRouter against the deepest fee-100 pool, v4 through the
 real PoolManager against the deepest fee-100 pool with a minimal locker (the
 Universal Router would cost more). Fee tiers differ across venues, which does
 not affect the code path; output matched the production quoter within 0.02% on
-the Ekubo leg.
+the Ekubo leg, and both swap directions reconcile across all three harnesses.
 
 ## The mint exception
 
@@ -149,10 +152,16 @@ optimized for the operation that happens orders of magnitude more often.
 
 - Each protocol compiles under its own production settings (Ekubo: solc 0.8.33,
   9999999 optimizer runs, via IR, Osaka; v4: v4-core's own settings; v3:
-  canonical mainnet bytecode), with Foundry 1.8.3 throughout.
-- One identical token artifact runs in every lab harness, and every recipient
-  is pre-funded, so no measured call pays a zero-to-nonzero balance write that
-  the others avoid.
+  canonical mainnet bytecode), with Foundry 1.8.3 throughout, each test on a
+  fresh chain.
+- One identical token artifact runs in every lab harness, every recipient is
+  pre-funded, and multihop routers deliver output to the calling user, so no
+  measured call pays a zero-to-nonzero balance write the others avoid. (An
+  early v4 multihop router that retained output broke this rule and was fixed;
+  the numbers did not move.)
+- Single-hop figures are cold-path on capitalized pools; scaling marginals are
+  warmed, matching in-route conditions. `vm.cool` was verified to be a no-op
+  in this setup and is not used.
 - Routers are deliberately minimal on all sides, which favors Uniswap:
   production routers (Universal Router, SwapRouter, and Ekubo's own frontend
   path) all cost more than the numbers above.
@@ -160,8 +169,7 @@ optimized for the operation that happens orders of magnitude more often.
   hooks, no Ekubo extensions, both swap directions covered, concentrated pools
   throughout.
 - v3 per-hop figures exclude end-of-transaction refunds (about 4.8k per hop
-  from clearing intermediate balances), so the true v3 marginal is closer to
-  58k than 63k — the ranking is unaffected.
+  from clearing intermediate balances) — the ranking is unaffected.
 - Any v4 hook or Ekubo extension changes every number on this page; pool
   configuration (fee, tick spacing) barely moves them.
 
