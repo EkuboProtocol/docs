@@ -1,0 +1,308 @@
+{
+  "rpc": "https://ethereum-rpc.publicnode.com",
+  "window": {
+    "fromBlock": 25997689,
+    "toBlock": 25997888,
+    "blocks": 200,
+    "fromTimestamp": 1789653875,
+    "toTimestamp": 1789656287,
+    "fromIso": "2026-09-17T14:04:35.000Z",
+    "toIso": "2026-09-17T14:44:47.000Z"
+  },
+  "rpcCalls": 407,
+  "families": {
+    "0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67": "univ3",
+    "0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822": "univ2-family",
+    "0x8b3e96f2b889fa771c53c981b40daf005f63f637f1869f707052d15a3dd97140": "curve",
+    "0xd013ca23e77a65003c2c659c5442c00c805371b7fc1ebd4c206c41d1536bd90b": "curve",
+    "0x40e9cecb9f5f1f1c5b9c97dec2917b7ee92e57ba5563708daca94dd84ad7112f": "univ4"
+  },
+  "routers": {
+    "0x66a9893cc07d91d95644aedd05d03f95e1dba8af": {
+      "name": "Universal Router (v2, 2025)",
+      "kind": "ur",
+      "verifiedSelectors": ["3593564c"],
+      "codeBytes": 19499
+    },
+    "0x3fc91a3afd70395cd496c647d5a6cc9d4b2b7fad": {
+      "name": "Universal Router (v1.2, 2023)",
+      "kind": "ur",
+      "verifiedSelectors": ["3593564c"],
+      "codeBytes": 17958
+    },
+    "0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45": {
+      "name": "SwapRouter02",
+      "kind": "sr02",
+      "verifiedSelectors": ["b858183f", "5ae401dc"],
+      "codeBytes": 24497
+    },
+    "0xe592427a0aece92de3edee1f18e0157c05861564": {
+      "name": "SwapRouter (v3 classic)",
+      "kind": "sr",
+      "verifiedSelectors": ["c04b8d59"],
+      "codeBytes": 12070
+    },
+    "0x7a250d5630b4cf539739df2c5dacb4c659f2488d": {
+      "name": "Uniswap v2 Router02",
+      "kind": "v2r",
+      "verifiedSelectors": ["38ed1739"],
+      "codeBytes": 21943
+    },
+    "0x111111125421ca6dc452d289314280a0f8842a65": {
+      "name": "1inch AggregationRouter v6",
+      "kind": "oneinch",
+      "verifiedSelectors": ["07ed2379", "83800a8e"],
+      "codeBytes": 24294
+    }
+  },
+  "receipts": {
+    "method": "eth_getBlockReceipts; successful txs with >=1 pool-level swap event; pools = number of such events in the tx",
+    "swapTxs": 5341,
+    "failedSwapTxsSeen": 0,
+    "avgPoolsPerSwapTx": 1.657,
+    "histogram": {
+      "1": {
+        "txs": 3820,
+        "pct": 71.52
+      },
+      "2": {
+        "txs": 834,
+        "pct": 15.62
+      },
+      "3": {
+        "txs": 332,
+        "pct": 6.22
+      },
+      "4+": {
+        "txs": 355,
+        "pct": 6.65
+      }
+    },
+    "perFamily": {
+      "univ3": {
+        "txs": 2631,
+        "events": 3491,
+        "avgEventsOfThisFamilyPerTx": 1.327,
+        "avgTotalPoolsPerTxTouchingFamily": 1.968
+      },
+      "univ4": {
+        "txs": 2392,
+        "events": 3778,
+        "avgEventsOfThisFamilyPerTx": 1.579,
+        "avgTotalPoolsPerTxTouchingFamily": 2.187
+      },
+      "univ2-family": {
+        "txs": 1210,
+        "events": 1427,
+        "avgEventsOfThisFamilyPerTx": 1.179,
+        "avgTotalPoolsPerTxTouchingFamily": 2.018
+      },
+      "curve": {
+        "txs": 120,
+        "events": 155,
+        "avgEventsOfThisFamilyPerTx": 1.292,
+        "avgTotalPoolsPerTxTouchingFamily": 3.275
+      }
+    },
+    "gasShare": {
+      "swapTxGas": "1803698643",
+      "allTxGas": "5962572822",
+      "pct": 30.25
+    }
+  },
+  "calldata": {
+    "method": "eth_getBlockByNumber(full); successful txs to the verified routers; pools decoded from calldata",
+    "decodedTxs": 470,
+    "avgPoolsPerSwapTx": 1.106,
+    "histogram": {
+      "1": {
+        "txs": 435,
+        "pct": 92.55
+      },
+      "2": {
+        "txs": 28,
+        "pct": 5.96
+      },
+      "3": {
+        "txs": 3,
+        "pct": 0.64
+      },
+      "4+": {
+        "txs": 4,
+        "pct": 0.85
+      }
+    },
+    "opaqueTxs": 102,
+    "undecodedTxs": 106,
+    "failedTxs": 60,
+    "crossCheckAgainstReceipts": {
+      "compared": 470,
+      "equal": 470,
+      "calldataLower": 0,
+      "calldataHigher": 0
+    },
+    "undecodedSelectors": {
+      "1inch AggregationRouter v6:0xb68fb020": 84,
+      "1inch AggregationRouter v6:0xc3cf8043": 10,
+      "1inch AggregationRouter v6:0x89e7c650": 4,
+      "Uniswap v2 Router02:0xe8e33700": 2,
+      "Uniswap v2 Router02:0xaf2979eb": 2,
+      "1inch AggregationRouter v6:0x56a75868": 1,
+      "1inch AggregationRouter v6:0xcc713a04": 1,
+      "1inch AggregationRouter v6:0x5816d723": 1,
+      "Uniswap v2 Router02:0xbaa2abde": 1
+    },
+    "perRouter": {
+      "1inch AggregationRouter v6": {
+        "decodedTxs": 9,
+        "avgPools": 1.556,
+        "histogram": {
+          "1": {
+            "txs": 4,
+            "pct": 44.44
+          },
+          "2": {
+            "txs": 5,
+            "pct": 55.56
+          },
+          "3": {
+            "txs": 0,
+            "pct": 0
+          },
+          "4+": {
+            "txs": 0,
+            "pct": 0
+          }
+        },
+        "opaque": 102,
+        "undecoded": 101,
+        "failed": 30
+      },
+      "Universal Router (v2, 2025)": {
+        "decodedTxs": 202,
+        "avgPools": 1.173,
+        "histogram": {
+          "1": {
+            "txs": 182,
+            "pct": 90.1
+          },
+          "2": {
+            "txs": 13,
+            "pct": 6.44
+          },
+          "3": {
+            "txs": 3,
+            "pct": 1.49
+          },
+          "4+": {
+            "txs": 4,
+            "pct": 1.98
+          }
+        },
+        "opaque": 0,
+        "undecoded": 0,
+        "failed": 24
+      },
+      "SwapRouter02": {
+        "decodedTxs": 110,
+        "avgPools": 1.064,
+        "histogram": {
+          "1": {
+            "txs": 103,
+            "pct": 93.64
+          },
+          "2": {
+            "txs": 7,
+            "pct": 6.36
+          },
+          "3": {
+            "txs": 0,
+            "pct": 0
+          },
+          "4+": {
+            "txs": 0,
+            "pct": 0
+          }
+        },
+        "opaque": 0,
+        "undecoded": 0,
+        "failed": 3
+      },
+      "Uniswap v2 Router02": {
+        "decodedTxs": 75,
+        "avgPools": 1,
+        "histogram": {
+          "1": {
+            "txs": 75,
+            "pct": 100
+          },
+          "2": {
+            "txs": 0,
+            "pct": 0
+          },
+          "3": {
+            "txs": 0,
+            "pct": 0
+          },
+          "4+": {
+            "txs": 0,
+            "pct": 0
+          }
+        },
+        "opaque": 0,
+        "undecoded": 5,
+        "failed": 1
+      },
+      "Universal Router (v1.2, 2023)": {
+        "decodedTxs": 20,
+        "avgPools": 1,
+        "histogram": {
+          "1": {
+            "txs": 20,
+            "pct": 100
+          },
+          "2": {
+            "txs": 0,
+            "pct": 0
+          },
+          "3": {
+            "txs": 0,
+            "pct": 0
+          },
+          "4+": {
+            "txs": 0,
+            "pct": 0
+          }
+        },
+        "opaque": 0,
+        "undecoded": 0,
+        "failed": 0
+      },
+      "SwapRouter (v3 classic)": {
+        "decodedTxs": 54,
+        "avgPools": 1.056,
+        "histogram": {
+          "1": {
+            "txs": 51,
+            "pct": 94.44
+          },
+          "2": {
+            "txs": 3,
+            "pct": 5.56
+          },
+          "3": {
+            "txs": 0,
+            "pct": 0
+          },
+          "4+": {
+            "txs": 0,
+            "pct": 0
+          }
+        },
+        "opaque": 0,
+        "undecoded": 0,
+        "failed": 2
+      }
+    }
+  }
+}
