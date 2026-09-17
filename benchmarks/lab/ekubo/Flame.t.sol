@@ -1,13 +1,18 @@
 // SPDX-License-Identifier: ekubo-license-v1.eth
 pragma solidity =0.8.33;
 
-import {SqrtRatio} from "ekubo/src/types/sqrtRatio.sol";
-import {createSwapParameters} from "ekubo/src/types/swapParameters.sol";
 import {EkuboGasTest} from "./EkuboGas.t.sol";
 
-/// @notice Dedicated single-call capture for flamegraphs (no warm-up, no snapshot).
+/// @notice Steady-state single-call capture for flamegraphs: setUp performs the same
+///         warm-up swap as the snapshot test, the test itself makes exactly one swap, so
+///         the flamegraph total matches "ekubo single erc20 steady-state".
 contract FlameTest is EkuboGasTest {
+    function setUp() public override {
+        super.setUp();
+        _swapAB();
+    }
+
     function test_flame_single() public {
-        router.swapAllowPartialFill(keyAB, createSwapParameters(SqrtRatio.wrap(0), 1 ether, false, 0));
+        _swapAB();
     }
 }

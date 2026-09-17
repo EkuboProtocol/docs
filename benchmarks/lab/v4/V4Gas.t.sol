@@ -8,7 +8,6 @@ import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
 import {PoolKey} from "v4-core/src/types/PoolKey.sol";
 import {PoolId, PoolIdLibrary} from "v4-core/src/types/PoolId.sol";
 import {Currency, CurrencyLibrary} from "v4-core/src/types/Currency.sol";
-import {BalanceDelta} from "v4-core/src/types/BalanceDelta.sol";
 import {SwapParams, ModifyLiquidityParams} from "v4-core/src/types/PoolOperation.sol";
 import {IHooks} from "v4-core/src/interfaces/IHooks.sol";
 import {IUnlockCallback} from "v4-core/src/interfaces/callback/IUnlockCallback.sol";
@@ -21,6 +20,7 @@ import {PoolModifyLiquidityTest} from "v4-core/src/test/PoolModifyLiquidityTest.
 
 /// @notice True-minimal single-hop exact-input locker: unlock, swap, settle net.
 ///         No balance assertions, no test settings — the floor for v4 router cost.
+///         Native input is settled with the value forwarded by the caller.
 contract MinimalSwapRouter is IUnlockCallback {
     using CurrencyLibrary for Currency;
     using CurrencySettler for Currency;
@@ -34,6 +34,7 @@ contract MinimalSwapRouter is IUnlockCallback {
 
     function swapExactIn(PoolKey memory key, bool zeroForOne, int256 amountIn, uint160 limit, address payer)
         external
+        payable
         returns (uint256 amountOut)
     {
         bytes memory result = manager.unlock(abi.encode(key, zeroForOne, amountIn, limit, payer, msg.sender));
@@ -177,51 +178,35 @@ contract V4GasTest is Test {
         tokenA.approve(address(minRouter), type(uint256).max);
         tokenB.approve(address(minRouter), type(uint256).max);
 
-        keyAB = PoolKey({
-            currency0: Currency.wrap(address(tokenA)),
-            currency1: Currency.wrap(address(tokenB)),
-            fee: 3000,
-            tickSpacing: 60,
-            hooks: IHooks(address(0))
-        });
-        keyBC = PoolKey({
-            currency0: Currency.wrap(address(tokenB)),
-            currency1: Currency.wrap(address(tokenC)),
-            fee: 3000,
-            tickSpacing: 60,
-            hooks: IHooks(address(0))
-        });
-        keyCD = PoolKey({
-            currency0: Currency.wrap(address(tokenC)),
-            currency1: Currency.wrap(address(tokenD)),
-            fee: 3000,
-            tickSpacing: 60,
-            hooks: IHooks(address(0))
-        });
+        keyAB = _key(address(tokenA), address(tokenB));
+        keyBC = _key(address(tokenB), address(tokenC));
+        keyCD = _key(address(tokenC), address(tokenD));
 
         manager.initialize(keyAB, TickMath.getSqrtPriceAtTick(30));
         manager.initialize(keyBC, TickMath.getSqrtPriceAtTick(30));
         manager.initialize(keyCD, TickMath.getSqrtPriceAtTick(30));
-        _addFullRangeLiquidity(keyAB, address(tokenA), address(tokenB), false);
-        _addFullRangeLiquidity(keyBC, address(tokenB), address(tokenC), false);
-        _addFullRangeLiquidity(keyCD, address(tokenC), address(tokenD), false);
+        _addFullRangeLiquidity(keyAB);
+        _addFullRangeLiquidity(keyBC);
+        _addFullRangeLiquidity(keyCD);
 
         // native (ETH) / tokenB pool for the native-input scenario
-        keyNative = PoolKey({
-            currency0: Currency.wrap(address(0)),
-            currency1: Currency.wrap(address(tokenB)),
-            fee: 3000,
-            tickSpacing: 60,
-            hooks: IHooks(address(0))
-        });
+        keyNative = _key(address(0), address(tokenB));
         manager.initialize(keyNative, TickMath.getSqrtPriceAtTick(30));
-        tokenB.approve(address(mintRouter), type(uint256).max);
         mintRouter.modifyLiquidity{value: LIQUIDITY_TOKEN_AMOUNT}(
             keyNative,
             ModifyLiquidityParams({tickLower: TICK_LOWER, tickUpper: TICK_UPPER, liquidityDelta: int256(uint256(_fullRangeLiquidity(LIQUIDITY_TOKEN_AMOUNT, LIQUIDITY_TOKEN_AMOUNT))), salt: bytes32(0)}),
             ""
         );
+    }
 
+    function _key(address c0, address c1) internal pure returns (PoolKey memory) {
+        return PoolKey({
+            currency0: Currency.wrap(c0),
+            currency1: Currency.wrap(c1),
+            fee: 3000,
+            tickSpacing: 60,
+            hooks: IHooks(address(0))
+        });
     }
 
     function _fullRangeLiquidity(uint256 amount0, uint256 amount1) internal pure returns (uint128) {
@@ -230,22 +215,13 @@ contract V4GasTest is Test {
         return LiquidityAmounts.getLiquidityForAmounts(TickMath.getSqrtPriceAtTick(30), sqrtA, sqrtB, amount0, amount1);
     }
 
-    function _addFullRangeLiquidity(PoolKey memory key, address t0, address t1, bool native) internal {
+    function _addFullRangeLiquidity(PoolKey memory key) internal {
         uint128 liq = _fullRangeLiquidity(LIQUIDITY_TOKEN_AMOUNT, LIQUIDITY_TOKEN_AMOUNT);
-        if (native) {
-            mintRouter.modifyLiquidity{value: LIQUIDITY_TOKEN_AMOUNT}(
-                key,
-                ModifyLiquidityParams({tickLower: TICK_LOWER, tickUpper: TICK_UPPER, liquidityDelta: int256(uint256(liq)), salt: bytes32(0)}),
-                ""
-            );
-        } else {
-            mintRouter.modifyLiquidity(
-                key,
-                ModifyLiquidityParams({tickLower: TICK_LOWER, tickUpper: TICK_UPPER, liquidityDelta: int256(uint256(liq)), salt: bytes32(0)}),
-                ""
-            );
-        }
-        (t0, t1);
+        mintRouter.modifyLiquidity(
+            key,
+            ModifyLiquidityParams({tickLower: TICK_LOWER, tickUpper: TICK_UPPER, liquidityDelta: int256(uint256(liq)), salt: bytes32(0)}),
+            ""
+        );
     }
 
     function _v4Hops(PoolKey[] memory keys) internal pure returns (MultiHopRouter.Hop[] memory hops) {
@@ -255,91 +231,95 @@ contract V4GasTest is Test {
         }
     }
 
+    function _swapAB() internal returns (uint256) {
+        return minRouter.swapExactIn(keyAB, true, SWAP_AMOUNT, TickMath.MIN_SQRT_PRICE + 1, address(this));
+    }
+
+    // ---- single swaps through the minimal locker ----
+
     /// forge-config: default.isolate = true
-    function test_gas_single_minimal_erc20() public {
-        minRouter.swapExactIn(keyAB, true, SWAP_AMOUNT, TickMath.MIN_SQRT_PRICE + 1, address(this));
-        uint256 out = minRouter.swapExactIn(keyAB, true, SWAP_AMOUNT, TickMath.MIN_SQRT_PRICE + 1, address(this));
+    function test_gas_single_steady_erc20() public {
+        _swapAB(); // warm-up, unmeasured
+        uint256 out = _swapAB();
         assertGt(out, 0);
-        vm.snapshotGasLastCall("v4 single exact-input minimal locker token0->token1");
+        vm.snapshotGasLastCall("v4 single erc20 steady-state");
     }
 
     /// forge-config: default.isolate = true
-    function test_gas_single_minimal_erc20_reverse() public {
+    function test_gas_single_steady_erc20_reverse() public {
         minRouter.swapExactIn(keyAB, false, SWAP_AMOUNT, TickMath.MAX_SQRT_PRICE - 1, address(this));
         uint256 out = minRouter.swapExactIn(keyAB, false, SWAP_AMOUNT, TickMath.MAX_SQRT_PRICE - 1, address(this));
         assertGt(out, 0);
-        vm.snapshotGasLastCall("v4 single exact-input minimal locker token1->token0");
+        vm.snapshotGasLastCall("v4 single erc20 reverse steady-state");
     }
 
     /// forge-config: default.isolate = true
-    function test_gas_single_exactInput_erc20() public {
-        swapRouter.swap(
-            keyAB,
-            SwapParams({zeroForOne: true, amountSpecified: SWAP_AMOUNT, sqrtPriceLimitX96: TickMath.MIN_SQRT_PRICE + 1}),
-            PoolSwapTest.TestSettings({takeClaims: false, settleUsingBurn: false}),
-            ""
-        );
-        swapRouter.swap(
-            keyAB,
-            SwapParams({zeroForOne: true, amountSpecified: SWAP_AMOUNT, sqrtPriceLimitX96: TickMath.MIN_SQRT_PRICE + 1}),
-            PoolSwapTest.TestSettings({takeClaims: false, settleUsingBurn: false}),
-            ""
-        );
-        vm.snapshotGasLastCall("v4 single exact-input ERC20->ERC20 wide-range concentrated");
-    }
-
-    /// forge-config: default.isolate = true
-    function test_gas_single_exactInput_native() public {
-        swapRouter.swap{value: 1 ether}(
-            keyNative,
-            SwapParams({zeroForOne: true, amountSpecified: SWAP_AMOUNT, sqrtPriceLimitX96: TickMath.MIN_SQRT_PRICE + 1}),
-            PoolSwapTest.TestSettings({takeClaims: false, settleUsingBurn: false}),
-            ""
-        );
-        swapRouter.swap{value: 1 ether}(
-            keyNative,
-            SwapParams({zeroForOne: true, amountSpecified: SWAP_AMOUNT, sqrtPriceLimitX96: TickMath.MIN_SQRT_PRICE + 1}),
-            PoolSwapTest.TestSettings({takeClaims: false, settleUsingBurn: false}),
-            ""
-        );
-        vm.snapshotGasLastCall("v4 single exact-input native->ERC20 wide-range concentrated");
-    }
-
-    /// forge-config: default.isolate = true
-    function test_gas_oneHop_exactInput() public {
-        PoolKey[] memory keys = new PoolKey[](1);
-        keys[0] = keyAB;
-        multiHopRouter.multiHop(_v4Hops(keys), Currency.wrap(address(tokenA)), Currency.wrap(address(tokenB)), SWAP_AMOUNT);
-        uint256 out = multiHopRouter.multiHop(_v4Hops(keys), Currency.wrap(address(tokenA)), Currency.wrap(address(tokenB)), SWAP_AMOUNT);
+    function test_gas_single_steady_native() public {
+        minRouter.swapExactIn{value: 1 ether}(keyNative, true, SWAP_AMOUNT, TickMath.MIN_SQRT_PRICE + 1, address(this));
+        uint256 out = minRouter.swapExactIn{value: 1 ether}(keyNative, true, SWAP_AMOUNT, TickMath.MIN_SQRT_PRICE + 1, address(this));
         assertGt(out, 0);
-        vm.snapshotGasLastCall("v4 one-hop exact-input single lock");
+        vm.snapshotGasLastCall("v4 single native steady-state");
     }
 
+    /// @dev No warm-up: the very first swap in a freshly capitalized pool, which writes the
+    ///      fee-growth accumulator from zero (SSTORE 20,000 instead of 2,900).
     /// forge-config: default.isolate = true
-    function test_gas_twoHop_exactInput() public {
-        PoolKey[] memory keys = new PoolKey[](2);
-        keys[0] = keyAB;
-        keys[1] = keyBC;
-        multiHopRouter.multiHop(_v4Hops(keys), Currency.wrap(address(tokenA)), Currency.wrap(address(tokenC)), SWAP_AMOUNT);
-        uint256 out = multiHopRouter.multiHop(_v4Hops(keys), Currency.wrap(address(tokenA)), Currency.wrap(address(tokenC)), SWAP_AMOUNT);
+    function test_gas_single_firstSwap_erc20() public {
+        uint256 out = _swapAB();
         assertGt(out, 0);
-        vm.snapshotGasLastCall("v4 two-hop exact-input single lock");
+        vm.snapshotGasLastCall("v4 single erc20 first swap in fresh pool");
     }
 
+    /// @dev Context only: v4-core's own PoolSwapTest helper (balance assertions and test
+    ///      settings) on the same swap, to show the minimal locker is the floor.
     /// forge-config: default.isolate = true
-    function test_gas_threeHop_exactInput() public {
-        PoolKey[] memory keys = new PoolKey[](3);
+    function test_gas_single_steady_erc20_poolSwapTest() public {
+        SwapParams memory params =
+            SwapParams({zeroForOne: true, amountSpecified: SWAP_AMOUNT, sqrtPriceLimitX96: TickMath.MIN_SQRT_PRICE + 1});
+        PoolSwapTest.TestSettings memory settings = PoolSwapTest.TestSettings({takeClaims: false, settleUsingBurn: false});
+        swapRouter.swap(keyAB, params, settings, "");
+        swapRouter.swap(keyAB, params, settings, "");
+        vm.snapshotGasLastCall("v4 single erc20 steady-state PoolSwapTest helper");
+    }
+
+    // ---- routes through the single-lock multihop router, warmed ----
+
+    function _route(uint256 n) internal returns (uint256 out) {
+        PoolKey[] memory keys = new PoolKey[](n);
         keys[0] = keyAB;
-        keys[1] = keyBC;
-        keys[2] = keyCD;
-        multiHopRouter.multiHop(_v4Hops(keys), Currency.wrap(address(tokenA)), Currency.wrap(address(tokenD)), SWAP_AMOUNT);
-        uint256 out = multiHopRouter.multiHop(_v4Hops(keys), Currency.wrap(address(tokenA)), Currency.wrap(address(tokenD)), SWAP_AMOUNT);
-        assertGt(out, 0);
-        vm.snapshotGasLastCall("v4 three-hop exact-input single lock");
+        if (n > 1) keys[1] = keyBC;
+        if (n > 2) keys[2] = keyCD;
+        Currency currencyOut = Currency.wrap(address(n == 1 ? tokenB : n == 2 ? tokenC : tokenD));
+        out = multiHopRouter.multiHop(_v4Hops(keys), Currency.wrap(address(tokenA)), currencyOut, SWAP_AMOUNT);
     }
 
     /// forge-config: default.isolate = true
-    function test_gas_mint_fullRange() public {
+    function test_gas_route_1pool() public {
+        _route(1);
+        assertGt(_route(1), 0);
+        vm.snapshotGasLastCall("v4 route 1 pool steady-state");
+    }
+
+    /// forge-config: default.isolate = true
+    function test_gas_route_2pools() public {
+        _route(2);
+        assertGt(_route(2), 0);
+        vm.snapshotGasLastCall("v4 route 2 pools steady-state");
+    }
+
+    /// forge-config: default.isolate = true
+    function test_gas_route_3pools() public {
+        _route(3);
+        assertGt(_route(3), 0);
+        vm.snapshotGasLastCall("v4 route 3 pools steady-state");
+    }
+
+    // ---- liquidity provision through v4-core's PoolModifyLiquidityTest ----
+
+    /// @dev Warm-up mint under one salt, measured mint under another: a brand-new position
+    ///      with both boundary ticks already initialized.
+    /// forge-config: default.isolate = true
+    function test_gas_mint_newPosition() public {
         uint128 liq = _fullRangeLiquidity(LIQUIDITY_TOKEN_AMOUNT, LIQUIDITY_TOKEN_AMOUNT);
         mintRouter.modifyLiquidity(
             keyAB,
@@ -351,7 +331,15 @@ contract V4GasTest is Test {
             ModifyLiquidityParams({tickLower: TICK_LOWER, tickUpper: TICK_UPPER, liquidityDelta: int256(uint256(liq)), salt: bytes32(uint256(1))}),
             ""
         );
-        vm.snapshotGasLastCall("v4 mint wide-range position");
+        vm.snapshotGasLastCall("v4 mint new position");
+    }
+
+    // ---- pool creation ----
+
+    /// forge-config: default.isolate = true
+    function test_gas_initializePool() public {
+        manager.initialize(_key(address(tokenA), address(tokenD)), TickMath.getSqrtPriceAtTick(30));
+        vm.snapshotGasLastCall("v4 initialize pool");
     }
 
     receive() external payable {}
