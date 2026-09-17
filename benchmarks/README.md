@@ -225,6 +225,47 @@ Calldata gas is 4 per zero byte and 16 per nonzero byte; the floor is 10 gas per
 (one per zero byte, four per nonzero byte) and applies only when it exceeds the whole
 transaction's regular gas, which it never does here.
 
+## Lab result tables (archived from the docs page)
+
+Steady state unless noted (one identical unmeasured warm-up call first).
+Execution gas, net of refunds; v3 rows that earn refunds show net (gross, refund).
+
+Single swaps, cheapest path per protocol (Ekubo production Solidity `Router`,
+v4 minimal locker, v3 direct `pool.swap` as an unsendable floor):
+
+| Swap                        | Ekubo  | Uniswap v4 | Uniswap v3                                     |
+| --------------------------- | ------ | ---------- | ---------------------------------------------- |
+| ERC20 to ERC20              | 87,416 | 103,533    | 87,641                                         |
+| ERC20 to ERC20, reverse     | 86,334 | 103,358    | 87,040                                         |
+| Native ETH to ERC20         | 72,580 | 88,864     | n/a (pools hold WETH; one `deposit` is 27,938) |
+| ERC20 to ERC20, bare locker | 87,077 | 103,533    | n/a (an EOA cannot pay a v3 callback)          |
+
+First swap in a fresh pool, no warm-up (one-time fee-accumulator write on v3/v4):
+Ekubo 87,384, v4 120,633, v3 104,741 — exactly 17,100 more on both Uniswap
+versions (20,000 gas instead of 2,900 for one zero-to-nonzero write).
+
+Routes through 1/2/3 pools in one transaction (Ekubo production `Router`
+multihop entry, single-lock v4 router, SwapRouter-shaped v3 router):
+
+| Pools | Ekubo   | Uniswap v4 | Uniswap v3, net (gross, refund) |
+| ----- | ------- | ---------- | ------------------------------- |
+| 1     | 94,904  | 107,360    | 94,078 (94,078, 0)              |
+| 2     | 119,333 | 141,771    | 152,774 (172,674, 19,900)       |
+| 3     | 143,774 | 176,182    | 211,470 (251,270, 39,800)       |
+
+Marginals per extra pool: 24,429 / 24,441 (Ekubo), 34,411 (v4), 58,696 net
+(78,596 gross) on v3.
+
+Swap frame attribution, steady-state single (transfers excluded from the core
+frame): Ekubo `Core.swap` 20,363 (23%), settlement 37,680 (43%), lock plumbing
+29,373 (34%); v4 `PoolManager.swap` 28,884 (28%), settlement 38,024 (37%),
+plumbing 36,625 (35%); v3 pool frame 66,430 with internals ~36,800 (39%),
+settlement ~29,600 (31%), plumbing 27,648 (29%).
+
+Bare-tier mints (new position, boundary ticks initialized): Ekubo 179,020, v4
+162,188, v3 138,380 net (141,180 gross, 2,800 refund); Ekubo Positions NFT
+213,104; v3 same-position top-up 121,496 net.
+
 ## Dependency pins
 
 - Ekubo `evm-contracts` worktree at commit `1f5be49` (plus the harness test files
