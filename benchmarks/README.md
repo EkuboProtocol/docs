@@ -12,8 +12,14 @@ measures code and architecture rather than compiler tuning.
 - `lab/v3/` — Uniswap v3 (`V3Gas.t.sol`, `Flame.t.sol`)
 - `lab/MockERC20.json` — the single shared token artifact deployed via `deployCode`
   in all three lab harnesses, so ERC20 transfer costs cannot skew the comparison
+- `prod/` — the headline bench: production Ekubo, Uniswap v3 and Uniswap v4 contracts on
+  a fork of the latest mainnet block with fresh ERC20 tokens (`test/Prod*.t.sol`,
+  `snapshots/*.json`, `calldata/*.hex` with the exact bytes of every measured call,
+  `encode-prod-routes.mjs` for the SDK routes, `run.sh`); see "Production-contract bench"
+  below
 - `pools-per-swap/` — the pools-touched-per-swap-transaction measurement behind the
-  chain-wide section (`measure.mjs`, `results.json`); see below
+  chain-wide section (`measure.mjs`, `results.json` for the 1,000-block window,
+  `results-30d.json` for the 30-day stride sample); see below
 - `fork/` — mainnet-fork validation at pinned block `25991868`
   (`ForkEkuboReal.t.sol`, `ForkV3.t.sol`, `ForkV4.t.sol` for swaps;
   `ForkMintEkubo.t.sol`, `ForkMintV3.t.sol`, `ForkMintV4.t.sol` for mints through the
@@ -45,6 +51,97 @@ used (EIP-3529). The v3 harness records `gross before refund` and `refund grante
 every snapshot via `vm.lastCallGas`; every Ekubo and v4 measurement has zero refund, so
 their snapshot, `lastCallGas().gasTotalUsed`, and a `gasleft()` delta around the call
 agree to within the caller's own overhead (roughly 1–5k, the CALL and argument copying).
+
+## Production-contract bench (`prod/`)
+
+The page's headline and route-scaling numbers. Every contract that executes a measured
+call is the deployed production one on Ethereum mainnet, read from a fork of the latest
+block at run time (`run.sh`; no block pin, so the bench reproduces on any day — the
+committed snapshots record the block they were taken at, `prod fork block number`
+25999935, timestamp 1789680959, 2026-09-17 21:35:59 UTC). Only the tokens are new:
+
+- **Tokens.** Four fresh solmate `MockERC20` contracts (the lab artifact,
+  `artifacts/MockERC20.json`) etched at fixed, address-ordered addresses
+  `0x1111…1111` (A) `< 0x2222…2222` (B) `< 0x3333…3333` (C) `< 0x4444…4444` (D), asserted
+  codeless on the chain before etching. Fixed addresses make the SDK route calldata
+  reproducible; all-nonzero bytes make it pay the full 16 gas per address byte (a real
+  address has about one zero byte in 256, so this is marginally pessimistic for every
+  leg alike). Plain ERC20 transfers, no proxy, no blocklist, no fee-on-transfer: the
+  USDC/USDT fork numbers below keep the expensive-token case.
+- **Contracts.** Ekubo Core `0x00000000000014aA86C5d3c41765bb24e11bd701`, Positions
+  `0x02D9876A21AF7545f8632C3af76eC90b5ad4b66D` (asserted `name() == "Ekubo Positions"`),
+  Yul router `0x7B2aA7Ecc0B5936b7C52E6259A19C3BA557d0748`; Uniswap v3 factory
+  `0x1F98431c8aD98523631AE4a59f267346ea31F984` and SwapRouter
+  `0xE592427A0AEce92De3Edee1F18E0157C05861564` (asserted `factory()` and `WETH9()`);
+  Uniswap v4 PoolManager `0x000000000004444c5dc75cB358380D2e3dE08A90`, Universal Router
+  `0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af` and Permit2
+  `0x000000000022D473030F116dDEE9F6B43aC78BA3`. Every address is checked for code on the
+  fork; the Ekubo addresses are the ones in the docs' EVM contract reference.
+- **Pools.** A/B, B/C, C/D and a native pool ETH/B on each protocol, 0.3% fee, Uniswap
+  tick spacing 60 (Ekubo spacing 6000; its ticks are 100x finer), initialized strictly
+  inside a tick (Uniswap tick 30, Ekubo tick 3050 = Uniswap 30.5, so Ekubo's pools sit
+  0.005% higher and its outputs are 0.005% larger; irrelevant to gas). One full-range
+  position per pool of the liquidity that 1M tokens a side buys at that price
+  (v3 mints the same liquidity figure as the lab, 998501199320305883812938). Ekubo pools
+  are asserted uninitialized on the fork before creation; Uniswap pools are asserted
+  absent from the factory / PoolManager. Capitalization is unmeasured: Ekubo through the
+  production Positions manager (`mintAndDepositWithSalt` with explicit salts — the
+  deployed manager's `mintAndDeposit` derives its salt from prevrandao and remaining
+  gas, which back-to-back mints in one context share), v3 by a direct `pool.mint` with
+  the test as callback payer, v4 through v4-core's `PoolModifyLiquidityTest`.
+- **Isolation and warmth.** Every measured call is a top-level call from the test under
+  `isolate = true`, so `vm.snapshotGasLastCall` is that call's execution gas net of
+  refunds, excluding the 21,000 base and calldata. One identical, unmeasured call
+  precedes every measurement, so every storage slot the swap touches is already nonzero
+  (pool state, both fee-growth accumulators, the recipient's output balance, which is
+  asserted nonzero before the measured call, and the router's approvals). Pool creation,
+  tick initialization, first-swap accumulator writes and NFT mints are therefore
+  excluded by design. Every measured swap is exact-input 1 token; the last pool's tick is
+  asserted to move by at most one Uniswap tick (measured: 0 on Uniswap, 2 fine ticks =
+  0.02 Uniswap ticks on Ekubo), and the router's reported output is asserted equal to
+  the recipient's balance change.
+- **Calldata.** The exact bytes of every measured call are written to `calldata/*.hex`
+  and recorded in the snapshot as byte count, EIP-2028 gas (4 per zero byte, 16 per
+  nonzero byte) and EIP-7623 floor tokens; the floor never binds here (execution is far
+  above it). Transaction gas on the page = snapshot + 21,000 + EIP-2028 calldata gas.
+- **Paths.** Two tiers per protocol. Production routers: the Ekubo Yul router with
+  SDK-generated routes (`encode-prod-routes.mjs`, 184 / 273 / 362 bytes for 1 / 2 / 3
+  pools), the v3 SwapRouter (`exactInputSingle`, `exactInput` with a packed path; the
+  native leg sends ETH to the router, which wraps it in flight), and the v4 Universal
+  Router (`execute` with one `V4_SWAP` command: `SWAP_EXACT_IN_SINGLE`, `SETTLE_ALL`,
+  `TAKE_ALL`, funded through Permit2 with a standing allowance granted in setup; the
+  `ExactInputSingleParams` layout is the 2025 deployment's, without `minHopPriceX36`,
+  confirmed by the call succeeding with the same output as the minimal locker to 1e-15).
+  Minimal single-lock routers: array-based N-hop lockers of the same shape on all three
+  sides (`MinimalEkuboRouter`: lock, swap each hop, pay once, withdraw once;
+  `V4MinimalRouter`: unlock, swap each hop, settle once, take once; `V3MinimalRouter`:
+  the SwapRouter's token flow with 2 transfers per pool). Minimal routers favor
+  Uniswap: its production routers cost more than the minimal figures, while Ekubo's
+  production Yul router is cheaper than its minimal locker.
+
+| Leg (execution gas)                    | 1 pool  | 2 pools | 3 pools | Native ETH in, 1 pool | Calldata bytes (1 / 2 / 3 pools) |
+| -------------------------------------- | ------- | ------- | ------- | --------------------- | -------------------------------- |
+| Ekubo, production Yul router           | 87,663  | 109,850 | 132,025 | 73,764                | 184 / 273 / 362                  |
+| Ekubo, minimal locker                  | 89,733  | 112,843 | 135,952 | 74,585                | 260 / 356 / 452                  |
+| Uniswap v4, Universal Router + Permit2 | 117,114 | —       | —       | —                     | 1,092                            |
+| Uniswap v4, minimal locker             | 107,384 | 141,795 | 176,206 | 92,472                | 356 / 548 / 740                  |
+| Uniswap v3, SwapRouter                 | 100,299 | 165,719 | 230,478 | 103,504 (wraps ETH)   | 260 / 324 / 324                  |
+| Uniswap v3, minimal router             | 94,078  | 152,774 | 211,470 | —                     | 260 / 324 / 388                  |
+
+Marginal execution gas per extra pool (2→3 pools): Ekubo Yul 22,175 (1→2: 22,187),
+Ekubo minimal 23,109, v4 minimal 34,411, v3 minimal 58,696, v3 SwapRouter 64,759
+(1→2: 65,420). The v3 minimal-router figures equal the lab harness's to the gas unit
+(94,078 / 152,774 / 211,470), which ties the two benches together. Outputs: Ekubo
+1000042490223401887 / 1000084982120610903 / 1000127475691875278 wei for 1 / 2 / 3
+pools, Uniswap v3 999992341035506990 / 999984682148650249 / 999977023339428738, v4
+999992341035507518 / 999984682148651304 / 999977023339430321 (the 0.005% Ekubo
+premium is the half-tick higher init price).
+
+Dependencies (`lib/`, git-ignored): forge-std, solady, `EkuboProtocol/evm-contracts` at
+`v3.2.0` as `lib/ekubo` (with its own `lib/forge-std` and `lib/solady`), `Uniswap/v4-core`
+(with its `lib/solmate`); `remappings.txt` lists the mapping. Foundry 1.8.3, solc
+auto-detected per file (0.8.26 for the Uniswap-side tests, 0.8.33 for the Ekubo test),
+`via_ir`, 1,000,000 optimizer runs, `evm_version = "osaka"`.
 
 ## Lab methodology (all three harnesses)
 

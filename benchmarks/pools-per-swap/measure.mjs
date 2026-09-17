@@ -15,7 +15,15 @@
 //                  calldata (Universal Router commands, SwapRouter02 / SwapRouter
 //                  exactInput paths, 1inch unoswapN). Router flow only.
 //
-// Usage: node measure.mjs [--blocks N] [--to BLOCK] [--rpc URL] [--out FILE]
+// Usage: node measure.mjs [--blocks N] [--stride S] [--to BLOCK] [--rpc URL[,URL...]] [--conc C] [--out FILE]
+//
+//   --blocks N   number of blocks to read (default 200)
+//   --stride S   read every S-th block, so the N blocks span N*S blocks ending at --to
+//                (default 1 = consecutive). A one-month window at 12 s/block is 216,000
+//                blocks; --blocks 21600 --stride 10 reads a uniform 10% sample of it.
+//   --rpc        comma-separated JSON-RPC endpoints; requests rotate across them on
+//                failure. Endpoints must serve eth_getBlockReceipts for the whole window
+//                (publicnode returns null for blocks older than a few days).
 
 import { writeFileSync } from "node:fs";
 
@@ -25,8 +33,13 @@ const args = Object.fromEntries(
     .map((a, i, arr) => (a.startsWith("--") ? [a.slice(2), arr[i + 1]] : null))
     .filter(Boolean),
 );
-const RPC = args.rpc ?? "https://ethereum-rpc.publicnode.com";
+const RPCS = (
+  args.rpc ??
+  "https://eth.drpc.org,https://mainnet.gateway.tenderly.co,https://eth.merkle.io,https://eth.rpc.blxrbdn.com"
+).split(",");
 const BLOCKS = Number(args.blocks ?? 200);
+const STRIDE = Number(args.stride ?? 1);
+const CONC = Number(args.conc ?? 4);
 const OUT = args.out ?? "results.json";
 
 // Event signatures. Every signature was read from the protocol's own source (repo path in
@@ -151,11 +164,17 @@ const ROUTERS = {
 };
 
 let rpcCalls = 0;
+let rpcRetries = 0;
+let rpcSeq = 0;
 async function rpc(method, params) {
+  const seed = rpcSeq++;
   for (let attempt = 0; ; attempt++) {
+    const url = RPCS[(seed + attempt) % RPCS.length];
     try {
       rpcCalls++;
-      const res = await fetch(RPC, {
+      if (attempt) rpcRetries++;
+      const res = await fetch(url, {
+        signal: AbortSignal.timeout(30000),
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
@@ -367,7 +386,7 @@ function decodeRouterTx(kind, input) {
 // ---- main ---------------------------------------------------------------------
 const latest = Number(BigInt(await rpc("eth_blockNumber", [])));
 const toBlock = Number(args.to ?? latest - 12); // stay behind the head to avoid reorgs
-const fromBlock = toBlock - BLOCKS + 1;
+const fromBlock = toBlock - (BLOCKS - 1) * STRIDE;
 
 for (const [addr, r] of Object.entries(ROUTERS)) {
   const code = await rpc("eth_getCode", [addr, "latest"]);
@@ -426,8 +445,17 @@ const routerStat = (name) =>
   });
 
 let firstTs, lastTs;
-const CONC = 4;
-const blocks = Array.from({ length: BLOCKS }, (_, i) => fromBlock + i);
+const blocks = Array.from({ length: BLOCKS }, (_, i) => fromBlock + i * STRIDE);
+// Per-UTC-day buckets, to show how the averages move across the window's gas and market regimes.
+const daily = {};
+const dayStat = (ts) =>
+  (daily[new Date(ts * 1000).toISOString().slice(0, 10)] ??= {
+    blocks: 0,
+    swapTxs: 0,
+    sumPools: 0,
+    gasSwapTxs: 0n,
+    gasAll: 0n,
+  });
 let next = 0;
 // Count pool-level swap events in one receipt; returns { counts by family, total }.
 function swapEventsIn(receipt) {
@@ -455,10 +483,12 @@ function swapEventsIn(receipt) {
 }
 
 // Measurement 1: tally one block's receipts. Returns tx hash -> pool count for the cross-check.
-function tallyReceipts(rcpts) {
+function tallyReceipts(rcpts, day) {
   const eventPools = new Map();
+  day.blocks++;
   for (const r of rcpts) {
     receipts.gasUsedAll += BigInt(r.gasUsed);
+    day.gasAll += BigInt(r.gasUsed);
     receipts.allTxs++;
     if (r.status === "0x1") receipts.successfulTxs++;
     const { counts, emitters, total } = swapEventsIn(r);
@@ -471,6 +501,9 @@ function tallyReceipts(rcpts) {
     receipts.sumPools += total;
     eventPools.set(r.transactionHash, total);
     receipts.gasUsedSwapTxs += BigInt(r.gasUsed);
+    day.swapTxs++;
+    day.sumPools += total;
+    day.gasSwapTxs += BigInt(r.gasUsed);
     bump(receipts.hist, Math.min(total, 4));
     for (const [f, c] of Object.entries(counts)) {
       const s = fam(f);
@@ -527,7 +560,7 @@ function tallyBlock(block, rcpts) {
   const status = new Map(
     rcpts.map((r) => [r.transactionHash, r.status === "0x1"]),
   );
-  const eventPools = tallyReceipts(rcpts);
+  const eventPools = tallyReceipts(rcpts, dayStat(Number(BigInt(block.timestamp))));
   for (const tx of block.transactions) {
     const router = ROUTERS[(tx.to ?? "").toLowerCase()];
     if (!router) continue;
@@ -545,16 +578,30 @@ async function worker() {
   while (next < blocks.length) {
     const bn = blocks[next++];
     const tag = "0x" + bn.toString(16);
-    const [block, rcpts] = await Promise.all([
-      rpc("eth_getBlockByNumber", [tag, true]),
-      rpc("eth_getBlockReceipts", [tag]),
-    ]);
+    let block, rcpts;
+    for (let attempt = 0; ; attempt++) {
+      [block, rcpts] = await Promise.all([
+        rpc("eth_getBlockByNumber", [tag, true]),
+        rpc("eth_getBlockReceipts", [tag]),
+      ]);
+      // an endpoint that serves a block but not its receipts (or a partial set) is rejected
+      if (
+        Array.isArray(rcpts) &&
+        rcpts.length === block.transactions.length &&
+        rcpts.every((r, i) => r.transactionHash === block.transactions[i].hash)
+      )
+        break;
+      if (attempt >= 8) throw new Error(`block ${bn}: receipts do not match block`);
+      rpcRetries++;
+      await new Promise((r) => setTimeout(r, 500 * 2 ** attempt));
+    }
     const ts = Number(BigInt(block.timestamp));
     if (bn === fromBlock) firstTs = ts;
     if (bn === toBlock) lastTs = ts;
     tallyBlock(block, rcpts);
-    if ((bn - fromBlock) % 50 === 0)
-      process.stderr.write(`block ${bn} (${bn - fromBlock + 1}/${BLOCKS})\n`);
+    const idx = (bn - fromBlock) / STRIDE;
+    if (idx % 200 === 0)
+      process.stderr.write(`block ${bn} (${idx + 1}/${BLOCKS})\n`);
   }
 }
 await Promise.all(Array.from({ length: CONC }, worker));
@@ -569,10 +616,13 @@ const histShare = (h, n) =>
   );
 
 const out = {
-  rpc: RPC,
+  rpc: RPCS,
   window: {
     fromBlock,
     toBlock,
+    stride: STRIDE,
+    blocksRead: BLOCKS,
+    blocksSpanned: toBlock - fromBlock + 1,
     blocks: BLOCKS,
     fromTimestamp: firstTs,
     toTimestamp: lastTs,
@@ -580,7 +630,21 @@ const out = {
     toIso: new Date(lastTs * 1000).toISOString(),
   },
   rpcCalls,
+  rpcRetries,
   families: FAMILIES,
+  daily: Object.fromEntries(
+    Object.entries(daily)
+      .sort()
+      .map(([d, s]) => [
+        d,
+        {
+          blocks: s.blocks,
+          swapTxs: s.swapTxs,
+          avgPoolsPerSwapTx: +(s.sumPools / (s.swapTxs || 1)).toFixed(3),
+          swapTxGasSharePct: s.gasAll ? +((10000n * s.gasSwapTxs) / s.gasAll).toString() / 100 : 0,
+        },
+      ]),
+  ),
   ekuboCore: {
     address: EKUBO_CORE,
     codeBytes: ekuboCoreCodeBytes,
