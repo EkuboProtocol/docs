@@ -560,7 +560,10 @@ function tallyBlock(block, rcpts) {
   const status = new Map(
     rcpts.map((r) => [r.transactionHash, r.status === "0x1"]),
   );
-  const eventPools = tallyReceipts(rcpts, dayStat(Number(BigInt(block.timestamp))));
+  const eventPools = tallyReceipts(
+    rcpts,
+    dayStat(Number(BigInt(block.timestamp))),
+  );
   for (const tx of block.transactions) {
     const router = ROUTERS[(tx.to ?? "").toLowerCase()];
     if (!router) continue;
@@ -591,7 +594,8 @@ async function worker() {
         rcpts.every((r, i) => r.transactionHash === block.transactions[i].hash)
       )
         break;
-      if (attempt >= 8) throw new Error(`block ${bn}: receipts do not match block`);
+      if (attempt >= 8)
+        throw new Error(`block ${bn}: receipts do not match block`);
       rpcRetries++;
       await new Promise((r) => setTimeout(r, 500 * 2 ** attempt));
     }
@@ -641,7 +645,9 @@ const out = {
           blocks: s.blocks,
           swapTxs: s.swapTxs,
           avgPoolsPerSwapTx: +(s.sumPools / (s.swapTxs || 1)).toFixed(3),
-          swapTxGasSharePct: s.gasAll ? +((10000n * s.gasSwapTxs) / s.gasAll).toString() / 100 : 0,
+          swapTxGasSharePct: s.gasAll
+            ? +((10000n * s.gasSwapTxs) / s.gasAll).toString() / 100
+            : 0,
         },
       ]),
   ),

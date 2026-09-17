@@ -373,24 +373,34 @@ Bare-tier mints (new position, boundary ticks initialized): Ekubo 179,020, v4
 ## Pools per swap transaction (mainnet, JSON-RPC)
 
 The docs page's chain-wide blend uses a measured average of pools touched per swap
-transaction. Dune was the intended source (a trailing-7-day query over `ethereum.logs`)
-but no Dune API key or account was available to this repository, so the measurement was
-taken from a public JSON-RPC endpoint instead: `https://ethereum-rpc.publicnode.com`
-(`eth_getBlockReceipts` and `eth_getBlockByNumber` with full transactions; that endpoint
-refuses `eth_getLogs` without an address filter, so receipts are read per block). The
-window is 1,000 consecutive blocks, `25997046` to `25998045` (2026-09-17 11:55:11 to
-15:16:11 UTC, tip pinned 12 blocks behind head at start), 2,174 RPC calls in total, no
-rate limiting observed at 4 concurrent blocks. Script and raw output:
-`pools-per-swap/measure.mjs` and `pools-per-swap/results.json`. An earlier 200-block run
-(`25997689`–`25997888`, Uniswap v2/v3/v4 and Curve only) gave 5,341 swap transactions at
-1.657 pools per swap and a 30.25% gas share; the wider event set and window below
-supersede it.
+transaction. Dune was the intended source (a query over `ethereum.logs`) but no Dune API
+key or account was available to this repository, so the measurement is taken from public
+JSON-RPC endpoints instead (`eth_getBlockReceipts` and `eth_getBlockByNumber` with full
+transactions, read per block). The page uses the **30-day stride sample** below
+(`results-30d.json`): every 10th block from `25783810` to `25999800`, 21,600 blocks
+read out of the 215,991 spanned (2026-08-18 18:36:47 to 2026-09-17 21:08:59 UTC, tip
+pinned 12 blocks behind head at start), so every hour of the month, every day of the
+week and every gas regime in it is sampled uniformly. The earlier 1,000-consecutive-block
+window `25997046`–`25998045` (`results.json`, 2026-09-17 11:55:11 to 15:16:11 UTC) and a
+200-block run before it (Uniswap v2/v3/v4 and Curve only, 1.657 pools per swap) are kept
+as the short-window cross-checks; the 30-day sample supersedes both.
 
 ```sh
 cd benchmarks/pools-per-swap
-node measure.mjs --blocks 1000 --to 25998045        # reproduces results.json
-node measure.mjs --blocks 1000                      # fresh window ending 12 blocks behind head
+node measure.mjs --blocks 21600 --stride 10 --to 25999800 --conc 6 --out results-30d.json   # the 30-day sample
+node measure.mjs --blocks 1000 --to 25998045                                                 # the 1,000-block window
+node measure.mjs --blocks 21600 --stride 10                                                  # a fresh month ending 12 blocks behind head
 ```
+
+Endpoints for the 30-day run (rotated per request on any failure; `--rpc` overrides):
+`https://eth.drpc.org`, `https://mainnet.gateway.tenderly.co`, `https://eth.merkle.io`,
+`https://eth.rpc.blxrbdn.com`. `ethereum-rpc.publicnode.com`, used for the 1,000-block
+window, returns `null` receipts for blocks older than a few days and cannot serve a
+month. Every block is accepted only when the receipt list has exactly one entry per
+transaction in the block, in order, with matching hashes; otherwise both calls are
+retried on the next endpoint. The run made 54,013 RPC calls, 10,803 of them retries
+(rate limiting and one endpoint intermittently answering with empty or partial receipt
+lists, which the consistency check rejects), at 6 concurrent blocks in about 100 minutes.
 
 Two measurements are taken over the same blocks:
 
@@ -581,6 +591,66 @@ before being quoted as a long-run figure. The event set now covers every AMM fam
 found among the window's gas consumers; what remains uncounted is listed under "Not
 counted" above, so a transaction whose only swap is an order-book fill, a legacy Ekubo
 v2 swap, or a long-tail AMM is not counted.
+
+### Results, 30-day stride sample (every 10th block, 25783810–25999800)
+
+All flow, from receipts: 5,724,722 transactions in the sampled blocks (5,643,974
+successful), of which 664,726 are swap transactions with 1,161,778 pool swap events,
+**1.748 pools per swap transaction** (1,161,778 / 664,726 = 1.7478). The swap transactions used
+32.68% of all gas in the sampled blocks (the ratio of summed `gasUsed`, so it is the
+share of block space, not of fee burn).
+
+| Pools touched | Transactions | Share  |
+| ------------- | ------------ | ------ |
+| 1             | 459,356      | 69.10% |
+| 2             | 106,197      | 15.98% |
+| 3             | 49,247       | 7.41%  |
+| 4 or more     | 49,926       | 7.51%  |
+
+Per family (a transaction touching two families is counted in both; "gas share" is the
+gas of every transaction touching the family over all gas in the sampled blocks, so it
+also overlaps):
+
+| Family            | Transactions | Events of this family per tx | All pools per tx touching it | Gas share of window |
+| ----------------- | ------------ | ---------------------------- | ---------------------------- | ------------------- |
+| Uniswap v3        | 327,953      | 1.327                        | 2.101                        | 18.30%              |
+| Uniswap v4        | 237,383      | 1.507                        | 2.493                        | 15.51%              |
+| Uniswap v2 family | 178,611      | 1.241                        | 2.212                        | 9.50%               |
+| Curve             | 37,104       | 1.391                        | 4.086                        | 4.61%               |
+| PancakeSwap v3    | 30,611       | 1.140                        | 4.299                        | 3.23%               |
+| Ekubo             | 21,419       | 1.128                        | 3.346                        | 2.22%               |
+| Fluid DEX         | 8,789        | 1.079                        | 3.940                        | 1.16%               |
+| DODO              | 7,846        | 1.071                        | 4.457                        | 1.08%               |
+| Balancer v2       | 5,584        | 1.063                        | 4.230                        | 0.61%               |
+| Balancer v3       | 3,987        | 1.080                        | 4.385                        | 0.53%               |
+| Maverick v2       | 2,591        | 1.045                        | 4.116                        | 0.33%               |
+| Bancor v2.1       | 2,359        | 1.848                        | 5.242                        | 0.25%               |
+| Maverick v1       | 563          | 1.046                        | 4.417                        | 0.08%               |
+| Bancor v3         | 531          | 1.047                        | 5.633                        | 0.06%               |
+| Bancor Carbon     | 218          | 1.009                        | 2.844                        | 0.02%               |
+| Solidly-style     | 3            | 1.000                        | 1.667                        | 0.00%               |
+
+Every catalogued family had at least one event in the month; none is missing. The
+sanity counters read 0 failed transactions with swap logs and 0 topic-less Core logs of
+a length other than 116 bytes.
+
+Per UTC day (`daily` in `results-30d.json`, 716–718 sampled blocks per full day; the
+first and last days are partial): the average ranged from 1.640 (August 26) to 1.865
+(August 19) pools per swap transaction, and the swap-transaction gas share from 20.25%
+(the 162-block partial first day) and 24.82% (August 29) to 41.03% (August 23). The
+1,000-block window on September 17 (1.678, 32.67%) sits inside both ranges.
+
+Router flow, from calldata: 135,167 successful transactions to the verified routers were
+decoded (8,303 opaque 1inch `swap` calls and 4,224 non-swap selectors excluded) at
+**1.219 pools per router transaction**; cross-checked against their own receipts,
+134,178 agree exactly, 989 have more pool events than the calldata declares (aggregator
+executors adding hops) and none fewer. Direct router calls are lighter than the all-flow
+average because aggregators, MEV bundles and other contracts carry most of the multi-pool
+weight.
+
+Reading the histogram for the page: 69% of swap transactions touch one pool, but the
+31% that touch more carry enough pools to lift the mean to 1.75, and the daily mean
+never left the 1.64–1.87 band in a month that spanned a 2x range of swap gas share.
 
 ## L2 fork methodology (Base, Arbitrum One)
 
