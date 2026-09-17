@@ -283,8 +283,8 @@ the 1000-USDT fork swaps, execution plus 21,000 plus the calldata above:
 Ekubo's transaction costs 11.7% less than v3's and 14.2% less than v4's. The
 100-USDT transactions differ from these by under 100 gas. A Universal Router
 leg would widen both Uniswap gaps on calldata and execution alike. The EIP-7623
-floor for these transactions is 3,000–8,000 gas, far below their regular cost,
-so it never binds.
+floor for these transactions is about 24,000–29,000 gas in total (21,000 plus
+10 gas per calldata token), far below their regular cost, so it never binds.
 
 ## What this means for chain capacity
 
