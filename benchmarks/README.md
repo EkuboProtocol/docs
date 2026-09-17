@@ -276,14 +276,18 @@ but no Dune API key or account was available to this repository, so the measurem
 taken from a public JSON-RPC endpoint instead: `https://ethereum-rpc.publicnode.com`
 (`eth_getBlockReceipts` and `eth_getBlockByNumber` with full transactions; that endpoint
 refuses `eth_getLogs` without an address filter, so receipts are read per block). The
-window is 200 consecutive blocks, `25997689` to `25997888` (2026-09-17 14:04:35 to
-14:44:47 UTC), 407 RPC calls in total. Script and raw output: `pools-per-swap/measure.mjs`
-and `pools-per-swap/results.json`.
+window is 1,000 consecutive blocks, `25997046` to `25998045` (2026-09-17 11:55:11 to
+15:16:11 UTC, tip pinned 12 blocks behind head at start), 2,174 RPC calls in total, no
+rate limiting observed at 4 concurrent blocks. Script and raw output:
+`pools-per-swap/measure.mjs` and `pools-per-swap/results.json`. An earlier 200-block run
+(`25997689`–`25997888`, Uniswap v2/v3/v4 and Curve only) gave 5,341 swap transactions at
+1.657 pools per swap and a 30.25% gas share; the wider event set and window below
+supersede it.
 
 ```sh
 cd benchmarks/pools-per-swap
-node measure.mjs --blocks 200 --to 25997888          # reproduces results.json
-node measure.mjs --blocks 200                        # fresh window ending 12 blocks behind head
+node measure.mjs --blocks 1000 --to 25998045        # reproduces results.json
+node measure.mjs --blocks 1000                      # fresh window ending 12 blocks behind head
 ```
 
 Two measurements are taken over the same blocks:
@@ -302,91 +306,179 @@ Two measurements are taken over the same blocks:
    paths, and 1inch v6 `unoswap/unoswap2/unoswap3` (1/2/3 pools by construction). 1inch's
    generic `swap(executor, desc, data)` carries its route inside opaque executor data and
    is reported as "opaque"; the remaining undecoded 1inch selectors were limit-order calls
-   (`cancelOrder` 0xb68fb020 alone is 84 of the 106 undecoded transactions, then
+   (`cancelOrder` 0xb68fb020 alone is 239 of the 323 undecoded transactions, then
    `fillContractOrder(Args)`, `permitAndCall`), not swaps. Every decoded router transaction
-   was cross-checked against its own receipt: 470 of 470 hop counts equal the event count.
+   is cross-checked against its own receipt (see the router table).
 
-Event signatures (topic0 computed with `cast keccak`, Foundry 1.8.3):
+### Event set
 
-| Family                     | Event                                                              | topic0                                                               |
-| -------------------------- | ------------------------------------------------------------------ | -------------------------------------------------------------------- |
-| Uniswap v3                 | `Swap(address,address,int256,int256,uint160,uint128,int24)`        | `0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67` |
-| Uniswap v2 family          | `Swap(address,uint256,uint256,uint256,uint256,address)`            | `0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822` |
-| Curve                      | `TokenExchange(address,int128,uint256,int128,uint256)`             | `0x8b3e96f2b889fa771c53c981b40daf005f63f637f1869f707052d15a3dd97140` |
-| Curve (underlying)         | `TokenExchangeUnderlying(address,int128,uint256,int128,uint256)`   | `0xd013ca23e77a65003c2c659c5442c00c805371b7fc1ebd4c206c41d1536bd90b` |
-| Uniswap v4 (`PoolManager`) | `Swap(bytes32,address,int128,int128,uint160,uint128,int24,uint24)` | `0x40e9cecb9f5f1f1c5b9c97dec2917b7ee92e57ba5563708daca94dd84ad7112f` |
+Every signature was read from the protocol's own source file (path in the table) and
+hashed with `cast keccak` (Foundry 1.8.3); nothing was taken from memory.
 
-The v2 signature is shared by Uniswap v2, SushiSwap, PancakeSwap v2 and every other v2
-fork, so those are folded into one "v2 family" and cannot be separated by event alone.
-Curve's two events are folded into one family. Ekubo's own events are not in the set (the
-question is what a swap on the incumbents touches today).
+| Family                   | Source                                                                             | Event                                                                                   | topic0                        |
+| ------------------------ | ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ----------------------------- |
+| Uniswap v3               | Uniswap/v3-core `IUniswapV3PoolEvents.sol`                                         | `Swap(address,address,int256,int256,uint160,uint128,int24)`                             | `0xc42079f9…`                 |
+| Uniswap v2 family        | Uniswap/v2-core `IUniswapV2Pair.sol`                                               | `Swap(address,uint256,uint256,uint256,uint256,address)`                                 | `0xd78ad95f…`                 |
+| Uniswap v4               | Uniswap/v4-core `IPoolManager.sol`                                                 | `Swap(bytes32,address,int128,int128,uint160,uint128,int24,uint24)`                      | `0x40e9cecb…`                 |
+| PancakeSwap v3           | pancakeswap/pancake-v3-contracts `IPancakeV3PoolEvents.sol`                        | `Swap(address,address,int256,int256,uint160,uint128,int24,uint128,uint128)`             | `0x19b47279…`                 |
+| Curve (stable)           | curvefi/stableswap-ng `CurveStableSwapNG.vy` (same as the classic pools)           | `TokenExchange(address,int128,uint256,int128,uint256)`                                  | `0x8b3e96f2…`                 |
+| Curve (stable, meta)     | same                                                                               | `TokenExchangeUnderlying(address,int128,uint256,int128,uint256)`                        | `0xd013ca23…`                 |
+| Curve (crypto v2)        | curvefi/curve-crypto-contract `CurveCryptoSwap2ETH.vy`                             | `TokenExchange(address,uint256,uint256,uint256,uint256)`                                | `0xb2e76ae9…`                 |
+| Curve (tricrypto/two-ng) | curvefi/tricrypto-ng `CurveTricryptoOptimizedWETH.vy`, twocrypto-ng `Twocrypto.vy` | `TokenExchange(address,uint256,uint256,uint256,uint256,uint256,uint256)`                | `0x143f1f8e…`                 |
+| Balancer v2              | balancer/balancer-v2-monorepo `vault/IVault.sol`                                   | `Swap(bytes32,address,address,uint256,uint256)`                                         | `0x2170c741…`                 |
+| Balancer v3              | balancer/balancer-v3-monorepo `vault/IVaultEvents.sol`                             | `Swap(address,address,address,uint256,uint256,uint256,uint256)`                         | `0x0874b2d5…`                 |
+| Maverick v1              | maverickprotocol/maverick-v1-interfaces `IPool.sol`                                | `Swap(address,address,bool,bool,uint256,uint256,int32)`                                 | `0x3b841dc9…`                 |
+| Maverick v2              | maverickprotocol/v2-common `IMaverickV2Pool.sol`                                   | `PoolSwap(address,address,(uint256,bool,bool,int32),uint256,uint256)`                   | `0x103ed084…`                 |
+| Fluid DEX                | Instadapp/fluid-contracts-public `dex/poolT1/coreModule/events.sol`                | `Swap(bool,uint256,uint256,address)`                                                    | `0xdc004dbc…`                 |
+| DODO v2 (DVM/DPP/DSP)    | DODOEX/contractV2 `DVMTrader.sol`, `DPPTrader.sol`, `DSPTrader.sol`                | `DODOSwap(address,address,uint256,uint256,address,address)`                             | `0xc2c0245e…`                 |
+| DODO v1                  | DODOEX/dodo-smart-contract `impl/Trader.sol`                                       | `SellBaseToken(address,uint256,uint256)` / `BuyBaseToken(address,uint256,uint256)`      | `0xd8648b6a…` / `0xe93ad760…` |
+| Bancor v3                | bancorprotocol/contracts-v3 `network/BancorNetwork.sol`                            | `TokensTraded(bytes32,address,address,uint256,uint256,uint256,uint256,uint256,address)` | `0x5c02c2bb…`                 |
+| Bancor Carbon            | bancorprotocol/carbon-contracts `carbon/Strategies.sol`                            | `TokensTraded(address,address,address,uint256,uint256,uint128,bool)`                    | `0x95f3b013…`                 |
+| Bancor v2.1              | bancorprotocol/contracts-solidity `converter/interfaces/IConverter.sol`            | `Conversion(address,address,address,uint256,uint256,int256)`                            | `0x276856b3…`                 |
+| Solidly-style pairs      | aerodrome-finance/contracts `interfaces/IPool.sol`                                 | `Swap(address,address,uint256,uint256,uint256,uint256)`                                 | `0xb3e27736…`                 |
+| Ekubo                    | EkuboProtocol/evm-contracts v3.2.0 `src/Core.sol`                                  | `log0`, no topics, 116 bytes (locker, poolId, balanceUpdate, stateAfter)                | none                          |
+
+Full hashes are in `measure.mjs` and `results.json`. Notes on folding and coverage:
+
+- The v2 signature is shared by Uniswap v2, SushiSwap, PancakeSwap v2, Fraxswap and every
+  other v2 fork, so those are one "v2 family" and cannot be separated by event alone.
+  The v3 signature is likewise shared by SushiSwap v3 and KyberSwap Elastic (identical
+  parameter types), so those land in the v3 row. Solidly-style pairs (Aerodrome,
+  Velodrome) hash to a different topic and were added, but emitted nothing on mainnet in
+  the window (they live on Base and Optimism).
+- Curve's four exchange events are folded into one family. PancakeSwap v3 is a separate
+  row because its `Swap` carries two extra protocol-fee words and therefore a different
+  topic.
+- Ekubo Core writes its swap record with `log0` and no topics (`Core.sol`,
+  `log0(o, 116)`), so topic filtering cannot see it. It is counted instead as "a
+  topic-less log from the Core address with exactly 116 bytes of data"; every other
+  Core event is a normal topic-carrying `emit`, and the sanity counter for topic-less
+  Core logs of any other length read 0. This counts every Ekubo swap regardless of
+  caller. The production Yul router (`0x7B2aA7Ec…`, bytecode verified to embed the Core
+  address) received 1 transaction in the window; Ekubo flow arrives through 1inch, 0x,
+  Relay, Kyber and other aggregators. Hop counts are not decoded from the Yul router's
+  packed calldata. The legacy Ekubo v2 core (`0xe0e0e08A…`) is not counted.
+- Within the Balancer v2 family, 58 of the 243 transactions came from a second
+  `Vault` deployment (`0xd315a9c3…`, Sourcify exact match to `contracts/Vault.sol`), a
+  Balancer-v2-architecture fork; it is left in the family.
+
+Not counted, and why:
+
+- Order-flow and RFQ settlement that is not a pool: CoW Protocol, UniswapX, 1inch and
+  KyberSwap limit orders (`DSLOProtocol`), 0x RFQ fills. Their transactions are counted
+  only when a leg lands in one of the pools above. The KyberSwap router transactions
+  without any counted event (51 in the first 200 blocks) were limit-order fills.
+- Long-tail AMMs outside the set (Kyber Classic/DMM, Smardex, Integral, Shell, Uniswap v1,
+  DODO v3): no signature was verified from source for them within the time box.
+- One unidentified contract (`0xf2e3dcb8…`) that emits topic-less logs (29 transactions,
+  5.2M gas in the first 200 blocks, no verified source on Sourcify).
+- Everything the discovery scan identified as non-AMM: ERC-4337 EntryPoint and
+  paymasters, Aave, Morpho, bridges (Relay, LiFi, Optimism/Base messengers), the Aztec
+  rollup, Seaport, Chainlink VRF, batch-transfer and address-poisoning contracts.
 
 Router addresses were not taken from memory: at startup the script fetches each
-contract's bytecode and aborts unless it contains the listed function selectors.
+contract's bytecode and aborts unless it contains the listed function selectors (or,
+for the selector-less Yul router, the Core address).
 
-| Router                        | Address                                      | Selectors verified in bytecode                      |
-| ----------------------------- | -------------------------------------------- | --------------------------------------------------- |
-| Universal Router (v2, 2025)   | `0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af` | `execute` `0x3593564c`                              |
-| Universal Router (v1.2, 2023) | `0x3fC91A3afd70395Cd496C647d5a6CC9D4B2b7FAD` | `execute` `0x3593564c`                              |
-| SwapRouter02                  | `0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45` | `exactInput` `0xb858183f`, `multicall` `0x5ae401dc` |
-| SwapRouter (v3 classic)       | `0xE592427A0AEce92De3Edee1F18E0157C05861564` | `exactInput` `0xc04b8d59`                           |
-| Uniswap v2 Router02           | `0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D` | `swapExactTokensForTokens` `0x38ed1739`             |
-| 1inch AggregationRouter v6    | `0x111111125421cA6dc452d289314280a0f8842A65` | `swap` `0x07ed2379`, `unoswap` `0x83800a8e`         |
+| Router                             | Address                                      | Verified in bytecode                                 |
+| ---------------------------------- | -------------------------------------------- | ---------------------------------------------------- |
+| Universal Router (v2, 2025)        | `0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af` | `execute` `0x3593564c`                               |
+| Universal Router (v1.2, 2023)      | `0x3fC91A3afd70395Cd496C647d5a6CC9D4B2b7FAD` | `execute` `0x3593564c`                               |
+| Universal Router (2026 deployment) | `0x4c82d1FBfe28c977cbb58d8c7ff8FcF9f70a2cca` | `execute` `0x3593564c` (Sourcify: `UniversalRouter`) |
+| SwapRouter02                       | `0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45` | `exactInput` `0xb858183f`, `multicall` `0x5ae401dc`  |
+| SwapRouter (v3 classic)            | `0xE592427A0AEce92De3Edee1F18E0157C05861564` | `exactInput` `0xc04b8d59`                            |
+| Uniswap v2 Router02                | `0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D` | `swapExactTokensForTokens` `0x38ed1739`              |
+| 1inch AggregationRouter v6         | `0x111111125421cA6dc452d289314280a0f8842A65` | `swap` `0x07ed2379`, `unoswap` `0x83800a8e`          |
+| Ekubo Yul router                   | `0x7B2aA7Ecc0B5936b7C52E6259A19C3BA557d0748` | Core address `0x…14aA86C5d3c41765bb24e11bd701`       |
 
-### Results (blocks 25997689–25997888)
+### Results (blocks 25997046–25998045)
 
-All flow, from receipts: 5,341 swap transactions, 8,851 pool swap events,
-**1.657 pools per swap transaction**.
-
-| Pools touched | Transactions | Share  |
-| ------------- | ------------ | ------ |
-| 1             | 3,820        | 71.52% |
-| 2             | 834          | 15.62% |
-| 3             | 332          | 6.22%  |
-| 4 or more     | 355          | 6.65%  |
-
-Per family (a transaction touching two families is counted in both):
-
-| Family            | Transactions | Events | Events of this family per tx | All pools per tx touching it |
-| ----------------- | ------------ | ------ | ---------------------------- | ---------------------------- |
-| Uniswap v3        | 2,631        | 3,491  | 1.327                        | 1.968                        |
-| Uniswap v4        | 2,392        | 3,778  | 1.579                        | 2.187                        |
-| Uniswap v2 family | 1,210        | 1,427  | 1.179                        | 2.018                        |
-| Curve             | 120          | 155    | 1.292                        | 3.275                        |
-
-Gas: the swap transactions used 1,803,698,643 of the window's 5,962,572,822 gas, **30.25%**.
-This is the gas of whole transactions that contain a swap event (an aggregator's or MEV
-bot's overhead included), so it is an upper bound on swap gas and a direct check on the
-router-address-only burn share (4.2%), which it comfortably exceeds.
-
-Router flow only, from calldata: 470 decoded transactions, **1.106 pools per swap**;
-102 opaque (1inch generic `swap`), 106 undecoded (limit-order calls, see above),
-60 failed (excluded).
+All flow, from receipts: 321,702 transactions in the window (317,617 successful), of
+which 32,417 are swap transactions with 54,407 pool swap events,
+**1.678 pools per swap transaction** (54,407 / 32,417 = 1.6783).
 
 | Pools touched | Transactions | Share  |
 | ------------- | ------------ | ------ |
-| 1             | 435          | 92.55% |
-| 2             | 28           | 5.96%  |
-| 3             | 3            | 0.64%  |
-| 4 or more     | 4            | 0.85%  |
+| 1             | 23,358       | 72.05% |
+| 2             | 4,801        | 14.81% |
+| 3             | 2,027        | 6.25%  |
+| 4 or more     | 2,231        | 6.88%  |
 
-| Router                        | Decoded txs | Avg pools | 1 / 2 / 3 / 4+   |
-| ----------------------------- | ----------- | --------- | ---------------- |
-| Universal Router (v2, 2025)   | 202         | 1.173     | 182 / 13 / 3 / 4 |
-| SwapRouter02                  | 110         | 1.064     | 103 / 7 / 0 / 0  |
-| Uniswap v2 Router02           | 75          | 1.000     | 75 / 0 / 0 / 0   |
-| SwapRouter (v3 classic)       | 54          | 1.056     | 51 / 3 / 0 / 0   |
-| Universal Router (v1.2, 2023) | 20          | 1.000     | 20 / 0 / 0 / 0   |
-| 1inch v6 `unoswapN`           | 9           | 1.556     | 4 / 5 / 0 / 0    |
+Per family (a transaction touching two families is counted in both; "gas" is the gas of
+every transaction touching the family, so it also overlaps):
 
-The gap between 1.66 (all flow) and 1.11 (router flow) is the multi-pool weight of
+| Family            | Transactions | Events | Events of this family per tx | All pools per tx touching it | Gas of those txs | Emitting contracts |
+| ----------------- | ------------ | ------ | ---------------------------- | ---------------------------- | ---------------- | ------------------ |
+| Uniswap v3        | 15,900       | 21,418 | 1.347                        | 2.024                        | 5,672,233,165    | 813                |
+| Uniswap v4        | 11,748       | 17,467 | 1.487                        | 2.354                        | 4,741,053,798    | 1 (PoolManager)    |
+| Uniswap v2 family | 7,528        | 8,963  | 1.191                        | 2.128                        | 2,467,266,054    | 1,267              |
+| Curve             | 1,652        | 2,250  | 1.362                        | 4.079                        | 1,286,127,611    | 219                |
+| PancakeSwap v3    | 1,307        | 1,433  | 1.096                        | 4.111                        | 858,951,131      | 35                 |
+| Ekubo             | 943          | 1,079  | 1.144                        | 3.538                        | 673,692,276      | 1 (Core)           |
+| Fluid DEX         | 551          | 587    | 1.065                        | 3.316                        | 435,123,007      | 19                 |
+| DODO              | 421          | 448    | 1.064                        | 4.496                        | 399,393,841      | 56                 |
+| Balancer v2       | 243          | 259    | 1.066                        | 4.066                        | 160,357,147      | 2 (Vault + fork)   |
+| Balancer v3       | 202          | 226    | 1.119                        | 5.119                        | 204,734,020      | 2                  |
+| Maverick v2       | 118          | 123    | 1.042                        | 5.127                        | 117,418,379      | 7                  |
+| Bancor v2.1       | 54           | 107    | 1.981                        | 6.130                        | 42,174,657       | 19                 |
+| Bancor v3         | 23           | 23     | 1.000                        | 5.348                        | 17,867,787       | 1                  |
+| Maverick v1       | 17           | 18     | 1.059                        | 6.059                        | 12,229,328       | 7                  |
+| Bancor Carbon     | 6            | 6      | 1.000                        | 2.333                        | 3,788,965        | 1                  |
+| Solidly-style     | 0            | 0      | —                            | —                            | —                | 0                  |
+
+Reading the right-hand columns: the families added in this pass are mostly reached
+through aggregators (a transaction touching Balancer v3 averages 5.1 pools in total,
+Maverick v2 5.1, Curve 4.1), while the four families of the first run are where the
+single-pool retail flow lives. Adding them therefore raised the average from 1.657 to
+1.678, not by more.
+
+Gas: the swap transactions used 10,039,217,633 of the window's 30,729,852,504 gas,
+**32.67%**. This is the gas of whole transactions that contain a swap event (an
+aggregator's or MEV bot's overhead included), so it is an upper bound on swap gas and a
+direct check on the router-address-only burn share (4.2%), which it comfortably exceeds.
+
+Router flow only, from calldata: 4,432 decoded transactions, 5,687 pools,
+**1.283 pools per swap**; 444 opaque (443 1inch generic `swap`, 1 Ekubo Yul
+router), 323 undecoded (limit-order and liquidity calls, see above), 284 failed
+(excluded).
+
+| Pools touched | Transactions | Share  |
+| ------------- | ------------ | ------ |
+| 1             | 3,712        | 83.75% |
+| 2             | 473          | 10.67% |
+| 3             | 130          | 2.93%  |
+| 4 or more     | 117          | 2.64%  |
+
+| Router                             | Decoded txs | Avg pools | 1 / 2 / 3 / 4+       | Calldata = events |
+| ---------------------------------- | ----------- | --------- | -------------------- | ----------------- |
+| SwapRouter02                       | 1,168       | 1.076     | 1093 / 71 / 0 / 4    | 1,168 / 1,168     |
+| Universal Router (v2, 2025)        | 1,153       | 1.207     | 974 / 147 / 18 / 14  | 1,150 / 1,153     |
+| Universal Router (2026 deployment) | 1,070       | 1.837     | 635 / 224 / 112 / 99 | 1,056 / 1,070     |
+| Uniswap v2 Router02                | 658         | 1.011     | 651 / 7 / 0 / 0      | 650 / 658         |
+| SwapRouter (v3 classic)            | 281         | 1.036     | 271 / 10 / 0 / 0     | 281 / 281         |
+| Universal Router (v1.2, 2023)      | 70          | 1.000     | 70 / 0 / 0 / 0       | 70 / 70           |
+| 1inch v6 `unoswapN`                | 32          | 1.438     | 18 / 14 / 0 / 0      | 32 / 32           |
+
+In 4,407 of the 4,432 decoded transactions the calldata hop count equals the event count.
+The 25 exceptions all have more events than hops, never fewer: Universal Router
+transactions whose Uniswap v4 legs went through hook pools that perform a nested
+`PoolManager` swap (17, e.g. 1 hop decoded / 2 `Swap` events, 11 / 16, 3 / 8), and v2
+Router02 `swapExactTokensForTokensSupportingFeeOnTransferTokens` calls on tax tokens
+that sell their fee through the same pair inside the transfer (8, each 1 hop / 2
+events on one pair). Both are real extra pool swaps, so the receipts measurement keeps
+them; note that it counts swap events, not distinct pools, so a pool swapped twice in
+one transaction counts twice.
+
+The gap between 1.68 (all flow) and 1.28 (router flow) is the multi-pool weight of
 aggregators, solvers, MEV bundles and other contract callers. The docs page uses the
 all-flow figure as its headline blend and shows the router-only figure as context.
 
-Caveats: 200 blocks is 40 minutes of one afternoon, not a 7-day window; the distribution
-should be re-run over a longer window (the script accepts `--blocks`) before being quoted
-as a long-run figure. The event set does not include Balancer, Maverick, Ekubo or
-non-standard pools, so a transaction whose only swap is on one of those is not counted.
+Caveats: 1,000 blocks is about three and a half hours of one day, not a 7-day window;
+the distribution should be re-run over a longer window (the script accepts `--blocks`)
+before being quoted as a long-run figure. The event set now covers every AMM family
+found among the window's gas consumers; what remains uncounted is listed under "Not
+counted" above, so a transaction whose only swap is an order-book fill, a legacy Ekubo
+v2 swap, or a long-tail AMM is not counted.
 
 ## Dependency pins
 

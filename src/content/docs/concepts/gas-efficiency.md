@@ -51,25 +51,28 @@ than a v4 block and 41% more than a v3 block.
 How much this matters chain-wide depends on the average number of pools a swap
 touches and on how much block space swaps take.
 
-**Pools per swap, measured.** Over 200 consecutive mainnet blocks (25997689 to
-25997888, September 17, 2026, 14:04 to 14:44 UTC), every successful transaction
-that emitted at least one pool-level swap event (Uniswap v2 and its forks, v3,
-v4, Curve) was counted by the number of such events it contains:
+**Pools per swap, measured.** Over 1,000 consecutive mainnet blocks (25997046
+to 25998045, September 17, 2026, 11:55 to 15:16 UTC), every successful
+transaction that emitted at least one pool-level swap event was counted by the
+number of such events it contains. The event set covers Uniswap v2 and its
+forks, v3, v4, PancakeSwap v3, Curve, Balancer v2 and v3, Maverick v1 and v2,
+Fluid, DODO, Bancor (v2.1, v3, Carbon) and Ekubo itself:
 
 | Pools touched in the transaction | Share of swap transactions |
 | -------------------------------- | -------------------------- |
-| 1                                | 71.5%                      |
-| 2                                | 15.6%                      |
-| 3                                | 6.2%                       |
-| 4 or more                        | 6.6%                       |
+| 1                                | 72.1%                      |
+| 2                                | 14.8%                      |
+| 3                                | 6.3%                       |
+| 4 or more                        | 6.9%                       |
 
-That is 5,341 swap transactions at an average of **1.66 pools per swap**. The
-subset sent directly to the Uniswap and 1inch routers (470 transactions, hop
-counts decoded from calldata and matched against their events in every case)
-averages only 1.11 pools, so most multi-pool weight comes from aggregators, MEV
-and other contracts rather than from retail router calls. Failed transactions
-emit no logs and are excluded by construction. Method, tables and script are in
-`benchmarks/`.
+That is 32,417 swap transactions at an average of **1.68 pools per swap**,
+confirming the 1.66 measured earlier over a 200-block window with only the
+Uniswap and Curve families. The subset sent directly to the Uniswap and 1inch
+routers (4,432 transactions, hop counts decoded from calldata and matched
+against their events in all but 25 cases) averages 1.28 pools, so most
+multi-pool weight comes from aggregators, MEV and other contracts rather than
+from retail router calls. Failed transactions emit no logs and are excluded by
+construction. Method, tables and script are in `benchmarks/`.
 
 A swap's transaction gas at an average of _p_ pools is the one-pool lab route
 plus (_p_ − 1) times the marginal per extra pool, plus 21,000. The measured
@@ -78,8 +81,8 @@ kept as context:
 
 | Average pools per swap | Ekubo       | Uniswap v4 | Uniswap v3 (net) | Ekubo saving vs v4 / v3 |
 | ---------------------- | ----------- | ---------- | ---------------- | ----------------------- |
-| **1.66 (measured)**    | **131,958** | 150,974    | 153,652          | **12.6% / 14.1%**       |
-| 1.11 (routers only)    | 118,504     | 132,022    | 121,324          | 10.2% / 2.3%            |
+| **1.68 (measured)**    | **132,475** | 151,703    | 154,894          | **12.7% / 14.5%**       |
+| 1.28 (routers only)    | 122,822     | 138,104    | 131,699          | 11.1% / 6.7%            |
 | 1.0                    | 115,904     | 128,360    | 115,078          | 9.7% / −0.7%            |
 | 1.5                    | 128,119     | 145,566    | 144,426          | 12.0% / 11.3%           |
 | 2.0                    | 140,333     | 162,771    | 173,774          | 13.8% / 19.2%           |
@@ -90,8 +93,8 @@ router contracts accounted for about 4.2% of that burn, a lower bound because
 router-address attribution misses swaps routed through aggregators, MEV bundles,
 and direct pool calls. Ultrasound's coarser "defi" category, which includes
 lending and everything else, was 19.4% over the same window and brackets it from
-above. In the 200-block window above, the transactions that emitted a pool swap
-event used 30.3% of all gas, which confirms the router figure is a floor. A
+above. In the 1,000-block window above, the transactions that emitted a pool
+swap event used 32.7% of all gas, which confirms the router figure is a floor. A
 third, higher share of 70% is included below because it was stipulated for this
 page as an "all AMM trading" upside case; it is an assumption handed to the
 analysis, not a measurement.
@@ -102,16 +105,16 @@ that slice to Ekubo would free the share times the saving. Each cell is the
 range spanned by the saving against v3 and the saving against v4 (the two
 savings are in the column header, v3 first):
 
-| Block-space share given to swaps                  | Fork single hop (v3 11.7%, v4 14.2%) | Measured 1.66 pools (v3 14.1%, v4 12.6%) | 2.0 pools (v3 19.2%, v4 13.8%) |
+| Block-space share given to swaps                  | Fork single hop (v3 11.7%, v4 14.2%) | Measured 1.68 pools (v3 14.5%, v4 12.7%) | 2.0 pools (v3 19.2%, v4 13.8%) |
 | ------------------------------------------------- | ------------------------------------ | ---------------------------------------- | ------------------------------ |
 | 4.2%, measured DEX-router burn, lower bound       | 0.5–0.6%                             | 0.5–0.6%                                 | 0.6–0.8%                       |
-| 19.4%, "defi" category bracket                    | 2.3–2.8%                             | 2.4–2.7%                                 | 2.7–3.7%                       |
-| 70%, stipulated AMM-trading upside (not measured) | 8.2–10.0%                            | 8.8–9.9%                                 | 9.7–13.5%                      |
+| 19.4%, "defi" category bracket                    | 2.3–2.8%                             | 2.5–2.8%                                 | 2.7–3.7%                       |
+| 70%, stipulated AMM-trading upside (not measured) | 8.2–10.0%                            | 8.9–10.1%                                | 9.7–13.5%                      |
 
 At the measured blend and the measured lower bound, Ekubo frees about half a
 percent of block gas chain-wide; at the stipulated 70% share it would be
-roughly nine percent. Induced demand would fill freed space. Read these as an
-order of magnitude, not a forecast.
+roughly nine to ten percent. Induced demand would fill freed space. Read these
+as an order of magnitude, not a forecast.
 
 ## Why it is cheaper
 
@@ -151,9 +154,12 @@ v4 hook or Ekubo extension changes every number here.
   measurement. Both swap directions covered.
 - Minimal routers on all sides, which favors Uniswap: production routers cost
   more than the lab numbers.
-- Pools per swap: 200 mainnet blocks read through a public JSON-RPC endpoint
+- Pools per swap: 1,000 mainnet blocks read through a public JSON-RPC endpoint
   (block receipts for the event count, full blocks for the router calldata
   cross-check). Uniswap v2 and all its forks share one event signature and are
-  counted as one family.
+  counted as one family; Ekubo swaps are counted from Core's topic-less swap
+  log. Not counted: order-book and RFQ fills (CoW, UniswapX, 1inch and Kyber
+  limit orders, 0x RFQ) unless they land in a pool, the legacy Ekubo v2 core,
+  and long-tail AMMs outside the listed families.
 - Full harness sources, raw snapshots, reference calldata, flamegraphs, pool
   identifiers, and reproduction commands: `benchmarks/` in the docs repository.

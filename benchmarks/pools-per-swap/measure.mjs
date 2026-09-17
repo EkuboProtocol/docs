@@ -5,10 +5,11 @@
 // JSON-RPC endpoint (no Dune / indexer needed):
 //
 //   1. receipts  — eth_getBlockReceipts per block. Counts pool-level swap events
-//                  per successful transaction (topic0 in the families below). This
-//                  covers every flow: routers, aggregators, MEV bundles, direct
-//                  pool calls. Logs exist only for successful transactions, so
-//                  failed fills are excluded by construction.
+//                  per successful transaction (topic0 in the families below, plus
+//                  Ekubo Core's topic-less 116-byte swap log). This covers every
+//                  flow: routers, aggregators, MEV bundles, direct pool calls. Logs
+//                  exist only for successful transactions, so failed fills are
+//                  excluded by construction.
 //   2. calldata  — eth_getBlockByNumber(full txs). For transactions sent to the
 //                  verified router contracts below, decodes the hop count from the
 //                  calldata (Universal Router commands, SwapRouter02 / SwapRouter
@@ -28,20 +29,75 @@ const RPC = args.rpc ?? "https://ethereum-rpc.publicnode.com";
 const BLOCKS = Number(args.blocks ?? 200);
 const OUT = args.out ?? "results.json";
 
-// Event signatures. Hashes were produced with `cast keccak` (Foundry 1.8.3), not memorized.
+// Event signatures. Every signature was read from the protocol's own source (repo path in
+// the comment) and hashed with `cast keccak` (Foundry 1.8.3); none is memorized.
 const FAMILIES = {
-  // Swap(address,address,int256,int256,uint160,uint128,int24)
+  // Uniswap v3-core IUniswapV3PoolEvents: Swap(address,address,int256,int256,uint160,uint128,int24).
+  // Shared by SushiSwap v3 and KyberSwap Elastic (identical parameter types), so those land here too.
   "0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67": "univ3",
-  // Swap(address,uint256,uint256,uint256,uint256,address) — Uniswap v2 and every fork (Sushi, PancakeSwap v2, ...)
+  // Uniswap v2-core: Swap(address,uint256,uint256,uint256,uint256,address) — v2 and every fork (Sushi, PancakeSwap v2, Fraxswap, ...)
   "0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822":
     "univ2-family",
-  // TokenExchange(address,int128,uint256,int128,uint256)
+  // curvefi/stableswap-ng CurveStableSwapNG.vy (and the classic plain/meta pools): TokenExchange(address,int128,uint256,int128,uint256)
   "0x8b3e96f2b889fa771c53c981b40daf005f63f637f1869f707052d15a3dd97140": "curve",
-  // TokenExchangeUnderlying(address,int128,uint256,int128,uint256)
+  // same, TokenExchangeUnderlying(address,int128,uint256,int128,uint256)
   "0xd013ca23e77a65003c2c659c5442c00c805371b7fc1ebd4c206c41d1536bd90b": "curve",
-  // Swap(bytes32,address,int128,int128,uint160,uint128,int24,uint24) — Uniswap v4 PoolManager
+  // curvefi/curve-crypto-contract CurveCryptoSwap2ETH.vy (crypto v2 pools): TokenExchange(address,uint256,uint256,uint256,uint256)
+  "0xb2e76ae99761dc136e598d4a629bb347eccb9532a5f8bbd72e18467c3c34cc98": "curve",
+  // curvefi/tricrypto-ng CurveTricryptoOptimizedWETH.vy and twocrypto-ng Twocrypto.vy:
+  // TokenExchange(address,uint256,uint256,uint256,uint256,uint256,uint256)
+  "0x143f1f8e861fbdeddd5b46e844b7d3ac7b86a122f36e8c463859ee6811b1f29c": "curve",
+  // Uniswap v4-core IPoolManager: Swap(bytes32,address,int128,int128,uint160,uint128,int24,uint24)
   "0x40e9cecb9f5f1f1c5b9c97dec2917b7ee92e57ba5563708daca94dd84ad7112f": "univ4",
+  // balancer-v2-monorepo pkg/interfaces/contracts/vault/IVault.sol: Swap(bytes32,address,address,uint256,uint256)
+  "0x2170c741c41531aec20e7c107c24eecfdd15e69c9bb0a8dd37b1840b9e0b207b":
+    "balancer-v2",
+  // balancer-v3-monorepo pkg/interfaces/contracts/vault/IVaultEvents.sol:
+  // Swap(address,address,address,uint256,uint256,uint256,uint256)
+  "0x0874b2d545cb271cdbda4e093020c452328b24af12382ed62c4d00f5c26709db":
+    "balancer-v3",
+  // maverickprotocol/maverick-v1-interfaces IPool.sol: Swap(address,address,bool,bool,uint256,uint256,int32)
+  "0x3b841dc9ab51e3104bda4f61b41e4271192d22cd19da5ee6e292dc8e2744f713":
+    "maverick-v1",
+  // maverickprotocol/v2-common IMaverickV2Pool.sol: PoolSwap(address,address,SwapParams,uint256,uint256)
+  // with SwapParams = (uint256 amount, bool tokenAIn, bool exactOutput, int32 tickLimit)
+  "0x103ed084e94a44c8f5f6ba8e3011507c41063177e29949083c439777d8d63f60":
+    "maverick-v2",
+  // pancakeswap/pancake-v3-contracts IPancakeV3PoolEvents.sol:
+  // Swap(address,address,int256,int256,uint160,uint128,int24,uint128,uint128) — differs from v3 by the two protocol-fee words
+  "0x19b47279256b2a23a1665c810c8d55a1758940ee09377d4f8d26497a3577dc83":
+    "pancake-v3",
+  // DODOEX/contractV2 DVMTrader.sol / DPPTrader.sol / DSPTrader.sol: DODOSwap(address,address,uint256,uint256,address,address)
+  "0xc2c0245e056d5fb095f04cd6373bc770802ebd1e6c918eb78fdef843cdb37b0f": "dodo",
+  // DODOEX/dodo-smart-contract Trader.sol (v1): SellBaseToken(address,uint256,uint256)
+  "0xd8648b6ac54162763c86fd54bf2005af8ecd2f9cb273a5775921fd7f91e17b2d": "dodo",
+  // same (v1): BuyBaseToken(address,uint256,uint256)
+  "0xe93ad76094f247c0dafc1c61adc2187de1ac2738f7a3b49cb20b2263420251a3": "dodo",
+  // bancorprotocol/contracts-v3 BancorNetwork.sol:
+  // TokensTraded(bytes32,address,address,uint256,uint256,uint256,uint256,uint256,address), one per hop
+  "0x5c02c2bb2d1d082317eb23916ca27b3e7c294398b60061a2ad54f1c3c018c318":
+    "bancor-v3",
+  // bancorprotocol/carbon-contracts Strategies.sol: TokensTraded(address,address,address,uint256,uint256,uint128,bool)
+  "0x95f3b01351225fea0e69a46f68b164c9dea10284f12cd4a907ce66510ab7af6a":
+    "bancor-carbon",
+  // bancorprotocol/contracts-solidity converter/interfaces/IConverter.sol (v2.1 converters):
+  // Conversion(address,address,address,uint256,uint256,int256)
+  "0x276856b36cbc45526a0ba64f44611557a2a8b68662c5388e9fe6d72e86e1c8cb":
+    "bancor-v2",
+  // Instadapp/fluid-contracts-public protocols/dex/poolT1/coreModule/events.sol: Swap(bool,uint256,uint256,address)
+  "0xdc004dbca4ef9c966218431ee5d9133d337ad018dd5b5c5493722803f75c64f7": "fluid",
+  // aerodrome-finance/contracts IPool.sol (Solidly-style pairs: Aerodrome, Velodrome, Solidly forks):
+  // Swap(address,address,uint256,uint256,uint256,uint256) — a different topic from the v2 family
+  "0xb3e2773606abfd36b5bd91394b3a54d1398336c65005baf7bf7a05efeffaf75b":
+    "solidly-style",
 };
+
+// Ekubo Core emits its swap record with `log0` (no topics) and exactly 116 bytes of data:
+// 20-byte locker, 32-byte poolId, 32-byte balance update, 32-byte pool state
+// (EkuboProtocol/evm-contracts v3.2.0 src/Core.sol, `log0(o, 116)`). Every other Core
+// event is a normal topic-carrying `emit`, so "zero topics + 116 bytes from Core" is exact.
+const EKUBO_CORE = "0x00000000000014aa86c5d3c41765bb24e11bd701";
+const EKUBO_SWAP_DATA_HEX_LEN = 2 + 116 * 2;
 
 // Router contracts. Each address is verified at startup: the deployed bytecode must
 // contain the 4-byte selectors listed (a memorized address that fails this check aborts the run).
@@ -75,6 +131,22 @@ const ROUTERS = {
     name: "1inch AggregationRouter v6",
     kind: "oneinch",
     selectors: ["07ed2379", "83800a8e"],
+  },
+  // Third Universal Router deployment seen as a top gas consumer in the window; Sourcify
+  // full-matches it to UniswapRouter contracts/UniversalRouter.sol.
+  "0x4c82d1fbfe28c977cbb58d8c7ff8fcf9f70a2cca": {
+    name: "Universal Router (2026 deployment)",
+    kind: "ur",
+    selectors: ["3593564c"],
+  },
+  // Ekubo's production Yul router has no ABI selectors (calldata is packed route data),
+  // so it is verified by the Core address embedded in its bytecode instead. Hop counts are
+  // not decoded from its calldata; Ekubo pools are counted from Core's own swap logs.
+  "0x7b2aa7ecc0b5936b7c52e6259a19c3ba557d0748": {
+    name: "Ekubo Yul router",
+    kind: "ekubo-yul",
+    selectors: [],
+    bytecodeContains: [EKUBO_CORE.slice(2)],
   },
 };
 
@@ -281,6 +353,7 @@ function decodeOneInch(input) {
 
 function decodeRouterTx(kind, input) {
   try {
+    if (kind === "ekubo-yul") return "opaque"; // packed route calldata, not decoded here
     if (kind === "ur") return decodeUR(input);
     if (kind === "sr02" || kind === "sr") return decodeSwapRouter(input);
     if (kind === "v2r") return decodeV2Router(input);
@@ -298,12 +371,15 @@ const fromBlock = toBlock - BLOCKS + 1;
 
 for (const [addr, r] of Object.entries(ROUTERS)) {
   const code = await rpc("eth_getCode", [addr, "latest"]);
-  for (const s of r.selectors) {
+  for (const s of [...r.selectors, ...(r.bytecodeContains ?? [])]) {
     if (!code.includes(s))
-      throw new Error(`${r.name} at ${addr}: bytecode lacks selector ${s}`);
+      throw new Error(`${r.name} at ${addr}: bytecode lacks ${s}`);
   }
   r.codeBytes = (code.length - 2) / 2;
 }
+const ekuboCoreCodeBytes =
+  ((await rpc("eth_getCode", [EKUBO_CORE, "latest"])).length - 2) / 2;
+if (!ekuboCoreCodeBytes) throw new Error("Ekubo Core has no code");
 
 const receipts = {
   txs: 0,
@@ -313,6 +389,9 @@ const receipts = {
   gasUsedSwapTxs: 0n,
   gasUsedAll: 0n,
   sumPools: 0,
+  ekuboCoreOtherTopiclessLogs: 0, // sanity: Core topic-less logs that are not 116 bytes (expected 0)
+  allTxs: 0,
+  successfulTxs: 0,
 };
 const calldata = {
   txs: 0,
@@ -327,7 +406,13 @@ const calldata = {
 };
 const bump = (h, k) => (h[k] = (h[k] ?? 0) + 1);
 const fam = (name) =>
-  (receipts.perFamily[name] ??= { txs: 0, events: 0, poolsInThoseTxs: 0 });
+  (receipts.perFamily[name] ??= {
+    txs: 0,
+    events: 0,
+    poolsInThoseTxs: 0,
+    gas: 0n,
+    emitters: {},
+  });
 const routerStat = (name) =>
   (calldata.perRouter[name] ??= {
     txs: 0,
@@ -336,6 +421,8 @@ const routerStat = (name) =>
     opaque: 0,
     undecoded: 0,
     failed: 0,
+    crossCheck: { compared: 0, equal: 0, calldataLower: 0, calldataHigher: 0 },
+    mismatchSamples: [],
   });
 
 let firstTs, lastTs;
@@ -345,14 +432,26 @@ let next = 0;
 // Count pool-level swap events in one receipt; returns { counts by family, total }.
 function swapEventsIn(receipt) {
   const counts = {};
+  const emitters = {};
   let total = 0;
   for (const log of receipt.logs) {
-    const f = FAMILIES[log.topics[0]];
-    if (!f) continue;
+    let f;
+    if (log.topics.length === 0) {
+      if (log.address.toLowerCase() !== EKUBO_CORE) continue;
+      if (log.data.length !== EKUBO_SWAP_DATA_HEX_LEN) {
+        receipts.ekuboCoreOtherTopiclessLogs++;
+        continue;
+      }
+      f = "ekubo";
+    } else {
+      f = FAMILIES[log.topics[0]];
+      if (!f) continue;
+    }
     counts[f] = (counts[f] ?? 0) + 1;
+    (emitters[f] ??= {})[log.address.toLowerCase()] = 1;
     total++;
   }
-  return { counts, total };
+  return { counts, emitters, total };
 }
 
 // Measurement 1: tally one block's receipts. Returns tx hash -> pool count for the cross-check.
@@ -360,7 +459,9 @@ function tallyReceipts(rcpts) {
   const eventPools = new Map();
   for (const r of rcpts) {
     receipts.gasUsedAll += BigInt(r.gasUsed);
-    const { counts, total } = swapEventsIn(r);
+    receipts.allTxs++;
+    if (r.status === "0x1") receipts.successfulTxs++;
+    const { counts, emitters, total } = swapEventsIn(r);
     if (!total) continue;
     if (r.status !== "0x1") {
       receipts.failedSwapTxs++; // cannot happen (failed txs emit no logs) — kept as a sanity counter
@@ -376,18 +477,23 @@ function tallyReceipts(rcpts) {
       s.txs++;
       s.events += c;
       s.poolsInThoseTxs += total;
+      s.gas += BigInt(r.gasUsed);
+      for (const a of Object.keys(emitters[f])) bump(s.emitters, a);
     }
   }
   return eventPools;
 }
 
-function crossCheck(n, ev) {
+function crossCheck(n, ev, rs, hash) {
   if (ev == null) return;
-  const cc = calldata.crossCheck;
-  cc.compared++;
-  if (ev === n) cc.equal++;
-  else if (n < ev) cc.calldataLower++;
-  else cc.calldataHigher++;
+  for (const cc of [calldata.crossCheck, rs.crossCheck]) {
+    cc.compared++;
+    if (ev === n) cc.equal++;
+    else if (n < ev) cc.calldataLower++;
+    else cc.calldataHigher++;
+  }
+  if (ev !== n && rs.mismatchSamples.length < 5)
+    rs.mismatchSamples.push({ hash, calldata: n, events: ev });
 }
 
 // Measurement 2: one successful transaction sent to a verified router.
@@ -414,7 +520,7 @@ function tallyRouterTx(router, tx, eventPools) {
   rs.txs++;
   rs.sumPools += n;
   bump(rs.hist, Math.min(n, 4));
-  crossCheck(n, eventPools.get(tx.hash));
+  crossCheck(n, eventPools.get(tx.hash), rs, tx.hash);
 }
 
 function tallyBlock(block, rcpts) {
@@ -447,7 +553,7 @@ async function worker() {
     if (bn === fromBlock) firstTs = ts;
     if (bn === toBlock) lastTs = ts;
     tallyBlock(block, rcpts);
-    if ((bn - fromBlock) % 25 === 0)
+    if ((bn - fromBlock) % 50 === 0)
       process.stderr.write(`block ${bn} (${bn - fromBlock + 1}/${BLOCKS})\n`);
   }
 }
@@ -475,6 +581,12 @@ const out = {
   },
   rpcCalls,
   families: FAMILIES,
+  ekuboCore: {
+    address: EKUBO_CORE,
+    codeBytes: ekuboCoreCodeBytes,
+    swapLog:
+      "log0, no topics, 116 bytes of data (locker, poolId, balanceUpdate, stateAfter)",
+  },
   routers: Object.fromEntries(
     Object.entries(ROUTERS).map(([a, r]) => [
       a,
@@ -482,6 +594,7 @@ const out = {
         name: r.name,
         kind: r.kind,
         verifiedSelectors: r.selectors,
+        verifiedBytecodeContains: r.bytecodeContains ?? [],
         codeBytes: r.codeBytes,
       },
     ]),
@@ -490,21 +603,38 @@ const out = {
     method:
       "eth_getBlockReceipts; successful txs with >=1 pool-level swap event; pools = number of such events in the tx",
     swapTxs: receipts.txs,
+    sumPools: receipts.sumPools,
     failedSwapTxsSeen: receipts.failedSwapTxs,
     avgPoolsPerSwapTx: +(receipts.sumPools / receipts.txs).toFixed(3),
     histogram: histShare(receipts.hist, receipts.txs),
+    ekuboCoreOtherTopiclessLogs: receipts.ekuboCoreOtherTopiclessLogs,
+    allTxs: receipts.allTxs,
+    successfulTxs: receipts.successfulTxs,
     perFamily: Object.fromEntries(
-      Object.entries(receipts.perFamily).map(([f, s]) => [
-        f,
-        {
-          txs: s.txs,
-          events: s.events,
-          avgEventsOfThisFamilyPerTx: +(s.events / s.txs).toFixed(3),
-          avgTotalPoolsPerTxTouchingFamily: +(
-            s.poolsInThoseTxs / s.txs
-          ).toFixed(3),
-        },
-      ]),
+      Object.entries(receipts.perFamily)
+        .sort((a, b) => b[1].txs - a[1].txs)
+        .map(([f, s]) => [
+          f,
+          {
+            txs: s.txs,
+            events: s.events,
+            avgEventsOfThisFamilyPerTx: +(s.events / s.txs).toFixed(3),
+            avgTotalPoolsPerTxTouchingFamily: +(
+              s.poolsInThoseTxs / s.txs
+            ).toFixed(3),
+            gasOfTxsTouchingFamily: s.gas.toString(),
+            // distinct emitting contracts and the busiest ones (txs in which each emitted)
+            emitters: Object.keys(s.emitters).length,
+            topEmitters: Object.fromEntries(
+              Object.entries(s.emitters)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5),
+            ),
+          },
+        ]),
+    ),
+    familiesWithNoEvents: [...new Set(Object.values(FAMILIES)), "ekubo"].filter(
+      (f) => !receipts.perFamily[f],
     ),
     gasShare: {
       swapTxGas: receipts.gasUsedSwapTxs.toString(),
@@ -516,6 +646,7 @@ const out = {
     method:
       "eth_getBlockByNumber(full); successful txs to the verified routers; pools decoded from calldata",
     decodedTxs: calldata.txs,
+    sumPools: calldata.sumPools,
     avgPoolsPerSwapTx: +(calldata.sumPools / calldata.txs).toFixed(3),
     histogram: histShare(calldata.hist, calldata.txs),
     opaqueTxs: calldata.opaque,
@@ -535,6 +666,8 @@ const out = {
           opaque: s.opaque,
           undecoded: s.undecoded,
           failed: s.failed,
+          crossCheckAgainstReceipts: s.crossCheck,
+          mismatchSamples: s.mismatchSamples,
         },
       ]),
     ),
