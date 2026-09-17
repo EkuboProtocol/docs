@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Ekubo Quoter API",
-    "version": "3.4.1",
+    "version": "3.4.4",
     "description": "Returns block-pinned split routes for exact-input and exact-output Ekubo Protocol swaps. Resolve token addresses and decimals through the Ekubo API token list before requesting a quote. All token amounts are base-unit decimal strings.",
     "contact": {
       "url": "https://ekubo.org",
@@ -160,6 +160,9 @@
             "$ref": "#/components/responses/Error"
           },
           "500": {
+            "$ref": "#/components/responses/Error"
+          },
+          "503": {
             "$ref": "#/components/responses/Error"
           }
         }

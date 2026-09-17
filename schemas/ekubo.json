@@ -2751,6 +2751,15 @@
                           },
                           "close": {
                             "type": "number"
+                          },
+                          "volume0": {
+                            "type": "string"
+                          },
+                          "volume1": {
+                            "type": "string"
+                          },
+                          "swap_count": {
+                            "type": "integer"
                           }
                         },
                         "required": [
