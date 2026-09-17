@@ -19,10 +19,11 @@ Two bases appear on this page and are never mixed inside one sentence:
   The post-Pectra calldata floor (EIP-7623) was checked and does not bind on any
   transaction here.
 
-Two conditions also recur. **Steady state** means the pool has already been
-swapped through: one identical, unmeasured swap precedes the measured one, so
-the figure is what an established pool charges. **First swap in a fresh pool**
-means no swap has touched the pool since it was capitalized in setup.
+Every figure is a **steady state** measurement: the pool has already been used,
+one identical, unmeasured call precedes the measured one, so the figure is what
+an established pool charges. One-time costs (pool creation, tick initialization,
+the first swap's accumulator write) are excluded by design; every mint row is a
+subsequent mint into already-initialized ticks.
 
 Lab figures use a 0.3% concentrated-liquidity pool with one position covering the
 whole tick space and no extension or hook, exact-input swaps of one 18-decimal
@@ -55,14 +56,10 @@ the one-pool route in the next section, 94,078 gas. Against that, Ekubo's
 single swap is 7.1% cheaper; against the unreachable floor, the two are within
 0.3% of each other.
 
-**First swap in a fresh pool.** Without the warm-up swap, Ekubo measures 87,384
-(32 gas below steady state), v4 120,633 and v3 104,741: exactly 17,100 more on
-both Uniswap versions, one zero-to-nonzero write of the fee-growth accumulator
-(20,000 gas instead of 2,900). State-diff recording confirms one fresh slot on
-v3 and v4 and none on Ekubo, whose `initializePool` writes both fee accumulator
-slots up front (see [Creating a pool](#creating-a-pool)). Ekubo's native-input
-first swap measures 72,560 against 72,580 in steady state. Reverse-direction
-first swaps were not measured.
+One excluded one-time cost, disclosed because it favors Ekubo: the very first
+swap in a fresh pool measures 87,384 on Ekubo, 120,633 on v4 and 104,741 on v3,
+a 17,100 surcharge on both Uniswap versions for the fee accumulator's
+zero-to-nonzero write, which Ekubo's pool initialization pre-pays.
 
 **v3's oracle write.** A v3 swap that changes the tick also writes an oracle
 observation, at most once per block. The same tick-changing swap costs 89,836
@@ -100,9 +97,8 @@ because each added hop hits an identically shaped pool with its own token
 contracts. At one pool the three are close: Ekubo's multihop entry is 11.6%
 below v4 and 0.9% above v3's route, which is nothing more than two transfers and
 one pool call. At three pools Ekubo is 18.4% below v4 and 32.0% below v3 net
-(42.8% below v3 gross). A real route's first hop pays the first-swap surcharge
-from the previous section on v4 and v3 if its pool is fresh; the marginals here
-are the right measure for the hops after it.
+(42.8% below v3 gross). The marginals are the right measure for every hop after
+the first.
 
 The v3 refund is 19,900 per intermediate hop: the router's balance of each
 intermediate token goes from zero to nonzero and back to zero inside the
@@ -158,8 +154,7 @@ moved into the settlement row. Three observations:
 - **The pool core is where Ekubo wins.** One packed storage word and Q64
   fixed-point math cost about 20k per swap, against 29k for v4's multi-slot state
   with protocol-fee and donation bookkeeping, and about 37k for v3's slot0,
-  fee-growth, and tick bookkeeping. On a first swap in a fresh pool the two
-  Uniswap cores each cost 17,100 more.
+  fee-growth, and tick bookkeeping.
 - **Settlement is a wash between Ekubo and v4.** Flash-accounting settlement
   costs about 38k on both (two transfers of about 12.5k each plus the payment
   and withdrawal accounting); v3 spends less on settlement per pool because it
@@ -174,8 +169,10 @@ moved into the settlement row. Three observations:
 Minting is measured at two tiers. The **user-facing tier** is what a liquidity
 provider actually sends: a mint through each protocol's production position
 manager, which issues the NFT, pulls the tokens, and calls the core. The **bare
-tier** is a direct core call from a lab harness with no NFT and no manager, a
-path no externally owned account can send on any of the three protocols.
+tier** is a core-level call from a lab harness with no NFT and no manager, a
+path no externally owned account can send on any of the three protocols. Every
+mint on this page is a subsequent mint into initialized boundary ticks; tick
+initialization and pool creation are one-time costs and are excluded.
 
 **User-facing tier, mainnet fork.** A new full-range position of about 10,000
 USDC and 10,000 USDT on the same live USDC/USDT pools as the
@@ -184,62 +181,95 @@ deployed Ekubo Positions contract, the deployed Uniswap v4 PositionManager
 (`MINT_POSITION` plus `SETTLE_PAIR`, tokens pulled through Permit2), and the
 deployed Uniswap v3 NonfungiblePositionManager. Execution gas of the measured
 mint. One identical, unmeasured mint of a separate NFT precedes it, so on every
-leg the boundary ticks are initialized and the minter already owns an NFT; the
-second row instead mints a range whose two boundary ticks no position uses,
-after the same warm-up, so it includes tick initialization:
+leg the boundary ticks are initialized and the minter already owns an NFT:
 
 | Mint on mainnet fork                             | Ekubo Positions | Uniswap v4 PositionManager | Uniswap v3 NonfungiblePositionManager |
 | ------------------------------------------------ | --------------- | -------------------------- | ------------------------------------- |
 | New position, boundary ticks already initialized | **244,513**     | 297,390                    | 381,653                               |
-| New position, both boundary ticks fresh          | **369,791**     | 376,984                    | 522,450                               |
 
 At the tier users touch, Ekubo's mint uses 17.8% less execution gas than v4's
-and 35.9% less than v3's. Fresh boundary ticks narrow the gap: initializing two
-ticks costs 125,278 on Ekubo, 79,594 on v4 and 140,797 on v3, so with both
-ticks fresh Ekubo is 1.9% below v4 and 29.2% below v3. Every leg's mint is
-proven by state: the NFT is owned by the minter, the position's liquidity is
-recorded (9,996,041,392 on Ekubo, 9,996,510,484 on v4, 9,996,546,576 on v3),
-the pool's active liquidity grows by that amount, and the minter's USDC and USDT
-balances fall by the amounts pulled (about 9,992–9,993 USDC and exactly 10,000
-USDT on each). The fork figures are not comparable to the lab table below: they
-run against the real USDC proxy and USDT contracts instead of the shared mock
-token, and pull tokens through each manager's own path.
+and 35.9% less than v3's. Every leg's mint is proven by state: the NFT is owned
+by the minter, the position's liquidity is recorded (9,996,041,392 on Ekubo,
+9,996,510,484 on v4, 9,996,546,576 on v3), the pool's active liquidity grows by
+that amount, and the minter's USDC and USDT balances fall by the amounts pulled
+(about 9,992–9,993 USDC and exactly 10,000 USDT on each). The fork figures are
+not comparable to the lab table below: they run against the real USDC proxy and
+USDT contracts instead of the shared mock token, and pull tokens through each
+manager's own path.
 
 **Bare tier, lab.** An economically matched full-range position (1M tokens a
-side) as a new position whose boundary ticks are already initialized, direct to
-the core on each protocol. Execution gas; the v3 rows earn a 2,800 refund, so
-gross figures are shown:
+side) as a new position whose boundary ticks are already initialized, at core
+level on each protocol. Execution gas; the v3 rows earn a 2,800 refund, so gross
+figures are shown. The three totals are not the same tier, which the rest of
+this section quantifies: the Ekubo and v4 figures are lock-mediated (a minimal
+locker takes the lock, calls the core, and settles), while the v3 figure is a
+direct `pool.mint` from the test contract, which pays the callback itself, with
+no lock and no router:
 
-| Mint path, lab                                 | Ekubo   | Uniswap v4 | Uniswap v3, net (gross, refund) |
-| ---------------------------------------------- | ------- | ---------- | ------------------------------- |
-| New position, bare / direct to core            | 179,020 | 162,188    | **138,380** (141,180, 2,800)    |
-| Top-up of an existing position, direct         | —       | —          | 121,496 (124,296, 2,800)        |
-| New position through the Positions NFT (Ekubo) | 213,104 | —          | —                               |
+| Mint path, lab                                       | Ekubo   | Uniswap v4 | Uniswap v3, net (gross, refund) |
+| ---------------------------------------------------- | ------- | ---------- | ------------------------------- |
+| New position, minimal locker (Ekubo, v4)             | 179,020 | 162,188    | —                               |
+| New position, direct `pool.mint`, no lock (v3)       | —       | —          | **138,380** (141,180, 2,800)    |
+| Top-up of an existing position, direct, no lock (v3) | —       | —          | 121,496 (124,296, 2,800)        |
+| New position through the Positions NFT (Ekubo)       | 213,104 | —          | —                               |
 
-The bare tier is the one place Ekubo is not cheapest: its bare mint costs 10.4%
-more than v4's and 29.4% more than a new v3 position (26.8% more against v3
-gross). The v3 top-up row is cheaper still because the position's slots are
-already nonzero; it is not a new position and has no counterpart above. In the
-lab, Ekubo's Positions NFT adds 34,084 (19%) over the bare path for the token
-mint, metadata, and protocol-fee accounting. The ordering reverses between the
-two tiers: bare, v3 is cheapest and Ekubo dearest; through the production
-managers, Ekubo is cheapest and v3 dearest. Core is optimized for the operation
-that happens orders of magnitude more often, and the Positions contract is thin
-enough that the whole user path is the cheapest of the three.
+Reading the call frames off the `-vvvv` trace of each measured call splits the
+totals into the core's state update, token settlement, and the plumbing around
+them:
 
-## Creating a pool
+| Component                                            | Ekubo, minimal locker (179,020)          | Uniswap v4, minimal locker (162,188)        | Uniswap v3 direct (138,380 net, 141,180 gross)   |
+| ---------------------------------------------------- | ---------------------------------------- | ------------------------------------------- | ------------------------------------------------ |
+| Core state update (position, ticks, pool liquidity)  | `Core.updatePosition`: **106,407** (59%) | `PoolManager.modifyLiquidity`: 63,358 (39%) | Pool internals: 108,185 net, 110,985 gross (78%) |
+| Settlement (two token pulls plus payment accounting) | 41,140 (23%)                             | 29,998 (18%)                                | 30,195 (22%)                                     |
+| Lock or unlock, router, and callback plumbing        | 31,473 (18%)                             | 68,832 (42%)                                | 0 (no lock, no router)                           |
 
-Initializing a pool once, execution gas:
+The settlement rows are exact frame sums: Ekubo pays each token with
+`startPayments` (5,914), `transferFrom` (12,602) and `completePayments` (2,054);
+v4 with `sync` (1,898), `transferFrom` (10,602) and `settle` (2,499); v3 runs
+one callback (24,095, two transfers of 10,452 plus token lookups) and four
+balance checks (6,100). The v3 pool internals are the `mint` frame minus those,
+and the 2,800 refund is the pool's own reentrancy flag being restored, so it
+belongs to that row. The v4 locker is v4-core's `PoolModifyLiquidityTest`, which
+reads pool state, balances and deltas around its call; that reading warms three
+pool-state slots before the core runs, so about 6,000 of what would otherwise be
+core cost sits in v4's plumbing row.
 
-| Operation                   | Ekubo  | Uniswap v4 | Uniswap v3                                                        |
-| --------------------------- | ------ | ---------- | ----------------------------------------------------------------- |
-| Initialize an existing pool | 92,935 | 51,812     | 70,328 (plus `createPool`: 4,558,970 to deploy the pool contract) |
+Two conclusions follow. First, the v3 total is a lower tier: the lock-mediated
+paths carry 31,473 (Ekubo) and 68,832 (v4) of plumbing the v3 direct call does
+not, and on the core frame alone Ekubo is 1.6% below v3 net (4.1% below gross)
+while v4 is 40% below Ekubo. Second, and this is the exception on this page,
+Ekubo's core frame is not the cheapest in this measurement, and its bare total
+is 10.4% above v4's and 29.4% above v3's direct call (26.8% against gross).
 
-Ekubo's `initializePool` is 41,123 gas more than v4's `initialize` because it
-writes both fee-per-liquidity accumulator slots from zero at creation (two
-20,000-gas writes); that is exactly what spares every Ekubo pool the 17,100-gas
-first-swap surcharge that v4 and v3 pay. v3 pools are separate contracts, so
-creating one costs 4.63 million gas in total.
+The reason is a property of the lab pool, not of the position code. Both
+Uniswap cores store two fee-growth snapshots per position, and nothing has been
+swapped in the lab pool before the mint, so a new position writes zero over zero
+into both (100 gas each). In a pool that has traded in both directions the
+accumulators are nonzero and the same mint pays two zero-to-nonzero writes.
+Ekubo's `initializePool` sets both accumulators nonzero at creation (Core's
+source says why: so that the first swap or deposit costs the same as any other),
+so an Ekubo position snapshot costs the same in every pool. A probe run on the
+same harnesses for this page, identical except for one unmeasured swap in each
+direction before the warm-up mint (not part of the committed snapshots),
+measures Ekubo 179,020 with the core frame unchanged at 106,407; v4 201,988 with
+the core frame at 103,158 (both up 39,800); v3 178,224 net, 181,024 gross (up
+39,844), pool internals 147,985 net. In that condition Ekubo's bare total is
+11.4% below v4's and within 0.4% of v3's direct call net (1.1% below gross)
+while still paying the lock and router plumbing v3 skips, and Ekubo's core frame
+is 28% below v3's and within 3.1% of v4's raw frame (below it once v4's 6,000 of
+pre-warming is counted). So the exception, stated exactly: in the committed lab
+condition, a never-swapped pool, Ekubo's bare mint is the dearest of the three;
+in a traded pool only v3's lock-free direct call, which no account can send
+without a contract of its own, stays marginally cheaper than Ekubo's
+lock-mediated mint.
+
+The v3 top-up row is cheaper still because the position's slots are already
+nonzero; it is not a new position and has no counterpart above. In the lab,
+Ekubo's Positions NFT adds 34,084 (19%) over the bare path for the token mint,
+metadata, and protocol-fee accounting. Through the production managers, the
+tier users touch, Ekubo is cheapest and v3 dearest: Core is optimized for the
+operation that happens orders of magnitude more often, and the Positions
+contract is thin enough that the whole user path is the cheapest of the three.
 
 ## Mainnet-fork validation
 
@@ -330,32 +360,56 @@ floor for these transactions is about 24,000–29,000 gas in total (21,000 plus
 ## What this means for chain capacity
 
 Mainnet's block gas limit is 60 million (59,999,943 at the fork block 25991868
-and unchanged at block 25994835 on September 17, 2026). Dividing the limit by
-the transaction gas of the fork swaps gives each protocol's ceiling on
-single-hop swaps per block if a block held nothing else:
+and unchanged at block 25994835 on September 17, 2026). Real swap flow is
+routes, not single pools: a router or aggregator transaction commonly crosses
+two or three pools, and every extra pool costs Ekubo 24,429 against v4's 34,411
+and v3's 58,696 net, so the per-transaction gap widens with route length. The
+first ceiling below is the measured production single hop on the fork,
+transaction gas as computed above. The route ceilings divide the limit by the
+[lab route totals](#how-the-gap-scales-with-route-length) plus the 21,000 base;
+calldata is omitted there because only the single-swap routers have a reference
+file, and it would add 1–3k per transaction, under 2% of any column:
 
-| Basis: 1000 USDT fork swap, transaction gas | Ekubo   | Uniswap v3 | Uniswap v4 |
-| ------------------------------------------- | ------- | ---------- | ---------- |
-| Gas per swap                                | 133,750 | 151,515    | 155,960    |
-| Swaps per 60M block                         | **448** | 396        | 384        |
+| Routes per 60M block, if a block held nothing else | Ekubo             | Uniswap v4    | Uniswap v3 (net) |
+| -------------------------------------------------- | ----------------- | ------------- | ---------------- |
+| 1 pool, fork single hop, transaction gas           | 133,750 → **448** | 155,960 → 384 | 151,515 → 396    |
+| 1 pool, lab route + 21,000                         | 115,904 → **517** | 128,360 → 467 | 115,078 → 521    |
+| 2 pools, lab route + 21,000                        | 140,333 → **427** | 162,771 → 368 | 173,774 → 345    |
+| 3 pools, lab route + 21,000                        | 164,774 → **364** | 197,182 → 304 | 232,470 → 258    |
 
-The chain-wide effect depends on how much block space swaps take. Over the 30
-days ending September 17, 2026, mainnet burned 1,255.7 ETH of base fees
-(ultrasound.money); transactions to known DEX router contracts accounted for
-about 4.2% of that burn, a lower bound because router-address attribution misses
-swaps routed through aggregators, MEV bundles, and direct pool calls. Dune was
-unavailable to re-derive that share; ultrasound's coarser "defi" category, which
-includes lending and everything else, was 19.4% over the same window and
-brackets it from above.
+At one pool the three protocols are within 12% of each other and v3's lab route
+is marginally the cheapest; at three pools an Ekubo block holds 20% more routes
+than a v4 block and 41% more than a v3 block.
+
+How much this matters chain-wide depends on the average number of pools a swap
+touches and on how much block space swaps take. No published figure for pools
+per swap was found for this page (a Uniswap or aggregator statistic was sought;
+Dune was not used), so the blend below is a sensitivity, not an estimate: a
+swap's transaction gas at an average of _p_ pools is the one-pool lab route plus
+(_p_ − 1) times the marginal per extra pool, plus 21,000:
+
+| Average pools per swap | Ekubo   | Uniswap v4 | Uniswap v3 (net) | Ekubo saving vs v4 / v3 |
+| ---------------------- | ------- | ---------- | ---------------- | ----------------------- |
+| 1.0                    | 115,904 | 128,360    | 115,078          | 9.7% / −0.7%            |
+| 1.5                    | 128,119 | 145,566    | 144,426          | 12.0% / 11.3%           |
+| 2.0                    | 140,333 | 162,771    | 173,774          | 13.8% / 19.2%           |
+
+For the block-space share: over the 30 days ending September 17, 2026, mainnet
+burned 1,255.7 ETH of base fees (ultrasound.money); transactions to known DEX
+router contracts accounted for about 4.2% of that burn, a lower bound because
+router-address attribution misses swaps routed through aggregators, MEV bundles,
+and direct pool calls. Dune was unavailable to re-derive that share; ultrasound's
+coarser "defi" category, which includes lending and everything else, was 19.4%
+over the same window and brackets it from above.
 
 Scenario math, with the assumptions stated: if a swap's share of the burn equals
-its share of gas, every such swap is a single hop like the fork swaps, and the
-per-transaction saving above (11.7% against v3, 14.2% against v4) applies to
-all of them, moving the DEX-router slice to Ekubo would free about 0.5–0.6% of
-block gas chain-wide at the 4.2% lower bound, and 2.3–2.8% if the whole "defi"
-slice behaved like swaps. Multi-pool routes save more per transaction (18.4%
-against v4 and 32.0% against v3 at three pools), and induced demand would fill
-freed space. Read these as an order of magnitude, not a forecast.
+its share of gas and the per-transaction saving applies to all of it, moving the
+DEX-router slice to Ekubo would free, at the 4.2% lower bound, about 0.5–0.6% of
+block gas chain-wide on the fork single-hop savings (11.7% against v3, 14.2%
+against v4), 0.5% at an average of 1.5 pools per swap, and 0.6–0.8% at 2 pools;
+if the whole "defi" slice behaved like swaps, 2.3–2.8% on single hops, 2.2–2.3%
+at 1.5 pools and 2.7–3.7% at 2 pools. Induced demand would fill freed space.
+Read these as an order of magnitude, not a forecast.
 
 ## Methodology and limitations
 
@@ -368,8 +422,11 @@ freed space. Read these as an order of magnitude, not a forecast.
   execution gas. It excludes the 21,000 base and calldata: the non-isolated
   flamegraph frame for the same call matches the isolated snapshot to the gas
   unit. Transaction gas on this page is computed, never measured.
-- **Headline basis.** Single swaps and routes are steady state, with a first-swap
-  note where the difference matters (Ekubo about the same, v4 and v3 +17,100).
+- **Headline basis.** Every figure is steady state. One-time initialization
+  costs (pool creation, tick initialization, the first swap's accumulator write)
+  are excluded by design, and every mint row is a subsequent mint into
+  initialized ticks; the harnesses record those one-time costs, and the page
+  discloses the first-swap one in a single line because it favors Ekubo.
   `vm.cool` was checked while building the harnesses and changed no figure; no
   committed test uses it. Switching the v3 and v4 harnesses from Cancun to Osaka
   changes none of their swap figures.

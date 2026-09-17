@@ -84,10 +84,22 @@ both fee-per-liquidity slots up front, so its first swap costs the same as any o
 - Mints are new positions with both boundary ticks already initialized (different salt
   on Ekubo and v4, different owner on v3); v3 also records adding to an existing position
   (`test_gas_mint_samePosition`, 121,496 net). Every v3 mint earns a 2,800 refund.
-- Pool initialization (`test_gas_initializePool`): Ekubo `initializePool` 92,935, v4
-  `initialize` 51,812, v3 `initialize` 70,328 plus `createPool` 4,558,970 (v3 deploys a
-  pool contract). Ekubo's extra cost over v4 is the two fee-accumulator slots it
-  pre-writes.
+- Pool initialization (`test_gas_initializePool`) is recorded in each harness's snapshot
+  file but is a one-time cost and is excluded from the docs page by design, as is every
+  cold-tick mint variant; the page's mint rows are subsequent mints into initialized
+  ticks only. Ekubo's `initializePool` pre-writes the two fee-accumulator slots (value 1),
+  which is why its first swap and its position snapshots cost the same in every pool.
+- Mint attribution for the docs page's component table comes from `-vvvv` traces of the
+  measured mint call: Ekubo `Core.updatePosition` 106,407, settlement 2 × (5,914 +
+  12,602 + 2,054) = 41,140, plumbing 31,473; v4 `PoolManager.modifyLiquidity` 63,358,
+  settlement 2 × (1,898 + 10,602 + 2,499) = 29,998, plumbing 68,832 (v4-core's
+  `PoolModifyLiquidityTest`, which also reads pool state, balances and deltas); v3 `mint`
+  frame 141,180 gross minus the callback (24,095) and four balance checks (6,100) =
+  110,985 gross pool internals, 108,185 net of the 2,800 refund. A one-off probe (not in
+  the committed snapshots) that swaps once in each direction before the warm-up mint
+  measures Ekubo 179,020 (unchanged), v4 201,988 (`modifyLiquidity` 103,158), v3 178,224
+  net / 181,024 gross: the Uniswap position fee-growth snapshots go zero-to-nonzero in a
+  traded pool, +39,800 each.
 - `Flame.t.sol` files capture one steady-state call for the flamegraphs; their router
   call frames equal the corresponding snapshots (Ekubo Router single 87,416, v4 minimal
   locker single 103,533, v3 1-pool route 94,078). The root frame of each SVG also
@@ -167,7 +179,8 @@ snapshot is the execution gas of the measured call.
   the first NFT for the minter. A second test per leg (`*_coldBoundaryTicks`) mints, after
   the same full-range warm-up, a range whose two boundary ticks are asserted
   uninitialized (`±500001` on Uniswap, `±88722750` on Ekubo) and asserted initialized
-  afterwards.
+  afterwards; its figures, like the warm-up figures, are one-time initialization costs,
+  recorded in the snapshot files but excluded from the docs page by design.
 - Proof of execution, asserted after the measured mint: `ownerOf(id)` is the minter, the
   manager's recorded position liquidity equals the returned liquidity (Ekubo
   `getPositionFeesAndLiquidity`, v4 `getPositionLiquidity`, v3 `positions`), the pool's
@@ -183,11 +196,11 @@ snapshot is the execution gas of the measured call.
   Core's packed state at that slot is asserted initialized; the v4 pool id is re-derived
   from the key and asserted equal to the swap leg's id.
 
-| Leg (execution gas)                | Measured (warm, ticks initialized) | Cold boundary ticks | First mint (warm-up) | Liquidity     | Amount0 USDC  | Amount1 USDT   |
-| ---------------------------------- | ---------------------------------- | ------------------- | -------------------- | ------------- | ------------- | -------------- |
-| Ekubo Positions `mintAndDeposit`   | 244,513                            | 369,791             | 420,636 (cold ticks) | 9,996,041,392 | 9,992,084,352 | 10,000,000,000 |
-| v4 PositionManager `MINT_POSITION` | 297,390                            | 376,984             | 314,490              | 9,996,510,484 | 9,993,022,187 | 10,000,000,000 |
-| v3 NPM `mint`                      | 381,653                            | 522,450             | 416,642              | 9,996,546,576 | 9,993,094,345 | 10,000,000,000 |
+| Leg (execution gas)                | Measured (warm, ticks initialized) | Liquidity     | Amount0 USDC  | Amount1 USDT   |
+| ---------------------------------- | ---------------------------------- | ------------- | ------------- | -------------- |
+| Ekubo Positions `mintAndDeposit`   | 244,513                            | 9,996,041,392 | 9,992,084,352 | 10,000,000,000 |
+| v4 PositionManager `MINT_POSITION` | 297,390                            | 9,996,510,484 | 9,993,022,187 | 10,000,000,000 |
+| v3 NPM `mint`                      | 381,653                            | 9,996,546,576 | 9,993,094,345 | 10,000,000,000 |
 
 Ekubo tokenId `25083100237766864067710388918595849694396003226932398993912489470024538291565`
 (salt-derived), v4 tokenId 405710, v3 tokenId 1365900. The Ekubo figures are not
