@@ -1,0 +1,9 @@
+{
+  "fork v3 NPM mint USDC/USDT fee-100, cold boundary ticks": "522450",
+  "fork v3 NPM mint amount0 (USDC, 6 decimals)": "9993094345",
+  "fork v3 NPM mint amount1 (USDT, 6 decimals)": "10000000000",
+  "fork v3 NPM mint full-range USDC/USDT fee-100 (first, warm-up)": "416642",
+  "fork v3 NPM mint full-range USDC/USDT fee-100 (measured)": "381653",
+  "fork v3 NPM mint liquidity": "9996546576",
+  "fork v3 NPM mint tokenId": "1365900"
+}

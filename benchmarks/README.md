@@ -13,8 +13,10 @@ measures code and architecture rather than compiler tuning.
 - `lab/MockERC20.json` — the single shared token artifact deployed via `deployCode`
   in all three lab harnesses, so ERC20 transfer costs cannot skew the comparison
 - `fork/` — mainnet-fork validation at pinned block `25991868`
-  (`ForkEkuboReal.t.sol`, `ForkV3.t.sol`, `ForkV4.t.sol`, `ForkProbe.t.sol` for the
-  pool identifiers, `calldata-*.hex` reference calldata, `encode-yul-route.mjs`)
+  (`ForkEkuboReal.t.sol`, `ForkV3.t.sol`, `ForkV4.t.sol` for swaps;
+  `ForkMintEkubo.t.sol`, `ForkMintV3.t.sol`, `ForkMintV4.t.sol` for mints through the
+  production position managers; `ForkProbe.t.sol` for the pool identifiers;
+  `calldata-*.hex` reference calldata, `encode-yul-route.mjs`)
 
 `*.json` files next to each harness are the raw `snapshots/` output of a full run of
 that test contract. `remappings.txt` files contain the original absolute paths and will
@@ -130,6 +132,68 @@ Uniswap's). The v4 key with `hooks = address(0)` is confirmed initialized (nonze
 - WETH: one `deposit` in steady state (the account already holds WETH), 27,938: what a
   v3 user pays to wrap ETH before a native-input swap (`test_fork_weth_deposit`).
 
+### Fork mints through the production position managers
+
+`ForkMintEkubo.t.sol`, `ForkMintV4.t.sol` and `ForkMintV3.t.sol` mint a new full-range
+position on the same three pools through each protocol's deployed position manager, the
+path a liquidity provider actually sends. Same block, same `isolate` discipline; the
+snapshot is the execution gas of the measured call.
+
+- Position: each pool's widest range aligned to its tick spacing (Uniswap spacing 1:
+  `-887272..887272`, the full tick range; Ekubo spacing 50: `-88722800..88722800`, the
+  widest multiples of 50 inside `MIN_TICK/MAX_TICK = ±88722835`). Max amounts 10,000
+  USDC and 10,000 USDT (`deal`ed 100,000 of each in setup); the v4 leg passes the
+  liquidity computed from those amounts and the pool's current price
+  (`LiquidityAmounts.getLiquidityForAmounts`), since `MINT_POSITION` takes liquidity, with
+  the same amounts as `amount0Max/amount1Max`. Recipient/owner is the test contract;
+  `deadline = block.timestamp`; no receiver hook is invoked on any leg (plain `_mint`).
+- Payment: Ekubo Positions pulls via `transferFrom` from `msg.sender` (ERC20 approval to
+  Positions); v3 NPM pulls in the pool callback (approval to NPM); v4 PositionManager
+  pulls through Permit2 (ERC20 approval to Permit2 plus a `Permit2.approve` allowance to
+  the manager). All approvals are granted in setup and never measured. USDT returns no
+  returndata, so its approvals are low-level calls.
+- Warm-up: one identical, unmeasured mint first. Every mint creates a new NFT, so the
+  warm-up is a separate position that initializes the boundary ticks if they were cold
+  and makes the minter's NFT balance nonzero; the measured mint is then a new position
+  with initialized boundary ticks, the lab condition. On the Ekubo leg the warm-up uses
+  `mintAndDepositWithSalt` with an explicit salt: `mint()` derives its salt from
+  `prevrandao` and remaining gas, which two identical isolated calls share, so a plain
+  repeat reverts with `TokenAlreadyExists`. The measured Ekubo call is the plain
+  user-facing `mintAndDeposit`. The v4 tokenId is `nextTokenId()` read before the call.
+- Boundary-tick state, checked on-chain before the warm-up: both Uniswap pools already had
+  their full-range ticks initialized (`ticks(...).initialized` on v3,
+  `getTickLiquidity` on v4); the Ekubo pool had no position at `±88722800`
+  (`Core.nextInitializedTick`), so its warm-up figure includes tick initialization and
+  the first NFT for the minter. A second test per leg (`*_coldBoundaryTicks`) mints, after
+  the same full-range warm-up, a range whose two boundary ticks are asserted
+  uninitialized (`±500001` on Uniswap, `±88722750` on Ekubo) and asserted initialized
+  afterwards.
+- Proof of execution, asserted after the measured mint: `ownerOf(id)` is the minter, the
+  manager's recorded position liquidity equals the returned liquidity (Ekubo
+  `getPositionFeesAndLiquidity`, v4 `getPositionLiquidity`, v3 `positions`), the pool's
+  active liquidity equals its value before plus both mints (Ekubo: Core's packed pool
+  word; v4 `getLiquidity`; v3 `liquidity()`), and the minter's USDC and USDT balances fall
+  by exactly the amounts pulled. The v4 leg also asserts the manager already stored this
+  pool key (no first-use pool-key write in the measurement).
+- Manager identity, asserted on the fork: v3 NPM `name()` = `Uniswap V3 Positions NFT-V1`
+  and `factory()` = the v3 factory; v4 PositionManager `name()` =
+  `Uniswap v4 Positions NFT`, `poolManager()` = the PoolManager, `permit2()` = Permit2;
+  Ekubo Positions `name()` = `Ekubo Positions`. The Ekubo pool id is re-derived as
+  `keccak256(abi.encode(USDC, USDT, config))` and asserted equal to the swap leg's id, and
+  Core's packed state at that slot is asserted initialized; the v4 pool id is re-derived
+  from the key and asserted equal to the swap leg's id.
+
+| Leg (execution gas)                | Measured (warm, ticks initialized) | Cold boundary ticks | First mint (warm-up) | Liquidity     | Amount0 USDC  | Amount1 USDT   |
+| ---------------------------------- | ---------------------------------- | ------------------- | -------------------- | ------------- | ------------- | -------------- |
+| Ekubo Positions `mintAndDeposit`   | 244,513                            | 369,791             | 420,636 (cold ticks) | 9,996,041,392 | 9,992,084,352 | 10,000,000,000 |
+| v4 PositionManager `MINT_POSITION` | 297,390                            | 376,984             | 314,490              | 9,996,510,484 | 9,993,022,187 | 10,000,000,000 |
+| v3 NPM `mint`                      | 381,653                            | 522,450             | 416,642              | 9,996,546,576 | 9,993,094,345 | 10,000,000,000 |
+
+Ekubo tokenId `25083100237766864067710388918595849694396003226932398993912489470024538291565`
+(salt-derived), v4 tokenId 405710, v3 tokenId 1365900. The Ekubo figures are not
+comparable to the lab Positions NFT figure (213,104): the fork runs against the real USDC
+proxy and USDT contracts, not the shared mock token.
+
 Calldata reference files (exact byte counts verified by decoding each file):
 
 | Router call                      | File                                   | Bytes | Zero / nonzero | Calldata gas | EIP-7623 floor |
@@ -188,20 +252,36 @@ only the tests that ran.
 ```sh
 forge test --fork-url <mainnet-rpc> --fork-block-number 25991868 \
   --match-contract 'ForkEkuboRealTest|ForkV3Test|ForkV4Test|ForkProbeTest'
+
+# mints through the production position managers (one contract at a time keeps
+# each snapshot file complete; add retries/backoff for rate-limited public RPCs)
+forge test --fork-url <mainnet-archive-rpc> --fork-block-number 25991868 \
+  --fork-retries 10 --fork-retry-backoff 2000 \
+  --match-contract 'ForkMintEkuboTest|ForkMintV3Test|ForkMintV4Test' -vv
 ```
+
+The block needs an archive-capable endpoint. The swap legs were captured through
+`https://ethereum-rpc.publicnode.com` while the block was inside its recent-state window;
+the mint legs were run later against `https://eth-mainnet.public.blastapi.io` (publicnode
+had by then started refusing the block as an archive request). Both serve the same
+canonical state, which the assertions on pool identity, price and manager wiring confirm.
 
 Deployed addresses used (all verified on-chain, none memorized):
 
-| Contract                        | Address                                      |
-| ------------------------------- | -------------------------------------------- |
-| Ekubo Core                      | `0x00000000000014aA86C5d3c41765bb24e11bd701` |
-| Ekubo Yul router (production)   | `0x7B2aA7Ecc0B5936b7C52E6259A19C3BA557d0748` |
-| Uniswap v4 PoolManager          | `0x000000000004444c5dc75cB358380D2e3dE08A90` |
-| Uniswap v3 SwapRouter (classic) | `0xE592427A0AEce92De3Edee1F18E0157C05861564` |
-| Uniswap v3 factory              | `0x1F98431c8aD98523631AE4a59f267346ea31F984` |
-| WETH                            | `0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2` |
-| USDC                            | `0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48` |
-| USDT                            | `0xdAC17F958D2ee523a2206206994597C13D831ec7` |
+| Contract                                                                            | Address                                      |
+| ----------------------------------------------------------------------------------- | -------------------------------------------- |
+| Ekubo Core                                                                          | `0x00000000000014aA86C5d3c41765bb24e11bd701` |
+| Ekubo Yul router (production)                                                       | `0x7B2aA7Ecc0B5936b7C52E6259A19C3BA557d0748` |
+| Uniswap v4 PoolManager                                                              | `0x000000000004444c5dc75cB358380D2e3dE08A90` |
+| Uniswap v3 SwapRouter (classic)                                                     | `0xE592427A0AEce92De3Edee1F18E0157C05861564` |
+| Uniswap v3 factory                                                                  | `0x1F98431c8aD98523631AE4a59f267346ea31F984` |
+| Ekubo Positions (canonical, original generation; docs contracts reference)          | `0x02D9876A21AF7545f8632C3af76eC90b5ad4b66D` |
+| Uniswap v4 PositionManager (docs.uniswap.org/contracts/v4/deployments, Ethereum: 1) | `0xbD216513d74C8cf14cf4747E6AaA6420FF64ee9e` |
+| Permit2                                                                             | `0x000000000022D473030F116dDEE9F6B43aC78BA3` |
+| Uniswap v3 NonfungiblePositionManager                                               | `0xC36442b4a4522E871399CD717aBDD847Ab11FE88` |
+| WETH                                                                                | `0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2` |
+| USDC                                                                                | `0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48` |
+| USDT                                                                                | `0xdAC17F958D2ee523a2206206994597C13D831ec7` |
 
 The v3/v4 fork pools (USDT/USDC fee-100, deepest at the pinned block) were selected by
 on-chain probing (`ForkProbe.t.sol`, which also reads the Ekubo pool state directly from

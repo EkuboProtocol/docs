@@ -1,5 +1,5 @@
 ---
-description: Measured gas costs for Ekubo swaps against Uniswap v4 and v3, with like-for-like benchmarks, scaling analysis, mainnet-fork validation, and chain-capacity implications
+description: Measured gas costs for Ekubo swaps and mints against Uniswap v4 and v3, with like-for-like benchmarks, scaling analysis, mainnet-fork validation through the production routers and position managers, and chain-capacity implications
 title: "Gas efficiency"
 ---
 
@@ -171,28 +171,61 @@ moved into the settlement row. Three observations:
 
 ## Providing liquidity
 
-Providing liquidity is the one measured operation where Ekubo is not the
-cheapest. Minting an economically matched full-range position (1M tokens a side)
-as a new position whose boundary ticks are already initialized, direct to the
-core on each protocol (no NFT, no position manager). Execution gas; the v3 rows
-earn a 2,800 refund, so gross figures are shown:
+Minting is measured at two tiers. The **user-facing tier** is what a liquidity
+provider actually sends: a mint through each protocol's production position
+manager, which issues the NFT, pulls the tokens, and calls the core. The **bare
+tier** is a direct core call from a lab harness with no NFT and no manager, a
+path no externally owned account can send on any of the three protocols.
 
-| Mint path                                                     | Ekubo   | Uniswap v4 | Uniswap v3, net (gross, refund) |
-| ------------------------------------------------------------- | ------- | ---------- | ------------------------------- |
-| New position, bare / direct to core                           | 179,020 | 162,188    | **138,380** (141,180, 2,800)    |
-| Top-up of an existing position, direct                        | —       | —          | 121,496 (124,296, 2,800)        |
-| New position through the Positions NFT (harness-only context) | 213,104 | —          | —                               |
+**User-facing tier, mainnet fork.** A new full-range position of about 10,000
+USDC and 10,000 USDT on the same live USDC/USDT pools as the
+[fork swaps](#mainnet-fork-validation), pinned at block 25991868, through the
+deployed Ekubo Positions contract, the deployed Uniswap v4 PositionManager
+(`MINT_POSITION` plus `SETTLE_PAIR`, tokens pulled through Permit2), and the
+deployed Uniswap v3 NonfungiblePositionManager. Execution gas of the measured
+mint. One identical, unmeasured mint of a separate NFT precedes it, so on every
+leg the boundary ticks are initialized and the minter already owns an NFT; the
+second row instead mints a range whose two boundary ticks no position uses,
+after the same warm-up, so it includes tick initialization:
 
-Ekubo's bare mint costs 10.4% more than v4's and 29.4% more than a new v3
-position (26.8% more against v3 gross). The v3 top-up row is cheaper still
-because the position's slots are already nonzero; it is not a new position and
-has no counterpart above. Ekubo's Positions NFT adds 34,084 (19%) over the bare
-path for the token mint, metadata, and protocol-fee accounting; production
-position managers add overhead on all three protocols, and no v4 or v3 manager
-path was measured, so the NFT row is harness-only context rather than a
-cross-protocol verdict. Cheap swaps and relatively expensive mints are two
-sides of the same design: Core is optimized for the operation that happens
-orders of magnitude more often.
+| Mint on mainnet fork                             | Ekubo Positions | Uniswap v4 PositionManager | Uniswap v3 NonfungiblePositionManager |
+| ------------------------------------------------ | --------------- | -------------------------- | ------------------------------------- |
+| New position, boundary ticks already initialized | **244,513**     | 297,390                    | 381,653                               |
+| New position, both boundary ticks fresh          | **369,791**     | 376,984                    | 522,450                               |
+
+At the tier users touch, Ekubo's mint uses 17.8% less execution gas than v4's
+and 35.9% less than v3's. Fresh boundary ticks narrow the gap: initializing two
+ticks costs 125,278 on Ekubo, 79,594 on v4 and 140,797 on v3, so with both
+ticks fresh Ekubo is 1.9% below v4 and 29.2% below v3. Every leg's mint is
+proven by state: the NFT is owned by the minter, the position's liquidity is
+recorded (9,996,041,392 on Ekubo, 9,996,510,484 on v4, 9,996,546,576 on v3),
+the pool's active liquidity grows by that amount, and the minter's USDC and USDT
+balances fall by the amounts pulled (about 9,992–9,993 USDC and exactly 10,000
+USDT on each). The fork figures are not comparable to the lab table below: they
+run against the real USDC proxy and USDT contracts instead of the shared mock
+token, and pull tokens through each manager's own path.
+
+**Bare tier, lab.** An economically matched full-range position (1M tokens a
+side) as a new position whose boundary ticks are already initialized, direct to
+the core on each protocol. Execution gas; the v3 rows earn a 2,800 refund, so
+gross figures are shown:
+
+| Mint path, lab                                 | Ekubo   | Uniswap v4 | Uniswap v3, net (gross, refund) |
+| ---------------------------------------------- | ------- | ---------- | ------------------------------- |
+| New position, bare / direct to core            | 179,020 | 162,188    | **138,380** (141,180, 2,800)    |
+| Top-up of an existing position, direct         | —       | —          | 121,496 (124,296, 2,800)        |
+| New position through the Positions NFT (Ekubo) | 213,104 | —          | —                               |
+
+The bare tier is the one place Ekubo is not cheapest: its bare mint costs 10.4%
+more than v4's and 29.4% more than a new v3 position (26.8% more against v3
+gross). The v3 top-up row is cheaper still because the position's slots are
+already nonzero; it is not a new position and has no counterpart above. In the
+lab, Ekubo's Positions NFT adds 34,084 (19%) over the bare path for the token
+mint, metadata, and protocol-fee accounting. The ordering reverses between the
+two tiers: bare, v3 is cheapest and Ekubo dearest; through the production
+managers, Ekubo is cheapest and v3 dearest. Core is optimized for the operation
+that happens orders of magnitude more often, and the Positions contract is thin
+enough that the whole user path is the cheapest of the three.
 
 ## Creating a pool
 
@@ -248,6 +281,14 @@ zero-to-nonzero balance or allowance write. Fee tiers differ across venues,
 which does not change the code path. USDT returns no data from `approve` and
 `transferFrom`, so the v4 locker settles with low-level calls, as production
 routers do.
+
+The same three pools carry the user-facing mint comparison in
+[Providing liquidity](#providing-liquidity), through the deployed Ekubo
+Positions contract (`0x02D9876A21AF7545f8632C3af76eC90b5ad4b66D`), the v4
+PositionManager (`0xbD216513d74C8cf14cf4747E6AaA6420FF64ee9e`, the canonical
+mainnet deployment listed by Uniswap, verified on the fork by its `poolManager`
+and `permit2` wiring) and the v3 NonfungiblePositionManager
+(`0xC36442b4a4522E871399CD717aBDD847Ab11FE88`).
 
 ## Calldata: the production routers
 
@@ -346,13 +387,19 @@ freed space. Read these as an order of magnitude, not a forecast.
   production routers (Universal Router, SwapRouter, and Ekubo's own frontend
   path) all cost more than the lab numbers. Ekubo is additionally measured
   through its production Solidity `Router`; the v3 direct pool call is a floor
-  an externally owned account cannot send.
+  an externally owned account cannot send. Mints are the exception: the
+  user-facing tier goes through each protocol's deployed production position
+  manager on the fork, with the one-time token approvals (and, for v4, the
+  Permit2 allowance) granted in setup and not measured.
 - **Scope.** No-crossing swaps on hookless, extensionless pools: any v4 hook or
   Ekubo extension changes every number on this page, while pool configuration
   (fee, tick spacing) barely moves them. Both swap directions are covered.
 - **Fork.** Pinned block 25991868, production contracts and live pools
   identified by on-chain probing, warmed as in the lab, negligible tick
-  movement. Fee tiers differ across venues.
+  movement. Fee tiers differ across venues. Fork mints use each pool's widest
+  spacing-aligned range (tick spacing 1 on both Uniswap pools, 50 on Ekubo), so
+  the three positions are not identical in liquidity, only in size; mints do
+  not move price.
 
 The complete harnesses, raw snapshots, reference calldata, flamegraphs, and
 reproduction commands live in `benchmarks/` alongside these docs.
