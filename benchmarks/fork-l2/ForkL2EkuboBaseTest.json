@@ -1,0 +1,14 @@
+{
+  "fork-l2 base ekubo Yul router 100 USDC->WETH fresh pool": "105084",
+  "fork-l2 base ekubo Yul router 100 USDC->WETH fresh pool | Ekubo fine ticks moved (1/100 of a Uniswap tick)": "0",
+  "fork-l2 base ekubo Yul router 1000 USDC->WETH fresh pool": "105096",
+  "fork-l2 base ekubo Yul router 1000 USDC->WETH fresh pool | Ekubo fine ticks moved (1/100 of a Uniswap tick)": "1",
+  "fork-l2 base ekubo Yul router 50 USDC->WETH fresh pool": "105096",
+  "fork-l2 base ekubo Yul router 50 USDC->WETH fresh pool | Ekubo fine ticks moved (1/100 of a Uniswap tick)": "0",
+  "fork-l2 base ekubo calldata bytes 100 USDC": "184",
+  "fork-l2 base ekubo calldata bytes 1000 USDC": "184",
+  "fork-l2 base ekubo calldata bytes 50 USDC": "184",
+  "fork-l2 base ekubo output 100 USDC->WETH (wei)": "40448346569108551",
+  "fork-l2 base ekubo output 1000 USDC->WETH (wei)": "404482873373385029",
+  "fork-l2 base ekubo output 50 USDC->WETH (wei)": "20224174929883199"
+}

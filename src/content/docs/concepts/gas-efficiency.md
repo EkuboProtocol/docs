@@ -26,6 +26,43 @@ Ekubo's transaction costs 11.7% less than v3's and 14.2% less than v4's. Output
 matched the production quoter within 0.02% on the Ekubo leg, and all three legs
 receive essentially the same output, so the gap is pure overhead, not price.
 
+## On Base and Arbitrum
+
+L2 fees have two parts: cheap L2 execution, and a separate charge for the L1
+data the sequencer posts. Both were measured on Base (block 51439900) and
+Arbitrum One (block 506178800) for a 100 USDC to WETH swap through each
+protocol's deployed contracts on the deepest live Uniswap WETH/USDC pool of each
+chain. No live Ekubo pool on either chain could absorb the swap, so the Ekubo
+leg runs on a pool created on the fork with the same price, fee tier and
+liquidity as the v3 pool, through the production Yul router. The L1 data
+component is what each chain's own fee oracle charges for the exact
+transaction, converted to gas at the block's L2 base fee:
+
+| Chain    | Leg (100 USDC to WETH)     | Execution gas | Calldata bytes | L1 data (gas-equivalent) | Total, incl. 21,000 base and calldata gas |
+| -------- | -------------------------- | ------------- | -------------- | ------------------------ | ----------------------------------------- |
+| Base     | Ekubo, Yul router          | **105,084**   | 184            | 331                      | **128,171**                               |
+| Base     | Uniswap v3, SwapRouter02   | 121,803       | 228            | 319                      | 144,646                                   |
+| Base     | Uniswap v4, minimal locker | 126,959       | 292            | 367                      | 150,694                                   |
+| Arbitrum | Ekubo, Yul router          | **113,121**   | 184            | 561                      | **136,870**                               |
+| Arbitrum | Uniswap v3, SwapRouter     | 130,896       | 260            | 603                      | 154,415                                   |
+| Arbitrum | Uniswap v4, minimal locker | 135,006       | 292            | 644                      | 159,234                                   |
+
+The mainnet pattern carries over almost unchanged. Ekubo's execution gas is
+13.7% below v3 and 17.2% below v4 on Base, 13.6% and 16.2% on Arbitrum,
+against 14.0% and 16.4% on the mainnet fork; the whole transaction is 11.4%
+and 14.9% cheaper on Base and 11.4% and 14.0% on Arbitrum. Execution gaps do
+not compress on L2s, because both chains run the same EVM at the same opcode
+prices.
+
+The data component does not decide anything at these blocks: it is 0.2% to
+0.4% of every leg, and on Base it is not even smallest for Ekubo. Base prices
+data by estimated compressed size, and the dense 184-byte route compresses
+worse than Uniswap's zero-padded 228 bytes (331 against 319 gas-equivalent);
+Arbitrum's compressor favors the shorter route, by 42 gas. Compact calldata
+buys nothing measurable on either chain while L1 data is this cheap; the saving
+is in execution. Pools, block hashes, endpoints, oracle readings and formulas
+are in `benchmarks/`.
+
 ## Throughput per block
 
 Mainnet's block gas limit is 60 million. Real swap flow is routes, not single
@@ -154,6 +191,10 @@ v4 hook or Ekubo extension changes every number here.
   measurement. Both swap directions covered.
 - Minimal routers on all sides, which favors Uniswap: production routers cost
   more than the lab numbers.
+- L2s: Base and Arbitrum One forks pinned by block, deployed Uniswap routers
+  and pools, the deployed Ekubo Yul router on a fresh pool mirroring the v3
+  pool; L1 data read from each chain's fee oracle for the exact calldata, not
+  modeled.
 - Pools per swap: 1,000 mainnet blocks read through a public JSON-RPC endpoint
   (block receipts for the event count, full blocks for the router calldata
   cross-check). Uniswap v2 and all its forks share one event signature and are

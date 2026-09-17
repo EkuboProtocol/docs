@@ -19,6 +19,11 @@ measures code and architecture rather than compiler tuning.
   `ForkMintEkubo.t.sol`, `ForkMintV3.t.sol`, `ForkMintV4.t.sol` for mints through the
   production position managers; `ForkProbe.t.sol` for the pool identifiers;
   `calldata-*.hex` reference calldata, `encode-yul-route.mjs`)
+- `fork-l2/` — Base and Arbitrum One fork swaps (`ForkL2Ekubo.t.sol`, `ForkL2V3.t.sol`,
+  `ForkL2V4.t.sol`, one snapshot JSON per test contract, `calldata/*.hex` with the exact
+  bytes of every measured call, `encode-l2-routes.mjs` for the SDK routes,
+  `l1-data-cost.mjs` and its raw output `l1-data-cost.json` for the L1 data component,
+  `quote-live-base.mjs`); see "L2 fork methodology" below
 
 `*.json` files next to each harness are the raw `snapshots/` output of a full run of
 that test contract. `remappings.txt` files contain the original absolute paths and will
@@ -479,6 +484,234 @@ before being quoted as a long-run figure. The event set now covers every AMM fam
 found among the window's gas consumers; what remains uncounted is listed under "Not
 counted" above, so a transaction whose only swap is an order-book fill, a legacy Ekubo
 v2 swap, or a long-tail AMM is not counted.
+
+## L2 fork methodology (Base, Arbitrum One)
+
+Same discipline as the mainnet fork (pinned block, one identical unmeasured warm-up swap,
+every measured call isolated, snapshot = execution gas of the measured call net of refunds,
+excluding the 21,000 base and calldata), on two L2s whose fee structure differs from
+mainnet: cheap L2 execution plus a separate charge for the L1 data the sequencer posts.
+Harness, snapshots, exact calldata and the fee-oracle readings are in `fork-l2/`.
+
+### Deployment check
+
+Chain IDs and code presence were read from the public RPCs before anything was pinned
+(`cast chain-id`, `cast code`, September 17, 2026). Both chains answer `8453` and `42161`
+respectively. Every address below has code on both chains at the pinned blocks; nothing
+listed here was taken from memory.
+
+| Contract                                                 | Base (8453)                                  | Arbitrum One (42161)                         | Source                                  |
+| -------------------------------------------------------- | -------------------------------------------- | -------------------------------------------- | --------------------------------------- |
+| Ekubo Core                                               | `0x00000000000014aA86C5d3c41765bb24e11bd701` | same                                         | docs `reference/contracts/evm-v3`       |
+| Ekubo Yul router (production, v0.7.1)                    | `0x7B2aA7Ecc0B5936b7C52E6259A19C3BA557d0748` | same                                         | `yul-router/broadcast/deployments.json` |
+| Ekubo Positions (original generation, canonical on both) | `0x02D9876A21AF7545f8632C3af76eC90b5ad4b66D` | same                                         | docs `reference/contracts/evm-v3`       |
+| Ekubo Positions (192-bit generation, also deployed)      | `0xA2971E0C37cFdb13aE8440A0C94Ef1A1af39e326` | same                                         | docs `reference/contracts/evm-v3`       |
+| Ekubo CoreDataFetcher / QuoteDataFetcher                 | `0xF68F25CA…` / `0x5a3F0F1d…`                | same                                         | docs `reference/contracts/evm-v3`       |
+| Uniswap v3 factory                                       | `0x33128a8fC17869897dcE68Ed026d694621f6FDfD` | `0x1F98431c8aD98523631AE4a59f267346ea31F984` | docs.uniswap.org v3 deployments         |
+| Uniswap v3 SwapRouter (classic)                          | not listed by Uniswap for Base               | `0xE592427A0AEce92De3Edee1F18E0157C05861564` | docs.uniswap.org v3 deployments         |
+| Uniswap v3 SwapRouter02                                  | `0x2626664c2603336E57B271c5C0b26F421741e481` | `0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45` | docs.uniswap.org v3 deployments         |
+| Uniswap v4 PoolManager                                   | `0x498581fF718922c3f8e6A244956aF099B2652b2b` | `0x360E68faCcca8cA495c1B759Fd9EEe466db9FB32` | docs.uniswap.org v4 deployments         |
+| Uniswap v4 StateView                                     | `0xA3c0c9b65baD0b08107Aa264b0f3dB444b867A71` | `0x76Fd297e2D437cd7f76d50F01AfE6160f86e9990` | docs.uniswap.org v4 deployments         |
+| WETH                                                     | `0x4200000000000000000000000000000000000006` | `0x82aF49447D8a07e3bd95BD0d56f35241523fBab1` | `symbol()`/`decimals()` read on-chain   |
+| USDC (native)                                            | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | `0xaf88d065e77c8cC2239327C5EDb3A432268e5831` | `symbol()`/`decimals()` read on-chain   |
+| USDT (Base) / USD₮0 (Arbitrum)                           | `0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2` | `0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9` | `symbol()`/`decimals()` read on-chain   |
+
+The mainnet Ekubo `Router` (Solidity) has no listed L2 address in the docs (it is
+deployment-specific), so the Ekubo leg is the Yul router only, which is also what the
+mainnet headline uses. The address `0xE592427A…` on Base holds 4,221 bytes of unrelated
+code and is not the Uniswap SwapRouter; Base's v3 leg therefore goes through SwapRouter02
+(`exactInputSingle` without the `deadline` field, 228 bytes of calldata against 260). On
+Arbitrum the classic SwapRouter is used for parity with mainnet and SwapRouter02 is
+recorded as well (`ForkL2V3ArbitrumRouter02Test`).
+
+### Endpoints and blocks
+
+`https://base-rpc.publicnode.com` and `https://arbitrum-rpc.publicnode.com` served the chain
+IDs, heads and code checks but refuse any historical state with `Archive requests require
+a personal token` (Base already about 1,000 blocks behind head, Arbitrum at 100 blocks), so
+the forks, the pool probes and the fee-oracle reads ran against
+`https://base-mainnet.public.blastapi.io` and `https://arbitrum-one.public.blastapi.io`.
+The L1-fee readings were cross-checked against `https://mainnet.base.org` and
+`https://arb1.arbitrum.io/rpc` (identical to the wei, `l1-data-cost.json`).
+
+| Chain        | Block       | Hash          | Timestamp                   | L2 base fee (wei) | Note                                                                         |
+| ------------ | ----------- | ------------- | --------------------------- | ----------------- | ---------------------------------------------------------------------------- |
+| Base         | `51439900`  | `0x54e5275d…` | 1789669147 (2026-09-17 UTC) | 5,000,000         | L1 origin block 25998943; Jovian active (`isJovian()` true)                  |
+| Arbitrum One | `506178800` | `0x24768c22…` | 1789669181 (2026-09-17 UTC) | 20,074,000        | L1 block 25998959; `block.number` on the fork is that L1 number (Nitro rule) |
+
+Because Foundry reports Arbitrum's `block.number` as the L1 block, the harness pins the
+block by timestamp on both chains. Foundry 1.8.3 also selects its `optimism` network family
+for chain 8453, and that family disables `CLZ` (EIP-7939) even at `evm_version = "osaka"`:
+every Ekubo swap reverted with `NotActivated` until the Base run was given
+`--network ethereum`. The opcode is live on the real chain (a Yul-router `quote` against the
+live Base ETH/USDC pool executes through `eth_call`, `quote-live-base.mjs`), so the flag
+restores the chain's actual EVM; it changes no opcode gas. Uniswap legs measure the same with
+or without it.
+
+### Pair choice: WETH/USDC, fresh Ekubo pool
+
+The rule was USDC/USDT on a live Ekubo pool, else WETH/USDC with real Uniswap pools and a
+freshly capitalized Ekubo pool. Neither chain has a live Ekubo pool that can absorb the
+swap at the pinned blocks:
+
+- Ekubo's own quoter (`prod-api-quoter.ekubo.org`) returns 107 USDC for 1000 USDT on Base
+  (two USDC/USDT pools, both far off-price and near-empty) and `insufficient_liquidity`
+  for every other pair tried on Base and for every pair on Arbitrum, including 10 USDC.
+- The Ekubo API's `poolKeys` and `overview/tvl` for the two chains show total Core balances
+  of about 0.002 ETH, 120 USDC and 120 USDT on Base and 0.002 ETH, 6,634 USDC (plus ARB)
+  on Arbitrum. The one populated Base ETH/USDC pool (fee 0.05%, spacing 1000, liquidity
+  1,498,307,833,298) would move tens of Uniswap ticks on a 100 USDC swap.
+
+So the Ekubo leg on each chain is a pool created on the fork in the test's setup:
+concentrated, no extension, the deepest live v3 WETH/USDC pool's fee tier and 100x its
+tick spacing, initialized at the fine tick matching that pool's `sqrtPriceX96`, and
+capitalized through a bare locker (`BareMintRouter`, never measured) with **exactly that
+v3 pool's active liquidity** in a single position spanning ±60,000 fine ticks (about ±6%
+in price). Both tokens are the real WETH and USDC contracts of the chain; Core already held
+a nonzero balance of each before setup (2 wei of WETH and the USDC above), and holds the
+minted amounts afterwards, so no measured swap pays a zero-to-nonzero balance write. The
+Yul router calldata is generated by the SDK (`encode-l2-routes.mjs`) with the same config
+word the test asserts against `createConcentratedPoolConfig`; the bytes the test sent are
+written to `calldata/ekubo-yul-*.hex` and equal the SDK output (case-insensitive hex).
+
+| Chain    | Leg           | Pool                                                                                  | Fee   | Spacing | Liquidity at block         | Tick at block |
+| -------- | ------------- | ------------------------------------------------------------------------------------- | ----- | ------- | -------------------------- | ------------- |
+| Base     | Ekubo (fresh) | id `keccak(WETH, USDC, 0x…c49ba5e353f7ce80001770)`, fee `55340232221128654 / 2^64`    | 0.3%  | 6000    | 37,026,042,371,903,555,946 | -19821136     |
+| Base     | v3            | `0x6c561B446416E1A00E8E93E221854d6eA4171372` (deepest of 100/500/3000/10000)          | 0.3%  | 60      | 37,026,042,371,903,555,946 | -198222       |
+| Base     | v4            | id `0x1d8c55f3…5a718f54`, hooks `address(0)` (deepest hookless of 100/500/3000/10000) | 0.3%  | 60      | 31,809,972,076,514,118     | -198217       |
+| Arbitrum | Ekubo (fresh) | id `keccak(WETH, USDC, 0x…20c49ba5e353f7800003e8)`, fee `9223372036854775 / 2^64`     | 0.05% | 1000    | 3,696,581,650,313,474,097  | -19822971     |
+| Arbitrum | v3            | `0xC6962004f452bE9203591991D15f6b388e09E8D0` (deepest of 100/500/3000/10000)          | 0.05% | 10      | 3,696,581,650,313,474,097  | -198240       |
+| Arbitrum | v4            | id `0xfc7b3ad1…57028653`, hooks `address(0)` (deepest hookless of 100/500/3000/10000) | 0.05% | 10      | 52,128,164,974,525,471     | -198242       |
+
+Other v3/v4 tiers probed at the pinned blocks (`getPool` + `liquidity()`, StateView
+`getLiquidity`): Base v3 100/500/10000 = 7.68e16 / 1.48e18 / 6.15e16, v4 WETH/USDC
+100/500/10000 = 0 / 3.72e14 / 0; Arbitrum v3 100/500/3000/10000 = 5.63e16 / 3.70e18 /
+4.81e17 / 6.28e15, v4 WETH/USDC 100/3000/10000 = 5e9 / 1.64e11 / 0. The native
+ETH/USDC v4 pools are deeper on both chains (8.14e17 at 0.3% on Base, 4.08e17 at 0.05% on
+Arbitrum) but are a different pair (native ETH settlement) and were not used. The v4 pools
+on both chains carry a nonzero protocol fee (`protocolFee` 2048500 on Base, 512125 on
+Arbitrum) which the swap pays inside `PoolManager.swap`; that is production state, not a
+harness choice.
+
+### Sizes and tick movement
+
+Swaps are USDC exact-input to WETH at 50, 100 and 1000 USDC. The measured swap's tick
+movement is read from pool state before and after and cross-checked against the pool's
+`Swap` event (v3 `slot0`/`Swap`, v4 StateView/`Swap`, Ekubo Core's 116-byte `log0` record).
+At 100 USDC no leg moves more than one tick and no leg crosses an initialized tick, so 100
+USDC is the size the docs page quotes; gas is identical at 50 USDC. At 1000 USDC the
+shallow v4 WETH/USDC pools move 13 ticks on Base (no initialized tick crossed, gas
+unchanged at 126,991) and 8 ticks on Arbitrum, crossing an initialized spacing-10 tick:
+156,321 instead of 135,006. That row is kept in the snapshot as a reminder of why the
+size was capped. Ekubo's fresh pool moves 0–1 fine ticks (1/100 of a Uniswap tick) at 100
+USDC and 11 at 1000.
+
+Outputs (wei of WETH for 100 USDC): Base Ekubo 40,448,346,569,108,551, v3
+40,448,339,546,831,424, v4 40,400,300,715,083,769 (spread 0.12%, the v4 pool is 0.03% off
+the v3 price); Arbitrum Ekubo 40,624,188,992,664,839, v3 40,624,162,908,750,166 (both
+routers), v4 40,620,850,698,508,208 (spread 0.008%). The Ekubo and v3 legs agree to 7
+significant figures because the fresh pool mirrors the v3 pool's price, fee and liquidity.
+
+### Results
+
+Execution gas is the isolated snapshot. Calldata bytes are the exact bytes of the measured
+call (`calldata/*.hex`); "L2 calldata gas" is the 16/4 per byte intrinsic charge every L2
+still levies inside its own gas (EIP-7623's floor never binds here). "L1 data" is what the
+chain's own fee logic charges for posting the transaction, read at the pinned block (see
+below), and its gas-equivalent is that wei amount divided by the block's L2 base fee.
+
+| Chain    | Leg (100 USDC)                 | Execution | Calldata bytes (zero / nonzero) | L2 calldata gas | L1 data (wei)  | L1 data, L2-gas equivalent | L2 gas incl. 21,000 | Total gas-equivalent |
+| -------- | ------------------------------ | --------- | ------------------------------- | --------------- | -------------- | -------------------------- | ------------------- | -------------------- |
+| Base     | Ekubo Yul router               | 105,084   | 184 (99 / 85)                   | 1,756           | 1,655,831,768  | 331                        | 127,840             | 128,171              |
+| Base     | v3 SwapRouter02                | 121,803   | 228 (177 / 51)                  | 1,524           | 1,596,015,122  | 319                        | 144,327             | 144,646              |
+| Base     | v4 PoolManager, minimal locker | 126,959   | 292 (192 / 100)                 | 2,368           | 1,835,281,704  | 367                        | 150,327             | 150,694              |
+| Arbitrum | Ekubo Yul router               | 113,121   | 184 (63 / 121)                  | 2,188           | 11,220,000,000 | 561                        | 136,309             | 136,870              |
+| Arbitrum | v3 SwapRouter (classic)        | 130,896   | 260 (187 / 73)                  | 1,916           | 12,060,000,000 | 603                        | 153,812             | 154,415              |
+| Arbitrum | v3 SwapRouter02                | 130,705   | 228 (159 / 69)                  | 1,740           | 11,400,000,000 | 570                        | 153,445             | 154,015              |
+| Arbitrum | v4 PoolManager, minimal locker | 135,006   | 292 (174 / 118)                 | 2,584           | 12,880,000,000 | 644                        | 158,590             | 159,234              |
+
+Base additionally tracks a Jovian "DA footprint" per transaction (block-space accounting,
+not a fee): `max(100, (intercept + fastlzCoef × fastlzSize) / 1e6) × daFootprintGasScalar`,
+with scalar 148 at the block: Ekubo 20,424, v3 19,684, v4 22,644 gas of DA footprint.
+
+Ekubo against v3 / v4 at 100 USDC: execution 13.7% / 17.2% lower on Base and 13.6% / 16.2%
+on Arbitrum (mainnet fork, 1000 USDT: 14.0% / 16.4%); whole transaction 11.4% / 14.9% on
+Base and 11.4% / 14.0% on Arbitrum (mainnet: 11.7% / 14.2%). The L1 data component is
+0.22–0.41% of every leg's total at these blocks, and Ekubo's is not the smallest on Base:
+Fjord's FastLZ estimator prices the dense 184-byte route at 138.9 estimated compressed
+bytes against 133.9 for the zero-padded 228-byte SwapRouter02 call. The same effect shows
+in the L2 calldata gas column (1,756 against 1,524), because 16/4 pricing also rewards
+zero bytes. On Arbitrum (Brotli) the Yul route is the cheapest to post, by 9–42 gas.
+
+Per-leg execution gas differs from the mainnet figures because the pair and the token
+contracts differ (WETH/USDC instead of USDT/USDC; Arbitrum's WETH and both chains' USDC
+are proxies), and the Ekubo pool is fresh rather than live; the ratios between legs are
+what carries over.
+
+### Fee predeploys and formulas
+
+Base (OP Stack; `GasPriceOracle` `0x420000000000000000000000000000000000000F` version
+1.6.0, `isFjord`, `isIsthmus`, `isJovian` all true at the block; `L1Block`
+`0x4200000000000000000000000000000000000015`). Values at block 51439900:
+
+| Parameter              | Value       | Read from                        |
+| ---------------------- | ----------- | -------------------------------- |
+| `l1BaseFee`            | 118,337,311 | oracle / `L1Block.basefee()`     |
+| `blobBaseFee`          | 7,219,357   | oracle / `L1Block.blobBaseFee()` |
+| `baseFeeScalar`        | 2,269       | oracle / `L1Block`               |
+| `blobBaseFeeScalar`    | 1,055,762   | oracle / `L1Block`               |
+| `operatorFeeScalar`    | 0           | `L1Block`                        |
+| `operatorFeeConstant`  | 0           | `L1Block`                        |
+| `daFootprintGasScalar` | 148         | `L1Block`                        |
+
+Fjord L1 cost (`specs/protocol/fjord/exec-engine.md`, implemented in `GasPriceOracle`):
+`l1FeeScaled = baseFeeScalar × l1BaseFee × 16 + blobBaseFeeScalar × blobBaseFee`;
+`estimatedSizeScaled = max(100 × 1e6, −42,585,600 + 836,500 × fastlzSize)` where
+`fastlzSize` is the FastLZ-compressed length of the signed transaction (the oracle
+compresses the unsigned RLP and adds 68 bytes for the signature); `l1Fee =
+estimatedSizeScaled × l1FeeScaled / 1e12`. `l1-data-cost.mjs` builds the unsigned EIP-1559
+transaction for each leg (chain id, nonce 100, priority fee 0.001 gwei, max fee 0.01 gwei,
+gas limit 200,000, value 0, the leg's `to` and exact calldata; 228 / 273 / 338 bytes for
+the three Base legs) and calls `getL1Fee(bytes)` and `getL1GasUsed(bytes)` on the oracle at
+the pinned block; the estimated compressed size in the results is the oracle's own answer
+divided back through the formula. The operator fee is zero at the block, so it adds
+nothing.
+
+Arbitrum One (Nitro; `ArbGasInfo` precompile `0x6C`, `NodeInterface` virtual contract
+`0xC8`). Values at block 506178800: `getPricesInWei()` = (perL2Tx 4,317,615,680; per L1
+calldata byte 30,840,112; per storage allocation 401,480,000,000; per ArbGas base
+20,000,000; congestion 74,000; total 20,074,000), `getL1BaseFeeEstimate()` = 1,927,507
+wei per L1 gas (so 30,840,112 = 16 × 1,927,507). The chain's poster charge
+(`nitro/arbos/l1pricing/l1pricing.go`) is `pricePerUnit × units` with `units = 16 ×
+brotli-compressed bytes of the signed transaction`; in estimation the units are padded by
+256 and 1%. `l1-data-cost.mjs` calls `NodeInterface.gasEstimateL1Component(to, false,
+data)` with `from` = the test contract at the pinned block; it returns the L1 component
+already denominated in L2 gas (`gasEstimateForL1`, the table's gas-equivalent), the L2 base
+fee it used (20,000,000, the block's minimum, against 20,074,000 in the header), and the L1
+base fee estimate. The wei column is `gasEstimateForL1 × 20,000,000`. The precompiles are
+not executable on the Foundry fork, so both chains' fee readings come from `eth_call`
+against the archive endpoints, not from inside the tests.
+
+### Reproducing the L2 numbers
+
+```sh
+# from a checkout with lib/ekubo (evm-contracts 1f5be49), lib/v4-core (46c6834, submodules),
+# lib/forge-std (77041d2), lib/solady (65e87c7); foundry.toml and remappings.txt as in fork-l2/
+forge test --fork-url https://base-mainnet.public.blastapi.io --fork-block-number 51439900 \
+  --network ethereum --fork-retries 10 --fork-retry-backoff 2000 \
+  --match-contract 'ForkL2EkuboBaseTest|ForkL2V3BaseTest|ForkL2V4BaseTest' -vv
+
+forge test --fork-url https://arbitrum-one.public.blastapi.io --fork-block-number 506178800 \
+  --fork-retries 10 --fork-retry-backoff 2000 \
+  --match-contract 'ForkL2EkuboArbitrumTest|ForkL2V3ArbitrumTest|ForkL2V3ArbitrumRouter02Test|ForkL2V4ArbitrumTest' -vv
+
+bun run encode-l2-routes.mjs      # regenerates the SDK routes (yul-router SDK checkout path inside)
+bun run l1-data-cost.mjs > l1-data-cost.json   # fee-oracle readings (viem from the SDK's node_modules)
+```
+
+Foundry 1.8.3, `evm_version = "osaka"`, `via_ir`, `optimizer_runs = 1000000`, solc
+auto-detected per file (0.8.26 Uniswap drivers, 0.8.33 Ekubo sources). `isolate = true` is
+set per test.
 
 ## Dependency pins
 

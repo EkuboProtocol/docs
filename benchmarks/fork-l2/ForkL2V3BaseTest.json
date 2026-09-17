@@ -1,0 +1,15 @@
+{
+  "fork-l2 base v3 SwapRouter02 100 USDC->WETH fee-3000": "121803",
+  "fork-l2 base v3 SwapRouter02 100 USDC->WETH fee-3000 | ticks moved": "0",
+  "fork-l2 base v3 SwapRouter02 1000 USDC->WETH fee-3000": "121803",
+  "fork-l2 base v3 SwapRouter02 1000 USDC->WETH fee-3000 | ticks moved": "0",
+  "fork-l2 base v3 SwapRouter02 50 USDC->WETH fee-3000": "121815",
+  "fork-l2 base v3 SwapRouter02 50 USDC->WETH fee-3000 | ticks moved": "0",
+  "fork-l2 base v3 SwapRouter02 calldata bytes 100 USDC": "228",
+  "fork-l2 base v3 SwapRouter02 calldata bytes 1000 USDC": "228",
+  "fork-l2 base v3 SwapRouter02 calldata bytes 50 USDC": "228",
+  "fork-l2 base v3 SwapRouter02 output 100 USDC->WETH (wei)": "40448339546831424",
+  "fork-l2 base v3 SwapRouter02 output 1000 USDC->WETH (wei)": "404482803150768010",
+  "fork-l2 base v3 SwapRouter02 output 50 USDC->WETH (wei)": "20224171418744207",
+  "fork-l2 base v3 pool liquidity": "37026042371903555946"
+}
