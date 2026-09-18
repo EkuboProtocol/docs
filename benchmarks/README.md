@@ -1,6 +1,6 @@
 # Gas benchmark harnesses
 
-Foundry tests behind the numbers on the [Gas efficiency](/concepts/gas-efficiency/) page.
+Foundry tests behind the numbers on the [Gas efficiency](/reference/gas-efficiency/) page.
 Each protocol compiles under its own production toolchain settings, so the comparison
 measures code and architecture rather than compiler tuning.
 

@@ -195,7 +195,6 @@ export default defineConfig({
               label: "Protocol architecture",
               slug: "concepts/architecture",
             },
-            { label: "Gas efficiency", slug: "concepts/gas-efficiency" },
             {
               label: "Extensions",
               slug: "concepts/extensions",
@@ -249,6 +248,7 @@ export default defineConfig({
               label: "Price representation",
               slug: "reference/price-representation",
             },
+            { label: "Gas efficiency", slug: "reference/gas-efficiency" },
             {
               label: "Contract addresses",
               slug: "reference/contracts",
