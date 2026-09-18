@@ -1,0 +1,15 @@
+{
+  "fork-l2 base v4 PoolManager minimal locker 100 USDC->WETH fee-3000": "126959",
+  "fork-l2 base v4 PoolManager minimal locker 100 USDC->WETH fee-3000 | ticks moved": "1",
+  "fork-l2 base v4 PoolManager minimal locker 1000 USDC->WETH fee-3000": "126991",
+  "fork-l2 base v4 PoolManager minimal locker 1000 USDC->WETH fee-3000 | ticks moved": "13",
+  "fork-l2 base v4 PoolManager minimal locker 50 USDC->WETH fee-3000": "126971",
+  "fork-l2 base v4 PoolManager minimal locker 50 USDC->WETH fee-3000 | ticks moved": "1",
+  "fork-l2 base v4 calldata bytes 100 USDC": "292",
+  "fork-l2 base v4 calldata bytes 1000 USDC": "292",
+  "fork-l2 base v4 calldata bytes 50 USDC": "292",
+  "fork-l2 base v4 output 100 USDC->WETH (wei)": "40400300715083769",
+  "fork-l2 base v4 output 1000 USDC->WETH (wei)": "403315880591944557",
+  "fork-l2 base v4 output 50 USDC->WETH (wei)": "20202061711569369",
+  "fork-l2 base v4 pool liquidity": "31809972076514118"
+}

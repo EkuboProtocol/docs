@@ -248,6 +248,7 @@ export default defineConfig({
               label: "Price representation",
               slug: "reference/price-representation",
             },
+            { label: "Gas efficiency", slug: "reference/gas-efficiency" },
             {
               label: "Contract addresses",
               slug: "reference/contracts",

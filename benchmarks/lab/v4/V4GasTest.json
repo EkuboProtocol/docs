@@ -1,0 +1,12 @@
+{
+  "v4 initialize pool": "51812",
+  "v4 mint new position": "162188",
+  "v4 route 1 pool steady-state": "107360",
+  "v4 route 2 pools steady-state": "141771",
+  "v4 route 3 pools steady-state": "176182",
+  "v4 single erc20 first swap in fresh pool": "120633",
+  "v4 single erc20 reverse steady-state": "103358",
+  "v4 single erc20 steady-state": "103533",
+  "v4 single erc20 steady-state PoolSwapTest helper": "116827",
+  "v4 single native steady-state": "88864"
+}

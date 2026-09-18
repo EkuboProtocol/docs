@@ -1,0 +1,14 @@
+{
+  "ekubo initialize pool": "92935",
+  "ekubo mint new position Positions NFT": "213104",
+  "ekubo mint new position bare": "179020",
+  "ekubo route 1 pool steady-state": "94904",
+  "ekubo route 2 pools steady-state": "119333",
+  "ekubo route 3 pools steady-state": "143774",
+  "ekubo single erc20 first swap in fresh pool": "87384",
+  "ekubo single erc20 reverse steady-state": "86334",
+  "ekubo single erc20 steady-state": "87416",
+  "ekubo single erc20 steady-state minimal locker": "87077",
+  "ekubo single native steady-state": "72580",
+  "ekubo single native steady-state minimal locker": "72164"
+}

@@ -7,9 +7,9 @@ title: "Price representation"
 
 Every Ekubo pool tracks its current price as a **square root ratio**: the square root of the price of `token1` in terms of `token0`.
 
-$$
-sqrt\_ratio = \sqrt{token1/token0}
-$$
+```
+sqrt_ratio = sqrt(token1 / token0)
+```
 
 Working with the square root of the price (rather than the price itself) makes the concentrated liquidity math cheaper and more precise — see the [Math 1-pager](/reference/pool-math/) for why. Prices are supported over the enormous range `[2^-128, 2^128]`, so the sqrt ratio always lies in `[2^-64, 2^64]`.
 

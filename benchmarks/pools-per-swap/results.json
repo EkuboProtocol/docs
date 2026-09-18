@@ -1,0 +1,712 @@
+{
+  "rpc": "https://ethereum-rpc.publicnode.com",
+  "window": {
+    "fromBlock": 25997046,
+    "toBlock": 25998045,
+    "blocks": 1000,
+    "fromTimestamp": 1789646111,
+    "toTimestamp": 1789658171,
+    "fromIso": "2026-09-17T11:55:11.000Z",
+    "toIso": "2026-09-17T15:16:11.000Z"
+  },
+  "rpcCalls": 2174,
+  "families": {
+    "0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67": "univ3",
+    "0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822": "univ2-family",
+    "0x8b3e96f2b889fa771c53c981b40daf005f63f637f1869f707052d15a3dd97140": "curve",
+    "0xd013ca23e77a65003c2c659c5442c00c805371b7fc1ebd4c206c41d1536bd90b": "curve",
+    "0xb2e76ae99761dc136e598d4a629bb347eccb9532a5f8bbd72e18467c3c34cc98": "curve",
+    "0x143f1f8e861fbdeddd5b46e844b7d3ac7b86a122f36e8c463859ee6811b1f29c": "curve",
+    "0x40e9cecb9f5f1f1c5b9c97dec2917b7ee92e57ba5563708daca94dd84ad7112f": "univ4",
+    "0x2170c741c41531aec20e7c107c24eecfdd15e69c9bb0a8dd37b1840b9e0b207b": "balancer-v2",
+    "0x0874b2d545cb271cdbda4e093020c452328b24af12382ed62c4d00f5c26709db": "balancer-v3",
+    "0x3b841dc9ab51e3104bda4f61b41e4271192d22cd19da5ee6e292dc8e2744f713": "maverick-v1",
+    "0x103ed084e94a44c8f5f6ba8e3011507c41063177e29949083c439777d8d63f60": "maverick-v2",
+    "0x19b47279256b2a23a1665c810c8d55a1758940ee09377d4f8d26497a3577dc83": "pancake-v3",
+    "0xc2c0245e056d5fb095f04cd6373bc770802ebd1e6c918eb78fdef843cdb37b0f": "dodo",
+    "0xd8648b6ac54162763c86fd54bf2005af8ecd2f9cb273a5775921fd7f91e17b2d": "dodo",
+    "0xe93ad76094f247c0dafc1c61adc2187de1ac2738f7a3b49cb20b2263420251a3": "dodo",
+    "0x5c02c2bb2d1d082317eb23916ca27b3e7c294398b60061a2ad54f1c3c018c318": "bancor-v3",
+    "0x95f3b01351225fea0e69a46f68b164c9dea10284f12cd4a907ce66510ab7af6a": "bancor-carbon",
+    "0x276856b36cbc45526a0ba64f44611557a2a8b68662c5388e9fe6d72e86e1c8cb": "bancor-v2",
+    "0xdc004dbca4ef9c966218431ee5d9133d337ad018dd5b5c5493722803f75c64f7": "fluid",
+    "0xb3e2773606abfd36b5bd91394b3a54d1398336c65005baf7bf7a05efeffaf75b": "solidly-style"
+  },
+  "ekuboCore": {
+    "address": "0x00000000000014aa86c5d3c41765bb24e11bd701",
+    "codeBytes": 18797,
+    "swapLog": "log0, no topics, 116 bytes of data (locker, poolId, balanceUpdate, stateAfter)"
+  },
+  "routers": {
+    "0x66a9893cc07d91d95644aedd05d03f95e1dba8af": {
+      "name": "Universal Router (v2, 2025)",
+      "kind": "ur",
+      "verifiedSelectors": ["3593564c"],
+      "verifiedBytecodeContains": [],
+      "codeBytes": 19499
+    },
+    "0x3fc91a3afd70395cd496c647d5a6cc9d4b2b7fad": {
+      "name": "Universal Router (v1.2, 2023)",
+      "kind": "ur",
+      "verifiedSelectors": ["3593564c"],
+      "verifiedBytecodeContains": [],
+      "codeBytes": 17958
+    },
+    "0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45": {
+      "name": "SwapRouter02",
+      "kind": "sr02",
+      "verifiedSelectors": ["b858183f", "5ae401dc"],
+      "verifiedBytecodeContains": [],
+      "codeBytes": 24497
+    },
+    "0xe592427a0aece92de3edee1f18e0157c05861564": {
+      "name": "SwapRouter (v3 classic)",
+      "kind": "sr",
+      "verifiedSelectors": ["c04b8d59"],
+      "verifiedBytecodeContains": [],
+      "codeBytes": 12070
+    },
+    "0x7a250d5630b4cf539739df2c5dacb4c659f2488d": {
+      "name": "Uniswap v2 Router02",
+      "kind": "v2r",
+      "verifiedSelectors": ["38ed1739"],
+      "verifiedBytecodeContains": [],
+      "codeBytes": 21943
+    },
+    "0x111111125421ca6dc452d289314280a0f8842a65": {
+      "name": "1inch AggregationRouter v6",
+      "kind": "oneinch",
+      "verifiedSelectors": ["07ed2379", "83800a8e"],
+      "verifiedBytecodeContains": [],
+      "codeBytes": 24294
+    },
+    "0x4c82d1fbfe28c977cbb58d8c7ff8fcf9f70a2cca": {
+      "name": "Universal Router (2026 deployment)",
+      "kind": "ur",
+      "verifiedSelectors": ["3593564c"],
+      "verifiedBytecodeContains": [],
+      "codeBytes": 24546
+    },
+    "0x7b2aa7ecc0b5936b7c52e6259a19c3ba557d0748": {
+      "name": "Ekubo Yul router",
+      "kind": "ekubo-yul",
+      "verifiedSelectors": [],
+      "verifiedBytecodeContains": ["00000000000014aa86c5d3c41765bb24e11bd701"],
+      "codeBytes": 2878
+    }
+  },
+  "receipts": {
+    "method": "eth_getBlockReceipts; successful txs with >=1 pool-level swap event; pools = number of such events in the tx",
+    "swapTxs": 32417,
+    "sumPools": 54407,
+    "failedSwapTxsSeen": 0,
+    "avgPoolsPerSwapTx": 1.678,
+    "histogram": {
+      "1": {
+        "txs": 23358,
+        "pct": 72.05
+      },
+      "2": {
+        "txs": 4801,
+        "pct": 14.81
+      },
+      "3": {
+        "txs": 2027,
+        "pct": 6.25
+      },
+      "4+": {
+        "txs": 2231,
+        "pct": 6.88
+      }
+    },
+    "ekuboCoreOtherTopiclessLogs": 0,
+    "allTxs": 321702,
+    "successfulTxs": 317617,
+    "perFamily": {
+      "univ3": {
+        "txs": 15900,
+        "events": 21418,
+        "avgEventsOfThisFamilyPerTx": 1.347,
+        "avgTotalPoolsPerTxTouchingFamily": 2.024,
+        "gasOfTxsTouchingFamily": "5672233165",
+        "emitters": 813,
+        "topEmitters": {
+          "0xe0554a476a092703abdb3ef35c80e0d76d32939f": 3058,
+          "0xc7bbec68d12a0d1830360f8ec58fa599ba1b0e9b": 1870,
+          "0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640": 1059,
+          "0x99ac8ca7087fa4a2a1fb6357269965a2014abc35": 914,
+          "0x11b815efb8f581194ae79006d24e0d814b7697f6": 662
+        }
+      },
+      "univ4": {
+        "txs": 11748,
+        "events": 17467,
+        "avgEventsOfThisFamilyPerTx": 1.487,
+        "avgTotalPoolsPerTxTouchingFamily": 2.354,
+        "gasOfTxsTouchingFamily": "4741053798",
+        "emitters": 1,
+        "topEmitters": {
+          "0x000000000004444c5dc75cb358380d2e3de08a90": 11748
+        }
+      },
+      "univ2-family": {
+        "txs": 7528,
+        "events": 8963,
+        "avgEventsOfThisFamilyPerTx": 1.191,
+        "avgTotalPoolsPerTxTouchingFamily": 2.128,
+        "gasOfTxsTouchingFamily": "2467266054",
+        "emitters": 1267,
+        "topEmitters": {
+          "0xad1a21f61d653c6101b92c335f61140459c81c79": 233,
+          "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc": 222,
+          "0x4a86c01d67965f8cb3d0aaa2c655705e64097c31": 181,
+          "0xd3d2e2692501a5c9ca623199d38826e513033a17": 172,
+          "0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852": 172
+        }
+      },
+      "curve": {
+        "txs": 1652,
+        "events": 2250,
+        "avgEventsOfThisFamilyPerTx": 1.362,
+        "avgTotalPoolsPerTxTouchingFamily": 4.079,
+        "gasOfTxsTouchingFamily": "1286127611",
+        "emitters": 219,
+        "topEmitters": {
+          "0x4ebdf703948ddcea3b11f675b4d1fba9d2414a14": 194,
+          "0x35c9a4dae1ff05788f24b5b32721d89340cbb636": 178,
+          "0xd51a44d3fae010294c616388b506acda1bfaae46": 129,
+          "0x7f86bf177dd4f3494b841a37e810a34dd56c829b": 105,
+          "0xf5f5b97624542d72a9e06f04804bf81baa15e2b4": 81
+        }
+      },
+      "pancake-v3": {
+        "txs": 1307,
+        "events": 1433,
+        "avgEventsOfThisFamilyPerTx": 1.096,
+        "avgTotalPoolsPerTxTouchingFamily": 4.111,
+        "gasOfTxsTouchingFamily": "858951131",
+        "emitters": 35,
+        "topEmitters": {
+          "0x1445f32d1a74872ba41f3d8cf4022e9996120b31": 575,
+          "0xacdb27b266142223e1e676841c1e809255fc6d07": 372,
+          "0x1ac1a8feaaea1900c4166deeed0c11cc10669d36": 116,
+          "0x6ca298d2983ab03aa1da7679389d955a4efee15c": 103,
+          "0xbf542ecaa30d23f651e07720f9ca74d6109d4e3a": 62
+        }
+      },
+      "ekubo": {
+        "txs": 943,
+        "events": 1079,
+        "avgEventsOfThisFamilyPerTx": 1.144,
+        "avgTotalPoolsPerTxTouchingFamily": 3.538,
+        "gasOfTxsTouchingFamily": "673692276",
+        "emitters": 1,
+        "topEmitters": {
+          "0x00000000000014aa86c5d3c41765bb24e11bd701": 943
+        }
+      },
+      "fluid": {
+        "txs": 551,
+        "events": 587,
+        "avgEventsOfThisFamilyPerTx": 1.065,
+        "avgTotalPoolsPerTxTouchingFamily": 3.316,
+        "gasOfTxsTouchingFamily": "435123007",
+        "emitters": 19,
+        "topEmitters": {
+          "0x667701e51b4d1ca244f17c78f7ab8744b4c99f9b": 224,
+          "0x836951eb21f3df98273517b7249dceff270d34bf": 194,
+          "0x3c0441b42195f4ad6aa9a0978e06096ea616cda7": 76,
+          "0xde632c3a214d5f14c1d8ddf0b92f8bcd188fee45": 20,
+          "0x97f32e5091d0e6aee24beb398e6592ae111dee9c": 8
+        }
+      },
+      "dodo": {
+        "txs": 421,
+        "events": 448,
+        "avgEventsOfThisFamilyPerTx": 1.064,
+        "avgTotalPoolsPerTxTouchingFamily": 4.496,
+        "gasOfTxsTouchingFamily": "399393841",
+        "emitters": 56,
+        "topEmitters": {
+          "0x04571c32a4e1c5f39bc3a238cb95b215058c432c": 243,
+          "0x3058ef90929cb8180174d74c507176cca6835d73": 40,
+          "0xc9f93163c99695c6526b799ebca2207fdf7d61ad": 23,
+          "0x201939f5c74f5fd3beef1cf03a9cfcc75beba9d9": 13,
+          "0x46cf01f14ff6f8c7ef4d6a6b139b1c3d45af9289": 12
+        }
+      },
+      "balancer-v2": {
+        "txs": 243,
+        "events": 259,
+        "avgEventsOfThisFamilyPerTx": 1.066,
+        "avgTotalPoolsPerTxTouchingFamily": 4.066,
+        "gasOfTxsTouchingFamily": "160357147",
+        "emitters": 2,
+        "topEmitters": {
+          "0xba12222222228d8ba445958a75a0704d566bf2c8": 185,
+          "0xd315a9c38ec871068fec378e4ce78af528c76293": 58
+        }
+      },
+      "balancer-v3": {
+        "txs": 202,
+        "events": 226,
+        "avgEventsOfThisFamilyPerTx": 1.119,
+        "avgTotalPoolsPerTxTouchingFamily": 5.119,
+        "gasOfTxsTouchingFamily": "204734020",
+        "emitters": 2,
+        "topEmitters": {
+          "0xba1333333333a1ba1108e8412f11850a5c319ba9": 189,
+          "0x955244edc797a1c1b04134b600f819ac23c76081": 13
+        }
+      },
+      "maverick-v2": {
+        "txs": 118,
+        "events": 123,
+        "avgEventsOfThisFamilyPerTx": 1.042,
+        "avgTotalPoolsPerTxTouchingFamily": 5.127,
+        "gasOfTxsTouchingFamily": "117418379",
+        "emitters": 7,
+        "topEmitters": {
+          "0x6061cf96aa9f02aa072b77211a863989ca070c78": 51,
+          "0x025a13752ec1fb6c0e441e5d7b1678bb5f9ca62f": 27,
+          "0x5b6a0771c752e35b2ca2aff4f22a66b1598a2bc5": 18,
+          "0xdf9c440111a17eafbecf5db37dd04c948e878878": 12,
+          "0x31373595f40ea48a7aab6cbcb0d377c6066e2dca": 10
+        }
+      },
+      "bancor-v2": {
+        "txs": 54,
+        "events": 107,
+        "avgEventsOfThisFamilyPerTx": 1.981,
+        "avgTotalPoolsPerTxTouchingFamily": 6.13,
+        "gasOfTxsTouchingFamily": "42174657",
+        "emitters": 19,
+        "topEmitters": {
+          "0x079ca3f710599739a22673c2856202f90d3a8806": 22,
+          "0xe331821bc94187c2649e932810a60204699d45cb": 19,
+          "0xcba47689202d31575bfa204efe70e2c83d29da4d": 11,
+          "0xd4d5298136b52ec439ebfb23fda2ec500de69c71": 9,
+          "0x987caf390fc5100da6db7e8ec4b651cd3b61bc32": 6
+        }
+      },
+      "bancor-v3": {
+        "txs": 23,
+        "events": 23,
+        "avgEventsOfThisFamilyPerTx": 1,
+        "avgTotalPoolsPerTxTouchingFamily": 5.348,
+        "gasOfTxsTouchingFamily": "17867787",
+        "emitters": 1,
+        "topEmitters": {
+          "0xeef417e1d5cc832e619ae18d2f140de2999dd4fb": 23
+        }
+      },
+      "maverick-v1": {
+        "txs": 17,
+        "events": 18,
+        "avgEventsOfThisFamilyPerTx": 1.059,
+        "avgTotalPoolsPerTxTouchingFamily": 6.059,
+        "gasOfTxsTouchingFamily": "12229328",
+        "emitters": 7,
+        "topEmitters": {
+          "0x11a653ddfbb61e0feff5484919f06d9d254bf65f": 4,
+          "0xa6634fc4ed29950e85d97d48580a1a9d5c14ca7c": 4,
+          "0x6c6fc818b25df89a8ada8da5a43669023bad1f4c": 3,
+          "0x352b186090068eb35d532428676ce510e17ab581": 3,
+          "0x8dd893b9ec19d89b66c01794cf5e04e30d284e53": 2
+        }
+      },
+      "bancor-carbon": {
+        "txs": 6,
+        "events": 6,
+        "avgEventsOfThisFamilyPerTx": 1,
+        "avgTotalPoolsPerTxTouchingFamily": 2.333,
+        "gasOfTxsTouchingFamily": "3788965",
+        "emitters": 1,
+        "topEmitters": {
+          "0xc537e898cd774e2dcba3b14ea6f34c93d5ea45e1": 6
+        }
+      }
+    },
+    "familiesWithNoEvents": ["solidly-style"],
+    "gasShare": {
+      "swapTxGas": "10039217633",
+      "allTxGas": "30729852504",
+      "pct": 32.67
+    }
+  },
+  "calldata": {
+    "method": "eth_getBlockByNumber(full); successful txs to the verified routers; pools decoded from calldata",
+    "decodedTxs": 4432,
+    "sumPools": 5687,
+    "avgPoolsPerSwapTx": 1.283,
+    "histogram": {
+      "1": {
+        "txs": 3712,
+        "pct": 83.75
+      },
+      "2": {
+        "txs": 473,
+        "pct": 10.67
+      },
+      "3": {
+        "txs": 130,
+        "pct": 2.93
+      },
+      "4+": {
+        "txs": 117,
+        "pct": 2.64
+      }
+    },
+    "opaqueTxs": 444,
+    "undecodedTxs": 323,
+    "failedTxs": 284,
+    "crossCheckAgainstReceipts": {
+      "compared": 4432,
+      "equal": 4407,
+      "calldataLower": 25,
+      "calldataHigher": 0
+    },
+    "undecodedSelectors": {
+      "1inch AggregationRouter v6:0xb68fb020": 239,
+      "1inch AggregationRouter v6:0xc3cf8043": 34,
+      "1inch AggregationRouter v6:0x89e7c650": 13,
+      "Uniswap v2 Router02:0xe8e33700": 8,
+      "Uniswap v2 Router02:0x02751cec": 6,
+      "Universal Router (v2, 2025):0x24856bc3": 5,
+      "Uniswap v2 Router02:0xf305d719": 5,
+      "Uniswap v2 Router02:0xaf2979eb": 5,
+      "1inch AggregationRouter v6:0x56a75868": 2,
+      "Uniswap v2 Router02:0xbaa2abde": 2,
+      "Universal Router (v2, 2025):0x3593564c": 1,
+      "1inch AggregationRouter v6:0xea76dddf": 1,
+      "1inch AggregationRouter v6:0xcc713a04": 1,
+      "1inch AggregationRouter v6:0x5816d723": 1
+    },
+    "perRouter": {
+      "SwapRouter02": {
+        "decodedTxs": 1168,
+        "avgPools": 1.076,
+        "histogram": {
+          "1": {
+            "txs": 1093,
+            "pct": 93.58
+          },
+          "2": {
+            "txs": 71,
+            "pct": 6.08
+          },
+          "3": {
+            "txs": 0,
+            "pct": 0
+          },
+          "4+": {
+            "txs": 4,
+            "pct": 0.34
+          }
+        },
+        "opaque": 0,
+        "undecoded": 0,
+        "failed": 39,
+        "crossCheckAgainstReceipts": {
+          "compared": 1168,
+          "equal": 1168,
+          "calldataLower": 0,
+          "calldataHigher": 0
+        },
+        "mismatchSamples": []
+      },
+      "Universal Router (2026 deployment)": {
+        "decodedTxs": 1070,
+        "avgPools": 1.837,
+        "histogram": {
+          "1": {
+            "txs": 635,
+            "pct": 59.35
+          },
+          "2": {
+            "txs": 224,
+            "pct": 20.93
+          },
+          "3": {
+            "txs": 112,
+            "pct": 10.47
+          },
+          "4+": {
+            "txs": 99,
+            "pct": 9.25
+          }
+        },
+        "opaque": 0,
+        "undecoded": 0,
+        "failed": 56,
+        "crossCheckAgainstReceipts": {
+          "compared": 1070,
+          "equal": 1056,
+          "calldataLower": 14,
+          "calldataHigher": 0
+        },
+        "mismatchSamples": [
+          {
+            "hash": "0x11ca7590c89ee5e282d79c94e6a4d2324b2c715038c048ff7beabfd2a9d2cf0a",
+            "calldata": 1,
+            "events": 2
+          },
+          {
+            "hash": "0xb874723278b4f54e8d520c7f7c2dfcc8c51a3003f01bd77efa55c10628002214",
+            "calldata": 11,
+            "events": 16
+          },
+          {
+            "hash": "0xa214808bf64c3608d17bfc0fb6d20e29e5f209dbb0160d73677d7af92d59d445",
+            "calldata": 10,
+            "events": 15
+          },
+          {
+            "hash": "0xf9a1267117fb3703a6d23a0fd00b8d2c7f7285dead677988e5242b1509ce14b8",
+            "calldata": 3,
+            "events": 8
+          },
+          {
+            "hash": "0xf5247e389078d1c7e9f0b95648c29de1b1f48685ab8b881746abe4607538bb22",
+            "calldata": 4,
+            "events": 9
+          }
+        ]
+      },
+      "Universal Router (v2, 2025)": {
+        "decodedTxs": 1153,
+        "avgPools": 1.207,
+        "histogram": {
+          "1": {
+            "txs": 974,
+            "pct": 84.48
+          },
+          "2": {
+            "txs": 147,
+            "pct": 12.75
+          },
+          "3": {
+            "txs": 18,
+            "pct": 1.56
+          },
+          "4+": {
+            "txs": 14,
+            "pct": 1.21
+          }
+        },
+        "opaque": 0,
+        "undecoded": 6,
+        "failed": 84,
+        "crossCheckAgainstReceipts": {
+          "compared": 1153,
+          "equal": 1150,
+          "calldataLower": 3,
+          "calldataHigher": 0
+        },
+        "mismatchSamples": [
+          {
+            "hash": "0x1a0f9590d96739def7529481e2473fee20aeea31641e67d86ae008624b34db35",
+            "calldata": 1,
+            "events": 2
+          },
+          {
+            "hash": "0xa65e91f36e9dff915f2f4e8c3b53ca646868fdf4f02bd99be8981db7bcf25763",
+            "calldata": 1,
+            "events": 2
+          },
+          {
+            "hash": "0x0dd68372de80d8ca4877135f5e3cefb4723e953c30dc7d8545683fc9092520e9",
+            "calldata": 1,
+            "events": 2
+          }
+        ]
+      },
+      "1inch AggregationRouter v6": {
+        "decodedTxs": 32,
+        "avgPools": 1.438,
+        "histogram": {
+          "1": {
+            "txs": 18,
+            "pct": 56.25
+          },
+          "2": {
+            "txs": 14,
+            "pct": 43.75
+          },
+          "3": {
+            "txs": 0,
+            "pct": 0
+          },
+          "4+": {
+            "txs": 0,
+            "pct": 0
+          }
+        },
+        "opaque": 443,
+        "undecoded": 291,
+        "failed": 77,
+        "crossCheckAgainstReceipts": {
+          "compared": 32,
+          "equal": 32,
+          "calldataLower": 0,
+          "calldataHigher": 0
+        },
+        "mismatchSamples": []
+      },
+      "Uniswap v2 Router02": {
+        "decodedTxs": 658,
+        "avgPools": 1.011,
+        "histogram": {
+          "1": {
+            "txs": 651,
+            "pct": 98.94
+          },
+          "2": {
+            "txs": 7,
+            "pct": 1.06
+          },
+          "3": {
+            "txs": 0,
+            "pct": 0
+          },
+          "4+": {
+            "txs": 0,
+            "pct": 0
+          }
+        },
+        "opaque": 0,
+        "undecoded": 26,
+        "failed": 19,
+        "crossCheckAgainstReceipts": {
+          "compared": 658,
+          "equal": 650,
+          "calldataLower": 8,
+          "calldataHigher": 0
+        },
+        "mismatchSamples": [
+          {
+            "hash": "0x10d260c15faef3956f49a27deafcc922aa6571239a3bce2bb303ae30617f21cc",
+            "calldata": 1,
+            "events": 2
+          },
+          {
+            "hash": "0x7e9460abd09a72a555b5263f6c9bcbfba452ac567a33fd7a42efd5b8130f133f",
+            "calldata": 1,
+            "events": 2
+          },
+          {
+            "hash": "0xdac01c00222fcc79c0655a297c1787b452557f159fcd804e1ff8c470983a00eb",
+            "calldata": 1,
+            "events": 2
+          },
+          {
+            "hash": "0x0ebb14652926f33c82cc43d8d209647ca77ab098afc6d4cd98d412c67d1e0490",
+            "calldata": 1,
+            "events": 2
+          },
+          {
+            "hash": "0xef721bef53ae97252361b1e7abb4d54f166ad46fe9cf76152923890f62874226",
+            "calldata": 1,
+            "events": 2
+          }
+        ]
+      },
+      "SwapRouter (v3 classic)": {
+        "decodedTxs": 281,
+        "avgPools": 1.036,
+        "histogram": {
+          "1": {
+            "txs": 271,
+            "pct": 96.44
+          },
+          "2": {
+            "txs": 10,
+            "pct": 3.56
+          },
+          "3": {
+            "txs": 0,
+            "pct": 0
+          },
+          "4+": {
+            "txs": 0,
+            "pct": 0
+          }
+        },
+        "opaque": 0,
+        "undecoded": 0,
+        "failed": 8,
+        "crossCheckAgainstReceipts": {
+          "compared": 281,
+          "equal": 281,
+          "calldataLower": 0,
+          "calldataHigher": 0
+        },
+        "mismatchSamples": []
+      },
+      "Universal Router (v1.2, 2023)": {
+        "decodedTxs": 70,
+        "avgPools": 1,
+        "histogram": {
+          "1": {
+            "txs": 70,
+            "pct": 100
+          },
+          "2": {
+            "txs": 0,
+            "pct": 0
+          },
+          "3": {
+            "txs": 0,
+            "pct": 0
+          },
+          "4+": {
+            "txs": 0,
+            "pct": 0
+          }
+        },
+        "opaque": 0,
+        "undecoded": 0,
+        "failed": 1,
+        "crossCheckAgainstReceipts": {
+          "compared": 70,
+          "equal": 70,
+          "calldataLower": 0,
+          "calldataHigher": 0
+        },
+        "mismatchSamples": []
+      },
+      "Ekubo Yul router": {
+        "decodedTxs": 0,
+        "avgPools": null,
+        "histogram": {
+          "1": {
+            "txs": 0,
+            "pct": 0
+          },
+          "2": {
+            "txs": 0,
+            "pct": 0
+          },
+          "3": {
+            "txs": 0,
+            "pct": 0
+          },
+          "4+": {
+            "txs": 0,
+            "pct": 0
+          }
+        },
+        "opaque": 1,
+        "undecoded": 0,
+        "failed": 0,
+        "crossCheckAgainstReceipts": {
+          "compared": 0,
+          "equal": 0,
+          "calldataLower": 0,
+          "calldataHigher": 0
+        },
+        "mismatchSamples": []
+      }
+    }
+  }
+}

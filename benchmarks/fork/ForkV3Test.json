@@ -1,0 +1,7 @@
+{
+  "fork WETH deposit steady-state": "27938",
+  "fork v3 SwapRouter 100 USDT->USDC fee-100": "128611",
+  "fork v3 SwapRouter 1000 USDT->USDC fee-100": "128611",
+  "fork v3 output 100 USDT->USDC (USDC, 6 decimals)": "99920949",
+  "fork v3 output 1000 USDT->USDC (USDC, 6 decimals)": "999209400"
+}

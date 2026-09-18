@@ -1,0 +1,9 @@
+{
+  "fork v4 PositionManager mint USDC/USDT fee-100, cold boundary ticks": "376984",
+  "fork v4 PositionManager mint amount0 (USDC, 6 decimals)": "9993022187",
+  "fork v4 PositionManager mint amount1 (USDT, 6 decimals)": "10000000000",
+  "fork v4 PositionManager mint full-range USDC/USDT fee-100 (first, warm-up)": "314490",
+  "fork v4 PositionManager mint full-range USDC/USDT fee-100 (measured)": "297390",
+  "fork v4 PositionManager mint liquidity": "9996510484",
+  "fork v4 PositionManager mint tokenId": "405710"
+}

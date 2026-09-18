@@ -1,0 +1,15 @@
+{
+  "fork-l2 arbitrum v4 PoolManager minimal locker 100 USDC->WETH fee-500": "135006",
+  "fork-l2 arbitrum v4 PoolManager minimal locker 100 USDC->WETH fee-500 | ticks moved": "1",
+  "fork-l2 arbitrum v4 PoolManager minimal locker 1000 USDC->WETH fee-500": "156321",
+  "fork-l2 arbitrum v4 PoolManager minimal locker 1000 USDC->WETH fee-500 | ticks moved": "8",
+  "fork-l2 arbitrum v4 PoolManager minimal locker 50 USDC->WETH fee-500": "134922",
+  "fork-l2 arbitrum v4 PoolManager minimal locker 50 USDC->WETH fee-500 | ticks moved": "0",
+  "fork-l2 arbitrum v4 calldata bytes 100 USDC": "292",
+  "fork-l2 arbitrum v4 calldata bytes 1000 USDC": "292",
+  "fork-l2 arbitrum v4 calldata bytes 50 USDC": "292",
+  "fork-l2 arbitrum v4 output 100 USDC->WETH (wei)": "40620850698508208",
+  "fork-l2 arbitrum v4 output 1000 USDC->WETH (wei)": "405784743605143050",
+  "fork-l2 arbitrum v4 output 50 USDC->WETH (wei)": "20311602937263111",
+  "fork-l2 arbitrum v4 pool liquidity": "52128164974525471"
+}

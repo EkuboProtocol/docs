@@ -1,0 +1,16 @@
+[profile.default]
+src = "src"
+test = "test"
+out = "out"
+libs = ["lib"]
+# No `solc` pin: foundry auto-detects per file (=0.8.26 for the Uniswap-side files,
+# =0.8.33 for the Ekubo sources). A pin would force one version on everything.
+optimizer = true
+optimizer_runs = 1000000
+via_ir = true
+evm_version = "osaka"
+verbosity = 2
+fs_permissions = [
+  { access = "read", path = "./artifacts" },
+  { access = "read-write", path = "./calldata" },
+]

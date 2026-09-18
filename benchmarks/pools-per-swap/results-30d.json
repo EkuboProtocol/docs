@@ -1,0 +1,972 @@
+{
+  "rpc": [
+    "https://eth.drpc.org",
+    "https://mainnet.gateway.tenderly.co",
+    "https://eth.merkle.io",
+    "https://eth.rpc.blxrbdn.com"
+  ],
+  "window": {
+    "fromBlock": 25783810,
+    "toBlock": 25999800,
+    "stride": 10,
+    "blocksRead": 21600,
+    "blocksSpanned": 215991,
+    "blocks": 21600,
+    "fromTimestamp": 1787078207,
+    "toTimestamp": 1789679339,
+    "fromIso": "2026-08-18T18:36:47.000Z",
+    "toIso": "2026-09-17T21:08:59.000Z"
+  },
+  "rpcCalls": 54013,
+  "rpcRetries": 10803,
+  "families": {
+    "0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67": "univ3",
+    "0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822": "univ2-family",
+    "0x8b3e96f2b889fa771c53c981b40daf005f63f637f1869f707052d15a3dd97140": "curve",
+    "0xd013ca23e77a65003c2c659c5442c00c805371b7fc1ebd4c206c41d1536bd90b": "curve",
+    "0xb2e76ae99761dc136e598d4a629bb347eccb9532a5f8bbd72e18467c3c34cc98": "curve",
+    "0x143f1f8e861fbdeddd5b46e844b7d3ac7b86a122f36e8c463859ee6811b1f29c": "curve",
+    "0x40e9cecb9f5f1f1c5b9c97dec2917b7ee92e57ba5563708daca94dd84ad7112f": "univ4",
+    "0x2170c741c41531aec20e7c107c24eecfdd15e69c9bb0a8dd37b1840b9e0b207b": "balancer-v2",
+    "0x0874b2d545cb271cdbda4e093020c452328b24af12382ed62c4d00f5c26709db": "balancer-v3",
+    "0x3b841dc9ab51e3104bda4f61b41e4271192d22cd19da5ee6e292dc8e2744f713": "maverick-v1",
+    "0x103ed084e94a44c8f5f6ba8e3011507c41063177e29949083c439777d8d63f60": "maverick-v2",
+    "0x19b47279256b2a23a1665c810c8d55a1758940ee09377d4f8d26497a3577dc83": "pancake-v3",
+    "0xc2c0245e056d5fb095f04cd6373bc770802ebd1e6c918eb78fdef843cdb37b0f": "dodo",
+    "0xd8648b6ac54162763c86fd54bf2005af8ecd2f9cb273a5775921fd7f91e17b2d": "dodo",
+    "0xe93ad76094f247c0dafc1c61adc2187de1ac2738f7a3b49cb20b2263420251a3": "dodo",
+    "0x5c02c2bb2d1d082317eb23916ca27b3e7c294398b60061a2ad54f1c3c018c318": "bancor-v3",
+    "0x95f3b01351225fea0e69a46f68b164c9dea10284f12cd4a907ce66510ab7af6a": "bancor-carbon",
+    "0x276856b36cbc45526a0ba64f44611557a2a8b68662c5388e9fe6d72e86e1c8cb": "bancor-v2",
+    "0xdc004dbca4ef9c966218431ee5d9133d337ad018dd5b5c5493722803f75c64f7": "fluid",
+    "0xb3e2773606abfd36b5bd91394b3a54d1398336c65005baf7bf7a05efeffaf75b": "solidly-style"
+  },
+  "daily": {
+    "2026-08-18": {
+      "blocks": 162,
+      "swapTxs": 3093,
+      "avgPoolsPerSwapTx": 1.716,
+      "swapTxGasSharePct": 20.25
+    },
+    "2026-08-19": {
+      "blocks": 718,
+      "swapTxs": 21436,
+      "avgPoolsPerSwapTx": 1.865,
+      "swapTxGasSharePct": 32.76
+    },
+    "2026-08-20": {
+      "blocks": 717,
+      "swapTxs": 23867,
+      "avgPoolsPerSwapTx": 1.801,
+      "swapTxGasSharePct": 34.02
+    },
+    "2026-08-21": {
+      "blocks": 718,
+      "swapTxs": 27266,
+      "avgPoolsPerSwapTx": 1.801,
+      "swapTxGasSharePct": 39.43
+    },
+    "2026-08-22": {
+      "blocks": 717,
+      "swapTxs": 25728,
+      "avgPoolsPerSwapTx": 1.809,
+      "swapTxGasSharePct": 38.11
+    },
+    "2026-08-23": {
+      "blocks": 718,
+      "swapTxs": 28203,
+      "avgPoolsPerSwapTx": 1.831,
+      "swapTxGasSharePct": 41.03
+    },
+    "2026-08-24": {
+      "blocks": 718,
+      "swapTxs": 23088,
+      "avgPoolsPerSwapTx": 1.785,
+      "swapTxGasSharePct": 34.81
+    },
+    "2026-08-25": {
+      "blocks": 717,
+      "swapTxs": 25345,
+      "avgPoolsPerSwapTx": 1.719,
+      "swapTxGasSharePct": 34.51
+    },
+    "2026-08-26": {
+      "blocks": 717,
+      "swapTxs": 25078,
+      "avgPoolsPerSwapTx": 1.64,
+      "swapTxGasSharePct": 33.7
+    },
+    "2026-08-27": {
+      "blocks": 718,
+      "swapTxs": 23151,
+      "avgPoolsPerSwapTx": 1.68,
+      "swapTxGasSharePct": 32.74
+    },
+    "2026-08-28": {
+      "blocks": 718,
+      "swapTxs": 23946,
+      "avgPoolsPerSwapTx": 1.692,
+      "swapTxGasSharePct": 32.87
+    },
+    "2026-08-29": {
+      "blocks": 717,
+      "swapTxs": 17916,
+      "avgPoolsPerSwapTx": 1.671,
+      "swapTxGasSharePct": 24.82
+    },
+    "2026-08-30": {
+      "blocks": 718,
+      "swapTxs": 23422,
+      "avgPoolsPerSwapTx": 1.69,
+      "swapTxGasSharePct": 33.03
+    },
+    "2026-08-31": {
+      "blocks": 717,
+      "swapTxs": 21310,
+      "avgPoolsPerSwapTx": 1.666,
+      "swapTxGasSharePct": 38.55
+    },
+    "2026-09-01": {
+      "blocks": 717,
+      "swapTxs": 23334,
+      "avgPoolsPerSwapTx": 1.672,
+      "swapTxGasSharePct": 32.45
+    },
+    "2026-09-02": {
+      "blocks": 718,
+      "swapTxs": 21248,
+      "avgPoolsPerSwapTx": 1.713,
+      "swapTxGasSharePct": 31.01
+    },
+    "2026-09-03": {
+      "blocks": 717,
+      "swapTxs": 20996,
+      "avgPoolsPerSwapTx": 1.779,
+      "swapTxGasSharePct": 31.4
+    },
+    "2026-09-04": {
+      "blocks": 717,
+      "swapTxs": 21678,
+      "avgPoolsPerSwapTx": 1.746,
+      "swapTxGasSharePct": 32.78
+    },
+    "2026-09-05": {
+      "blocks": 718,
+      "swapTxs": 20022,
+      "avgPoolsPerSwapTx": 1.755,
+      "swapTxGasSharePct": 29.55
+    },
+    "2026-09-06": {
+      "blocks": 718,
+      "swapTxs": 21348,
+      "avgPoolsPerSwapTx": 1.779,
+      "swapTxGasSharePct": 32.22
+    },
+    "2026-09-07": {
+      "blocks": 716,
+      "swapTxs": 21942,
+      "avgPoolsPerSwapTx": 1.795,
+      "swapTxGasSharePct": 34.59
+    },
+    "2026-09-08": {
+      "blocks": 717,
+      "swapTxs": 21679,
+      "avgPoolsPerSwapTx": 1.731,
+      "swapTxGasSharePct": 31.85
+    },
+    "2026-09-09": {
+      "blocks": 718,
+      "swapTxs": 20183,
+      "avgPoolsPerSwapTx": 1.724,
+      "swapTxGasSharePct": 31.21
+    },
+    "2026-09-10": {
+      "blocks": 717,
+      "swapTxs": 19255,
+      "avgPoolsPerSwapTx": 1.691,
+      "swapTxGasSharePct": 29.16
+    },
+    "2026-09-11": {
+      "blocks": 717,
+      "swapTxs": 20262,
+      "avgPoolsPerSwapTx": 1.835,
+      "swapTxGasSharePct": 31.73
+    },
+    "2026-09-12": {
+      "blocks": 718,
+      "swapTxs": 19723,
+      "avgPoolsPerSwapTx": 1.831,
+      "swapTxGasSharePct": 32.61
+    },
+    "2026-09-13": {
+      "blocks": 718,
+      "swapTxs": 18625,
+      "avgPoolsPerSwapTx": 1.774,
+      "swapTxGasSharePct": 29.16
+    },
+    "2026-09-14": {
+      "blocks": 717,
+      "swapTxs": 19998,
+      "avgPoolsPerSwapTx": 1.701,
+      "swapTxGasSharePct": 28.48
+    },
+    "2026-09-15": {
+      "blocks": 717,
+      "swapTxs": 21488,
+      "avgPoolsPerSwapTx": 1.787,
+      "swapTxGasSharePct": 32.66
+    },
+    "2026-09-16": {
+      "blocks": 718,
+      "swapTxs": 21706,
+      "avgPoolsPerSwapTx": 1.703,
+      "swapTxGasSharePct": 30.78
+    },
+    "2026-09-17": {
+      "blocks": 632,
+      "swapTxs": 18390,
+      "avgPoolsPerSwapTx": 1.75,
+      "swapTxGasSharePct": 30.33
+    }
+  },
+  "ekuboCore": {
+    "address": "0x00000000000014aa86c5d3c41765bb24e11bd701",
+    "codeBytes": 18797,
+    "swapLog": "log0, no topics, 116 bytes of data (locker, poolId, balanceUpdate, stateAfter)"
+  },
+  "routers": {
+    "0x66a9893cc07d91d95644aedd05d03f95e1dba8af": {
+      "name": "Universal Router (v2, 2025)",
+      "kind": "ur",
+      "verifiedSelectors": [
+        "3593564c"
+      ],
+      "verifiedBytecodeContains": [],
+      "codeBytes": 19499
+    },
+    "0x3fc91a3afd70395cd496c647d5a6cc9d4b2b7fad": {
+      "name": "Universal Router (v1.2, 2023)",
+      "kind": "ur",
+      "verifiedSelectors": [
+        "3593564c"
+      ],
+      "verifiedBytecodeContains": [],
+      "codeBytes": 17958
+    },
+    "0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45": {
+      "name": "SwapRouter02",
+      "kind": "sr02",
+      "verifiedSelectors": [
+        "b858183f",
+        "5ae401dc"
+      ],
+      "verifiedBytecodeContains": [],
+      "codeBytes": 24497
+    },
+    "0xe592427a0aece92de3edee1f18e0157c05861564": {
+      "name": "SwapRouter (v3 classic)",
+      "kind": "sr",
+      "verifiedSelectors": [
+        "c04b8d59"
+      ],
+      "verifiedBytecodeContains": [],
+      "codeBytes": 12070
+    },
+    "0x7a250d5630b4cf539739df2c5dacb4c659f2488d": {
+      "name": "Uniswap v2 Router02",
+      "kind": "v2r",
+      "verifiedSelectors": [
+        "38ed1739"
+      ],
+      "verifiedBytecodeContains": [],
+      "codeBytes": 21943
+    },
+    "0x111111125421ca6dc452d289314280a0f8842a65": {
+      "name": "1inch AggregationRouter v6",
+      "kind": "oneinch",
+      "verifiedSelectors": [
+        "07ed2379",
+        "83800a8e"
+      ],
+      "verifiedBytecodeContains": [],
+      "codeBytes": 24294
+    },
+    "0x4c82d1fbfe28c977cbb58d8c7ff8fcf9f70a2cca": {
+      "name": "Universal Router (2026 deployment)",
+      "kind": "ur",
+      "verifiedSelectors": [
+        "3593564c"
+      ],
+      "verifiedBytecodeContains": [],
+      "codeBytes": 24546
+    },
+    "0x7b2aa7ecc0b5936b7c52e6259a19c3ba557d0748": {
+      "name": "Ekubo Yul router",
+      "kind": "ekubo-yul",
+      "verifiedSelectors": [],
+      "verifiedBytecodeContains": [
+        "00000000000014aa86c5d3c41765bb24e11bd701"
+      ],
+      "codeBytes": 2878
+    }
+  },
+  "receipts": {
+    "method": "eth_getBlockReceipts; successful txs with >=1 pool-level swap event; pools = number of such events in the tx",
+    "swapTxs": 664726,
+    "sumPools": 1161778,
+    "failedSwapTxsSeen": 0,
+    "avgPoolsPerSwapTx": 1.748,
+    "histogram": {
+      "1": {
+        "txs": 459356,
+        "pct": 69.1
+      },
+      "2": {
+        "txs": 106197,
+        "pct": 15.98
+      },
+      "3": {
+        "txs": 49247,
+        "pct": 7.41
+      },
+      "4+": {
+        "txs": 49926,
+        "pct": 7.51
+      }
+    },
+    "ekuboCoreOtherTopiclessLogs": 0,
+    "allTxs": 5724722,
+    "successfulTxs": 5643974,
+    "perFamily": {
+      "univ3": {
+        "txs": 327953,
+        "events": 435259,
+        "avgEventsOfThisFamilyPerTx": 1.327,
+        "avgTotalPoolsPerTxTouchingFamily": 2.101,
+        "gasOfTxsTouchingFamily": "119065061543",
+        "emitters": 5232,
+        "topEmitters": {
+          "0xe0554a476a092703abdb3ef35c80e0d76d32939f": 61019,
+          "0xc7bbec68d12a0d1830360f8ec58fa599ba1b0e9b": 37879,
+          "0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640": 21193,
+          "0x11b815efb8f581194ae79006d24e0d814b7697f6": 10039,
+          "0xfaa318479b7755b2dbfdd34dc306cb28b420ad12": 8245
+        }
+      },
+      "univ4": {
+        "txs": 237383,
+        "events": 357639,
+        "avgEventsOfThisFamilyPerTx": 1.507,
+        "avgTotalPoolsPerTxTouchingFamily": 2.493,
+        "gasOfTxsTouchingFamily": "100861794702",
+        "emitters": 1,
+        "topEmitters": {
+          "0x000000000004444c5dc75cb358380d2e3de08a90": 237383
+        }
+      },
+      "univ2-family": {
+        "txs": 178611,
+        "events": 221663,
+        "avgEventsOfThisFamilyPerTx": 1.241,
+        "avgTotalPoolsPerTxTouchingFamily": 2.212,
+        "gasOfTxsTouchingFamily": "61822705206",
+        "emitters": 12930,
+        "topEmitters": {
+          "0x76a411f14a704099ba476ce8dffc288a53295218": 4028,
+          "0xc56c9d4aee66e16aa4a31a710a6d2fc720a626b6": 3114,
+          "0x69c7bd26512f52bf6f76fab834140d13dda673ca": 2939,
+          "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc": 2903,
+          "0x52c77b0cb827afbad022e6d6caf2c44452edbc39": 2751
+        }
+      },
+      "curve": {
+        "txs": 37104,
+        "events": 51606,
+        "avgEventsOfThisFamilyPerTx": 1.391,
+        "avgTotalPoolsPerTxTouchingFamily": 4.086,
+        "gasOfTxsTouchingFamily": "29977793714",
+        "emitters": 583,
+        "topEmitters": {
+          "0x35c9a4dae1ff05788f24b5b32721d89340cbb636": 6071,
+          "0x4ebdf703948ddcea3b11f675b4d1fba9d2414a14": 5317,
+          "0x7f86bf177dd4f3494b841a37e810a34dd56c829b": 3494,
+          "0xd51a44d3fae010294c616388b506acda1bfaae46": 3293,
+          "0x4f493b7de8aac7d55f71853688b1f7c8f0243c85": 1376
+        }
+      },
+      "pancake-v3": {
+        "txs": 30611,
+        "events": 34890,
+        "avgEventsOfThisFamilyPerTx": 1.14,
+        "avgTotalPoolsPerTxTouchingFamily": 4.299,
+        "gasOfTxsTouchingFamily": "20991198643",
+        "emitters": 200,
+        "topEmitters": {
+          "0x1445f32d1a74872ba41f3d8cf4022e9996120b31": 13953,
+          "0xacdb27b266142223e1e676841c1e809255fc6d07": 8512,
+          "0x6ca298d2983ab03aa1da7679389d955a4efee15c": 3579,
+          "0x1ac1a8feaaea1900c4166deeed0c11cc10669d36": 2408,
+          "0xbabe4490da9bcf0bbf062c40112aea2109d6ba7f": 1025
+        }
+      },
+      "ekubo": {
+        "txs": 21419,
+        "events": 24161,
+        "avgEventsOfThisFamilyPerTx": 1.128,
+        "avgTotalPoolsPerTxTouchingFamily": 3.346,
+        "gasOfTxsTouchingFamily": "14424619848",
+        "emitters": 1,
+        "topEmitters": {
+          "0x00000000000014aa86c5d3c41765bb24e11bd701": 21419
+        }
+      },
+      "fluid": {
+        "txs": 8789,
+        "events": 9481,
+        "avgEventsOfThisFamilyPerTx": 1.079,
+        "avgTotalPoolsPerTxTouchingFamily": 3.94,
+        "gasOfTxsTouchingFamily": "7517421114",
+        "emitters": 35,
+        "topEmitters": {
+          "0x667701e51b4d1ca244f17c78f7ab8744b4c99f9b": 3812,
+          "0x836951eb21f3df98273517b7249dceff270d34bf": 2588,
+          "0xea734b615888c669667038d11950f44b177f15c0": 748,
+          "0x3c0441b42195f4ad6aa9a0978e06096ea616cda7": 652,
+          "0x0b1a513ee24972daef112bc777a5610d4325c9e7": 211
+        }
+      },
+      "dodo": {
+        "txs": 7846,
+        "events": 8405,
+        "avgEventsOfThisFamilyPerTx": 1.071,
+        "avgTotalPoolsPerTxTouchingFamily": 4.457,
+        "gasOfTxsTouchingFamily": "7053994957",
+        "emitters": 506,
+        "topEmitters": {
+          "0x04571c32a4e1c5f39bc3a238cb95b215058c432c": 3836,
+          "0x3058ef90929cb8180174d74c507176cca6835d73": 924,
+          "0xc9f93163c99695c6526b799ebca2207fdf7d61ad": 409,
+          "0x201939f5c74f5fd3beef1cf03a9cfcc75beba9d9": 155,
+          "0x46cf01f14ff6f8c7ef4d6a6b139b1c3d45af9289": 90
+        }
+      },
+      "balancer-v2": {
+        "txs": 5584,
+        "events": 5934,
+        "avgEventsOfThisFamilyPerTx": 1.063,
+        "avgTotalPoolsPerTxTouchingFamily": 4.23,
+        "gasOfTxsTouchingFamily": "3988451309",
+        "emitters": 2,
+        "topEmitters": {
+          "0xba12222222228d8ba445958a75a0704d566bf2c8": 4492,
+          "0xd315a9c38ec871068fec378e4ce78af528c76293": 1094
+        }
+      },
+      "balancer-v3": {
+        "txs": 3987,
+        "events": 4306,
+        "avgEventsOfThisFamilyPerTx": 1.08,
+        "avgTotalPoolsPerTxTouchingFamily": 4.385,
+        "gasOfTxsTouchingFamily": "3438367528",
+        "emitters": 3,
+        "topEmitters": {
+          "0xba1333333333a1ba1108e8412f11850a5c319ba9": 3863,
+          "0x955244edc797a1c1b04134b600f819ac23c76081": 121,
+          "0x21e64c2a1c953a4202433ad584fe8eef283b56dd": 6
+        }
+      },
+      "maverick-v2": {
+        "txs": 2591,
+        "events": 2707,
+        "avgEventsOfThisFamilyPerTx": 1.045,
+        "avgTotalPoolsPerTxTouchingFamily": 4.116,
+        "gasOfTxsTouchingFamily": "2176138301",
+        "emitters": 18,
+        "topEmitters": {
+          "0x025a13752ec1fb6c0e441e5d7b1678bb5f9ca62f": 1093,
+          "0x6061cf96aa9f02aa072b77211a863989ca070c78": 507,
+          "0xdf9c440111a17eafbecf5db37dd04c948e878878": 475,
+          "0x31373595f40ea48a7aab6cbcb0d377c6066e2dca": 212,
+          "0x5b6a0771c752e35b2ca2aff4f22a66b1598a2bc5": 156
+        }
+      },
+      "bancor-v2": {
+        "txs": 2359,
+        "events": 4359,
+        "avgEventsOfThisFamilyPerTx": 1.848,
+        "avgTotalPoolsPerTxTouchingFamily": 5.242,
+        "gasOfTxsTouchingFamily": "1609101112",
+        "emitters": 135,
+        "topEmitters": {
+          "0xe331821bc94187c2649e932810a60204699d45cb": 1278,
+          "0xd4d5298136b52ec439ebfb23fda2ec500de69c71": 327,
+          "0x93334ab8a64b24df7b2fd2132e0e087239a21b63": 314,
+          "0xcba47689202d31575bfa204efe70e2c83d29da4d": 294,
+          "0x079ca3f710599739a22673c2856202f90d3a8806": 250
+        }
+      },
+      "maverick-v1": {
+        "txs": 563,
+        "events": 589,
+        "avgEventsOfThisFamilyPerTx": 1.046,
+        "avgTotalPoolsPerTxTouchingFamily": 4.417,
+        "gasOfTxsTouchingFamily": "539029948",
+        "emitters": 13,
+        "topEmitters": {
+          "0x11a653ddfbb61e0feff5484919f06d9d254bf65f": 245,
+          "0x352b186090068eb35d532428676ce510e17ab581": 167,
+          "0xd0b2f5018b5d22759724af6d4281ac0b13266360": 49,
+          "0x6c6fc818b25df89a8ada8da5a43669023bad1f4c": 30,
+          "0xab1e2d29699146a2e07c3a1c8ad8cb914a536f7a": 29
+        }
+      },
+      "bancor-v3": {
+        "txs": 531,
+        "events": 556,
+        "avgEventsOfThisFamilyPerTx": 1.047,
+        "avgTotalPoolsPerTxTouchingFamily": 5.633,
+        "gasOfTxsTouchingFamily": "400607619",
+        "emitters": 1,
+        "topEmitters": {
+          "0xeef417e1d5cc832e619ae18d2f140de2999dd4fb": 531
+        }
+      },
+      "bancor-carbon": {
+        "txs": 218,
+        "events": 220,
+        "avgEventsOfThisFamilyPerTx": 1.009,
+        "avgTotalPoolsPerTxTouchingFamily": 2.844,
+        "gasOfTxsTouchingFamily": "136615766",
+        "emitters": 1,
+        "topEmitters": {
+          "0xc537e898cd774e2dcba3b14ea6f34c93d5ea45e1": 218
+        }
+      },
+      "solidly-style": {
+        "txs": 3,
+        "events": 3,
+        "avgEventsOfThisFamilyPerTx": 1,
+        "avgTotalPoolsPerTxTouchingFamily": 1.667,
+        "gasOfTxsTouchingFamily": "1207060",
+        "emitters": 2,
+        "topEmitters": {
+          "0xfe0c14b4e614f40bf58845b4b04ced17fd116532": 2,
+          "0x7565756feaec1cbf51dfe71e04720b13f1c5104d": 1
+        }
+      }
+    },
+    "familiesWithNoEvents": [],
+    "gasShare": {
+      "swapTxGas": "212552446940",
+      "allTxGas": "650468728416",
+      "pct": 32.68
+    }
+  },
+  "calldata": {
+    "method": "eth_getBlockByNumber(full); successful txs to the verified routers; pools decoded from calldata",
+    "decodedTxs": 135167,
+    "sumPools": 164766,
+    "avgPoolsPerSwapTx": 1.219,
+    "histogram": {
+      "1": {
+        "txs": 116216,
+        "pct": 85.98
+      },
+      "2": {
+        "txs": 14123,
+        "pct": 10.45
+      },
+      "3": {
+        "txs": 2440,
+        "pct": 1.81
+      },
+      "4+": {
+        "txs": 2388,
+        "pct": 1.77
+      }
+    },
+    "opaqueTxs": 8303,
+    "undecodedTxs": 4224,
+    "failedTxs": 8023,
+    "crossCheckAgainstReceipts": {
+      "compared": 135167,
+      "equal": 134178,
+      "calldataLower": 989,
+      "calldataHigher": 0
+    },
+    "undecodedSelectors": {
+      "1inch AggregationRouter v6:0xb68fb020": 2725,
+      "1inch AggregationRouter v6:0xc3cf8043": 336,
+      "Uniswap v2 Router02:0xf305d719": 306,
+      "Uniswap v2 Router02:0x02751cec": 207,
+      "Uniswap v2 Router02:0xbaa2abde": 105,
+      "Uniswap v2 Router02:0xaf2979eb": 102,
+      "Universal Router (v2, 2025):0x3593564c": 98,
+      "Universal Router (v2, 2025):0x24856bc3": 75,
+      "Uniswap v2 Router02:0xe8e33700": 73,
+      "1inch AggregationRouter v6:0x89e7c650": 50,
+      "SwapRouter02:0xac9650d8": 36,
+      "1inch AggregationRouter v6:0x0d2c7c16": 34,
+      "1inch AggregationRouter v6:0x5816d723": 26,
+      "1inch AggregationRouter v6:0xea76dddf": 11,
+      "1inch AggregationRouter v6:0xcc713a04": 10,
+      "1inch AggregationRouter v6:0xe2c95c82": 6,
+      "Universal Router (v1.2, 2023):0x3593564c": 5,
+      "1inch AggregationRouter v6:0x9fda64bd": 4,
+      "1inch AggregationRouter v6:0x56a75868": 4,
+      "Universal Router (2026 deployment):0x3593564c": 4,
+      "Uniswap v2 Router02:0xded9382a": 2,
+      "Uniswap v2 Router02:0x5b0d5984": 2,
+      "SwapRouter02:0xdf2ab5bb": 1,
+      "1inch AggregationRouter v6:0xf497df75": 1,
+      "Uniswap v2 Router02:0x2195995c": 1
+    },
+    "perRouter": {
+      "SwapRouter02": {
+        "decodedTxs": 57070,
+        "avgPools": 1.071,
+        "histogram": {
+          "1": {
+            "txs": 53099,
+            "pct": 93.04
+          },
+          "2": {
+            "txs": 3906,
+            "pct": 6.84
+          },
+          "3": {
+            "txs": 47,
+            "pct": 0.08
+          },
+          "4+": {
+            "txs": 18,
+            "pct": 0.03
+          }
+        },
+        "opaque": 0,
+        "undecoded": 37,
+        "failed": 922,
+        "crossCheckAgainstReceipts": {
+          "compared": 57070,
+          "equal": 57070,
+          "calldataLower": 0,
+          "calldataHigher": 0
+        },
+        "mismatchSamples": []
+      },
+      "Universal Router (2026 deployment)": {
+        "decodedTxs": 20867,
+        "avgPools": 1.884,
+        "histogram": {
+          "1": {
+            "txs": 11869,
+            "pct": 56.88
+          },
+          "2": {
+            "txs": 4827,
+            "pct": 23.13
+          },
+          "3": {
+            "txs": 2031,
+            "pct": 9.73
+          },
+          "4+": {
+            "txs": 2140,
+            "pct": 10.26
+          }
+        },
+        "opaque": 0,
+        "undecoded": 4,
+        "failed": 750,
+        "crossCheckAgainstReceipts": {
+          "compared": 20867,
+          "equal": 20611,
+          "calldataLower": 256,
+          "calldataHigher": 0
+        },
+        "mismatchSamples": [
+          {
+            "hash": "0x36348e4fb73d8a5b8832bca0da4a328955f45f6295a47b7af518363ceadd5cc0",
+            "calldata": 1,
+            "events": 2
+          },
+          {
+            "hash": "0x2d27bc4fb07a45227c171977c3bb92fd3f9c4ae492ff2f8ce8af324d79196580",
+            "calldata": 1,
+            "events": 2
+          },
+          {
+            "hash": "0x8ea6b0103d540f3ab103a4c3b8c52d2461a3fbe7629a1236b57c772d5a4fbd18",
+            "calldata": 1,
+            "events": 2
+          },
+          {
+            "hash": "0xea16c255284227d90b6a2dbc61191d5440ad4f4d7e97bbee330e876948b9269a",
+            "calldata": 2,
+            "events": 3
+          },
+          {
+            "hash": "0xe3c0310d80dcc0655dc6c4d90536c05c9830b97f2a343df897701a3baa3d217f",
+            "calldata": 1,
+            "events": 2
+          }
+        ]
+      },
+      "Universal Router (v2, 2025)": {
+        "decodedTxs": 31349,
+        "avgPools": 1.201,
+        "histogram": {
+          "1": {
+            "txs": 26103,
+            "pct": 83.27
+          },
+          "2": {
+            "txs": 4670,
+            "pct": 14.9
+          },
+          "3": {
+            "txs": 354,
+            "pct": 1.13
+          },
+          "4+": {
+            "txs": 222,
+            "pct": 0.71
+          }
+        },
+        "opaque": 0,
+        "undecoded": 173,
+        "failed": 4141,
+        "crossCheckAgainstReceipts": {
+          "compared": 31349,
+          "equal": 30795,
+          "calldataLower": 554,
+          "calldataHigher": 0
+        },
+        "mismatchSamples": [
+          {
+            "hash": "0xf8e95975c298b42f0f6bb6e2158b718c05408f6f827032e317d37895e492559a",
+            "calldata": 1,
+            "events": 2
+          },
+          {
+            "hash": "0xa969b9330082242ea578b710df784036453541a7a0084493d22352b02a9e40ee",
+            "calldata": 1,
+            "events": 2
+          },
+          {
+            "hash": "0x513d5dc0bd4e41278200be5b18fbc2a855f5698c350449bf77d66bb0a25e9408",
+            "calldata": 1,
+            "events": 2
+          },
+          {
+            "hash": "0x5892102ad1c51701aa6d664e5ff0f155a4a2b36a7977819c32e4d2bdd7a46f19",
+            "calldata": 1,
+            "events": 3
+          },
+          {
+            "hash": "0x22af68dfad3d3ec0a792a40e47d722200862e1d03b239ff8756c5dfb539048a0",
+            "calldata": 1,
+            "events": 3
+          }
+        ]
+      },
+      "Uniswap v2 Router02": {
+        "decodedTxs": 19072,
+        "avgPools": 1.028,
+        "histogram": {
+          "1": {
+            "txs": 18534,
+            "pct": 97.18
+          },
+          "2": {
+            "txs": 536,
+            "pct": 2.81
+          },
+          "3": {
+            "txs": 2,
+            "pct": 0.01
+          },
+          "4+": {
+            "txs": 0,
+            "pct": 0
+          }
+        },
+        "opaque": 0,
+        "undecoded": 798,
+        "failed": 1021,
+        "crossCheckAgainstReceipts": {
+          "compared": 19072,
+          "equal": 18895,
+          "calldataLower": 177,
+          "calldataHigher": 0
+        },
+        "mismatchSamples": [
+          {
+            "hash": "0xa36abe4510265aa77dbe3d49149c5e695d942f4f60f5a18bc258b5a6589b399b",
+            "calldata": 1,
+            "events": 2
+          },
+          {
+            "hash": "0xd622bf435c0803810878dcc98d4e08fa72570ade3180b4f4050812e755512b90",
+            "calldata": 1,
+            "events": 2
+          },
+          {
+            "hash": "0x1f2c205eec27c70573b2bc5cdf67b1c3718dd81226a1a2376cc12d3268497166",
+            "calldata": 1,
+            "events": 2
+          },
+          {
+            "hash": "0xdbfa8169f999378e81956b728c21452994f1391ba92249f6f3188256a95dbacd",
+            "calldata": 1,
+            "events": 2
+          },
+          {
+            "hash": "0x01271e9b0653a84f8bacdd0c62a3564e9c23075763fe0e51dd375ef3cc383a86",
+            "calldata": 1,
+            "events": 2
+          }
+        ]
+      },
+      "1inch AggregationRouter v6": {
+        "decodedTxs": 453,
+        "avgPools": 1.245,
+        "histogram": {
+          "1": {
+            "txs": 345,
+            "pct": 76.16
+          },
+          "2": {
+            "txs": 105,
+            "pct": 23.18
+          },
+          "3": {
+            "txs": 3,
+            "pct": 0.66
+          },
+          "4+": {
+            "txs": 0,
+            "pct": 0
+          }
+        },
+        "opaque": 8283,
+        "undecoded": 3207,
+        "failed": 941,
+        "crossCheckAgainstReceipts": {
+          "compared": 453,
+          "equal": 453,
+          "calldataLower": 0,
+          "calldataHigher": 0
+        },
+        "mismatchSamples": []
+      },
+      "SwapRouter (v3 classic)": {
+        "decodedTxs": 4813,
+        "avgPools": 1.017,
+        "histogram": {
+          "1": {
+            "txs": 4732,
+            "pct": 98.32
+          },
+          "2": {
+            "txs": 78,
+            "pct": 1.62
+          },
+          "3": {
+            "txs": 3,
+            "pct": 0.06
+          },
+          "4+": {
+            "txs": 0,
+            "pct": 0
+          }
+        },
+        "opaque": 0,
+        "undecoded": 0,
+        "failed": 234,
+        "crossCheckAgainstReceipts": {
+          "compared": 4813,
+          "equal": 4813,
+          "calldataLower": 0,
+          "calldataHigher": 0
+        },
+        "mismatchSamples": []
+      },
+      "Universal Router (v1.2, 2023)": {
+        "decodedTxs": 1543,
+        "avgPools": 1.022,
+        "histogram": {
+          "1": {
+            "txs": 1534,
+            "pct": 99.42
+          },
+          "2": {
+            "txs": 1,
+            "pct": 0.06
+          },
+          "3": {
+            "txs": 0,
+            "pct": 0
+          },
+          "4+": {
+            "txs": 8,
+            "pct": 0.52
+          }
+        },
+        "opaque": 0,
+        "undecoded": 5,
+        "failed": 14,
+        "crossCheckAgainstReceipts": {
+          "compared": 1543,
+          "equal": 1541,
+          "calldataLower": 2,
+          "calldataHigher": 0
+        },
+        "mismatchSamples": [
+          {
+            "hash": "0xcca4964ec899dfdd66316107236306c224cb784a572c3ddf484ed92ef67fb5c8",
+            "calldata": 1,
+            "events": 2
+          },
+          {
+            "hash": "0xdd819743acf4517182d5f8270f5f7c4d3999ac7e823cc20f7fb2193091c02fd6",
+            "calldata": 1,
+            "events": 2
+          }
+        ]
+      },
+      "Ekubo Yul router": {
+        "decodedTxs": 0,
+        "avgPools": null,
+        "histogram": {
+          "1": {
+            "txs": 0,
+            "pct": 0
+          },
+          "2": {
+            "txs": 0,
+            "pct": 0
+          },
+          "3": {
+            "txs": 0,
+            "pct": 0
+          },
+          "4+": {
+            "txs": 0,
+            "pct": 0
+          }
+        },
+        "opaque": 20,
+        "undecoded": 0,
+        "failed": 0,
+        "crossCheckAgainstReceipts": {
+          "compared": 0,
+          "equal": 0,
+          "calldataLower": 0,
+          "calldataHigher": 0
+        },
+        "mismatchSamples": []
+      }
+    }
+  }
+}

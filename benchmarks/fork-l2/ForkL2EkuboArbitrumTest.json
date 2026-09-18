@@ -1,0 +1,14 @@
+{
+  "fork-l2 arbitrum ekubo Yul router 100 USDC->WETH fresh pool": "113121",
+  "fork-l2 arbitrum ekubo Yul router 100 USDC->WETH fresh pool | Ekubo fine ticks moved (1/100 of a Uniswap tick)": "1",
+  "fork-l2 arbitrum ekubo Yul router 1000 USDC->WETH fresh pool": "113133",
+  "fork-l2 arbitrum ekubo Yul router 1000 USDC->WETH fresh pool | Ekubo fine ticks moved (1/100 of a Uniswap tick)": "11",
+  "fork-l2 arbitrum ekubo Yul router 50 USDC->WETH fresh pool": "113133",
+  "fork-l2 arbitrum ekubo Yul router 50 USDC->WETH fresh pool | Ekubo fine ticks moved (1/100 of a Uniswap tick)": "1",
+  "fork-l2 arbitrum ekubo calldata bytes 100 USDC": "184",
+  "fork-l2 arbitrum ekubo calldata bytes 1000 USDC": "184",
+  "fork-l2 arbitrum ekubo calldata bytes 50 USDC": "184",
+  "fork-l2 arbitrum ekubo output 100 USDC->WETH (wei)": "40624188992664839",
+  "fork-l2 arbitrum ekubo output 1000 USDC->WETH (wei)": "406235910949341733",
+  "fork-l2 arbitrum ekubo output 50 USDC->WETH (wei)": "20312111104803398"
+}

@@ -1,0 +1,9 @@
+{
+  "fork ekubo Positions mint amount0 (USDC, 6 decimals)": "9992084352",
+  "fork ekubo Positions mint amount1 (USDT, 6 decimals)": "10000000000",
+  "fork ekubo Positions mint id": "25083100237766864067710388918595849694396003226932398993912489470024538291565",
+  "fork ekubo Positions mint liquidity": "9996041392",
+  "fork ekubo Positions mintAndDeposit USDC/USDT, cold boundary ticks": "369791",
+  "fork ekubo Positions mintAndDeposit full-range USDC/USDT (measured)": "244513",
+  "fork ekubo Positions mintAndDepositWithSalt full-range USDC/USDT (first, warm-up)": "420636"
+}
