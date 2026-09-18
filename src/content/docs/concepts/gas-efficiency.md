@@ -75,6 +75,10 @@ That is 664,726 swap transactions at an average of **1.75 pools per swap**
 (daily 20% to 41%). Transactions sent straight to the Uniswap and
 1inch routers average 1.22 pools; the rest is aggregators, MEV and other
 contracts. Failed transactions emit no logs and are excluded by construction.
+Both figures are lower bounds: the count only sees swap events in the catalogued
+families, so any AMM outside the catalogue adds uncounted transactions and
+uncounted pools, and the swap-transaction gas share can only be higher. The
+chain-wide capacity gains below inherit that bias and are underestimates.
 
 A swap's transaction gas at _p_ pools is the one-pool minimal-router transaction
 plus (_p_ − 1) times the measured marginal per extra pool:

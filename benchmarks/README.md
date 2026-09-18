@@ -652,6 +652,14 @@ Reading the histogram for the page: 69% of swap transactions touch one pool, but
 31% that touch more carry enough pools to lift the mean to 1.75, and the daily mean
 never left the 1.64–1.87 band in a month that spanned a 2x range of swap gas share.
 
+Both the pools-per-swap average and the gas share are lower bounds. A transaction is
+counted, and its pools are counted, only through swap events of the catalogued
+families; any AMM outside the catalogue (long-tail forks with their own event
+signatures, order-book fills that never touch a pool, the legacy Ekubo v2 core)
+contributes uncounted transactions, uncounted pools inside counted transactions, and
+uncounted gas. The chain-wide capacity figures on the page therefore understate the
+effect of moving swap flow to Ekubo.
+
 ## L2 fork methodology (Base, Arbitrum One)
 
 Same discipline as the mainnet fork (pinned block, one identical unmeasured warm-up swap,
