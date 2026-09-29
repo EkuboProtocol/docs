@@ -15,8 +15,8 @@ Every interaction that moves tokens starts with `ICore#lock` (see the ["till" pa
 
 ## Swapping on EVM chains
 
-Production swaps go through the [Yul Router](/integration-guides/yul-router/) — a gas-optimized router deployed deterministically at the same address on each chain it has been released to (currently Ethereum, Base, Arbitrum, and Robinhood Chain, plus their testnets), with routes encoded by [`@ekubo/yul-router-sdk`](https://www.npmjs.com/package/@ekubo/yul-router-sdk). Core is deployed to more chains than the router; on those, use the reference `Router` below. See the [Yul Router guide](/integration-guides/yul-router/) for the calldata model, hop types, and SDK usage.
+Production swaps go through the [Yul Router](/integration-guides/yul-router/) — a gas-optimized router deployed deterministically at the same address on each chain it has been released to, with routes encoded by [`@ekubo/yul-router-sdk`](https://www.npmjs.com/package/@ekubo/yul-router-sdk). Release v0.7.1 is deployed on every mainnet in the [EVM supported chains](/reference/contracts/evm-v3/#supported-chains) table, plus several testnets; the [release manifest](https://github.com/EkuboProtocol/yul-router/blob/v0.7.1/broadcast/releases/v0.7.1/manifest.json) lists each network. See the [Yul Router guide](/integration-guides/yul-router/) for the calldata model, hop types, and SDK usage.
 
 ## Reference routers
 
-To execute swaps from your own contract, see the reference Router implementations on [Starknet](https://github.com/EkuboProtocol/starknet-contracts/blob/v5.0.3/src/router.cairo) and [EVM](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/Router.sol).
+To execute swaps from your own contract, see the reference Router implementations on [Starknet](https://github.com/EkuboProtocol/starknet-contracts/blob/v5.0.3/src/router.cairo) and [EVM](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/Router.sol). On EVM, a contract that already holds a Core lock can also run a Yul Router route through `Core.forward` and settle the net result itself; see [forwarded mode](/integration-guides/yul-router/#three-ways-to-execute-a-route).
