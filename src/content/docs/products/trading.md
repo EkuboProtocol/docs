@@ -31,7 +31,7 @@ For pool math in TypeScript — tick and price conversions, liquidity sizing, sw
 
 ## Execution
 
-On EVM chains, swaps execute through the [Yul Router](/integration-guides/yul-router/), deployed at the same address on every supported chain. Routes are encoded with [`@ekubo/yul-router-sdk`](https://www.npmjs.com/package/@ekubo/yul-router-sdk) and sent as raw calldata — there is no ABI selector, because the calldata _is_ the route.
+On EVM chains, swaps execute through the [Yul Router](/integration-guides/yul-router/), deployed at the same address on every supported chain. Routes are encoded with [`@ekubo/yul-router-sdk`](https://www.npmjs.com/package/@ekubo/yul-router-sdk) and sent as raw calldata — there is no swap selector, because the calldata _is_ the route. The same route can be priced without executing it through the router's `quote(bytes)` entrypoint.
 
 The router executes every split of a trade under a **single Core lock**, aggregates the amounts, applies **one slippage check** against the total, and settles token transfers once. This is what makes multi-pool routing on Ekubo cheap: [flash accounting](/concepts/architecture/) means intermediate hops never touch the token contracts.
 
