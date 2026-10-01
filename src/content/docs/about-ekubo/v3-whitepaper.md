@@ -19,7 +19,7 @@ This paper describes the V3 EVM architecture. Sharing occurs within a Core deplo
 
 Core implements concentrated liquidity using constant-product swap math. Liquidity providers choose price ranges, and their liquidity participates while the market price is inside those ranges. The underlying tick grid advances in increments of 0.01 basis points, with each pool's tick spacing determining the available position boundaries. This gives market makers fine control over where they supply liquidity.
 
-Core also supports full-range and stableswap configurations. These configurations belong to the shared implementation, so a team can select the appropriate pool design without maintaining its own copy of the swap math. The implementation is available in the [Core contract](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/Core.sol) and [pool configuration code](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/types/poolConfig.sol).
+Core also supports full-range and stableswap configurations. These configurations belong to the shared implementation, so a team can select the appropriate pool design without maintaining its own copy of the swap math. The implementation is available in the [Core contract](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/Core.sol) and [pool configuration code](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/types/poolConfig.sol).
 
 A pool is identified by its token pair and configuration, including its fee, pool type parameters, and extension. Products using the same pool key on the same Core access the same pool. Different configurations remain distinct markets, even though Core holds their tokens. Position ownership and accounting also remain separate: sharing a pool does not give one product control over another product's positions.
 
@@ -27,7 +27,7 @@ A pool is identified by its token pair and configuration, including its fee, poo
 
 Core reduces the storage access and token movement needed to execute a trade. Frequently accessed state is packed into compact representations, and critical arithmetic uses low-level operations. These choices matter because every transaction pays for the work performed by the EVM.
 
-The price representation illustrates this approach. Core stores the square-root price in a 96-bit dynamic fixed-point format whose two highest bits select the scale. This leaves room for the current tick and active liquidity in the same 256-bit storage word. The encoding and layout are defined in [SqrtRatio](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/types/sqrtRatio.sol) and [PoolState](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/types/poolState.sol).
+The price representation illustrates this approach. Core stores the square-root price in a 96-bit dynamic fixed-point format whose two highest bits select the scale. This leaves room for the current tick and active liquidity in the same 256-bit storage word. The encoding and layout are defined in [SqrtRatio](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/types/sqrtRatio.sol) and [PoolState](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/types/poolState.sol).
 
 Compact state and careful arithmetic reduce overhead, but their effect depends on the transaction. Tick crossings, extension logic, token behavior, and the route itself still affect gas consumption. The design should be evaluated through measurements of comparable operations; it does not establish that further optimization is impossible.
 
@@ -35,7 +35,7 @@ Compact state and careful arithmetic reduce overhead, but their effect depends o
 
 Independent teams can build products around Core under the Ekubo DAO Shared Revenue License. These licensees choose how users access the market, which assets and pools they feature, and how they earn revenue. Their products may use routers, position managers, and extensions to compose the underlying operations into a particular trading or liquidity-management experience.
 
-The standard positions contract provides one way to manage user liquidity above Core. A licensee can deploy it with its own fee parameters, including a share of collected swap fees and a fee on liquidity withdrawals. In the reference [Positions implementation](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/Positions.sol), those parameters are set at construction and are immutable for that deployment. Different position managers can therefore offer different economics while supplying liquidity to the same Core pool.
+The standard positions contract provides one way to manage user liquidity above Core. A licensee can deploy it with its own fee parameters, including a share of collected swap fees and a fee on liquidity withdrawals. In the reference [Positions implementation](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/Positions.sol), those parameters are set at construction and are immutable for that deployment. Different position managers can therefore offer different economics while supplying liquidity to the same Core pool.
 
 This arrangement allows products to share liquidity without sharing their entire business model. A trader can reach a pool through several interfaces, and liquidity in that pool can serve the resulting order flow. The benefit depends on products actually selecting and routing into common pools; using the same Core alone does not eliminate fragmentation across configurations.
 
@@ -43,7 +43,7 @@ This arrangement allows products to share liquidity without sharing their entire
 
 Extensions are contracts that add behavior at defined points in Core's operations. They let builders reuse protocol features while keeping the underlying AMM implementation in one place. A pool's configuration selects its extension, so extension behavior is part of the identity and execution requirements of that pool.
 
-The reference implementation includes an [Oracle](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/extensions/Oracle.sol) that records cumulative observations for supported pools, a [TWAMM](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/extensions/TWAMM.sol) that executes orders over time, and [MEV Capture](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/extensions/MEVCapture.sol), which collects additional swap fees based on price movement and accounts for them as pool fees. These features support different market requirements without requiring each licensee to reproduce them.
+The reference implementation includes an [Oracle](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/extensions/Oracle.sol) that records cumulative observations for supported pools, a [TWAMM](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/extensions/TWAMM.sol) that executes orders over time, and [MEV Capture](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/extensions/MEVCapture.sol), which collects additional swap fees based on price movement and accounts for them as pool fees. These features support different market requirements without requiring each licensee to reproduce them.
 
 Products can offer access to pools with different extensions or develop new extensions of their own. A single pool key contains one extension address; combining several behaviors in one pool requires an extension designed to compose them. Integrators must account for those behaviors when quoting and executing trades, even when they already support Core.
 
@@ -71,7 +71,7 @@ The same principle applies when products operated by different licensees compose
 
 ## Flash Accounting as a Supporting Feature
 
-Flash accounting makes this settlement model possible. During a lock, Core tracks token obligations as operations execute, allowing swaps and liquidity changes to be combined before settlement. The EVM implementation uses transient storage for this accounting and reverts if any debt remains outstanding when the lock ends. These checks are implemented in [FlashAccountant](https://github.com/EkuboProtocol/evm-contracts/blob/main/src/base/FlashAccountant.sol).
+Flash accounting makes this settlement model possible. During a lock, Core tracks token obligations as operations execute, allowing swaps and liquidity changes to be combined before settlement. The EVM implementation uses transient storage for this accounting and reverts if any debt remains outstanding when the lock ends. These checks are implemented in [FlashAccountant](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/src/base/FlashAccountant.sol).
 
 Core also supports saved balances that contracts can retain and reuse across transactions. Those balances are accounted for by the locker address, token pair, and a salt; custody in the same contract does not make them freely accessible to other callers.
 
@@ -81,7 +81,7 @@ Together, net settlement and saved balances let builders compose operations with
 
 The V3 EVM Core has no owner role or administrative switch for imposing a global protocol fee. Pool creation and extension registration are governed by contract validation rather than a discretionary approval process. These properties concern Core itself; position managers, extensions, and other contracts must be evaluated separately.
 
-The code can be deployed and integrated under the [Ekubo DAO Shared Revenue License](https://github.com/EkuboProtocol/evm-contracts/blob/main/LICENSE). The license governs revenue sharing and other obligations, including notices and distribution terms. Its definition of Protocol Revenue is broader than the fee setting on a particular positions contract, so a zero setting alone does not establish that a product has no revenue-sharing obligation.
+The code can be deployed and integrated under the [Ekubo DAO Shared Revenue License](https://github.com/EkuboProtocol/evm-contracts/blob/v3.2.0/LICENSE). The license governs revenue sharing and other obligations, including notices and distribution terms. Its definition of Protocol Revenue is broader than the fee setting on a particular positions contract, so a zero setting alone does not establish that a product has no revenue-sharing obligation.
 
 Core's accounting is separate from those licensing obligations. Products can implement their revenue models in contracts above Core, while the shared AMM continues to account for pool liquidity and trading fees. This separation places product economics at the integration layer and allows the same market infrastructure to support different commercial arrangements.
 
