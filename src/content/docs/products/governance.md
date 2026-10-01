@@ -7,7 +7,7 @@ title: "Governance"
 
 Ekubo Protocol is governed by holders of the [EKUBO token](/user-guides/ekubo-token/). Governance is deliberately narrow in scope: the EVM V3 Core contracts are **ownerless and immutable**, so there is no privileged actor who can change how the AMM works or seize funds. What governance does control is the protocol's upgradeable deployments, its treasury, and the parameters of the periphery.
 
-The contracts are open source in the [governance repository](https://github.com/EkuboProtocol/governance) and are themselves ownerless and non-upgradeable, apart from the Governor's ability to upgrade itself by proposal.
+The contracts are open source in the [governance repository](https://github.com/EkuboProtocol/governance) and are themselves ownerless and non-upgradeable, apart from the Governor's ability to upgrade itself by proposal. Deployed addresses are listed in the [governance contracts reference](/reference/contracts/governance/).
 
 ## The three contracts
 
