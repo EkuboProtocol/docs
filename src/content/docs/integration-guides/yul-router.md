@@ -57,7 +57,7 @@ For `forwarded` and `signedExclusiveSwap` hops, the SDK defaults `forwardee` to 
 
 ### Review status
 
-The router's [Codex audit](https://github.com/EkuboProtocol/yul-router/blob/v0.7.1/audits/codex-audit-2026-07-06.md) covered commit `04d29c4` (July 6, 2026). That commit predates the `signedExclusiveSwap` hop (added July 8), forwarded mode (July 25), and `quote(bytes)` and partial routes (July 27); at the audited commit, `Core.forward(router, ...)` was rejected. The Cantina [AI audit scan](/reference/audits/) is dated July 24, 2026, also before forwarded mode, `quote(bytes)`, and partial routes were added. All of these ship in v0.7.1, so neither review covers the full released router.
+The router's [Codex audit](https://github.com/EkuboProtocol/yul-router/blob/v0.7.1/audits/codex-audit-2026-07-06.md) covered commit `04d29c4` (July 6, 2026). That commit predates the `signedExclusiveSwap` hop (added July 8), forwarded mode (July 25), and `quote(bytes)` and partial routes (July 27); at the audited commit, `Core.forward(router, ...)` was rejected. The Cantina [AI audit scan](/reference/audits/) is dated July 24, 2026, also before forwarded mode, `quote(bytes)`, and partial routes were added. v0.7.1 was additionally reviewed by the CSO (ACCEPT, pinned to `c5a0dc4`, 2026-09-29); the Codex and Cantina reviews covered earlier revisions.
 
 CI continuously checks the router against production: it requests live mainnet quotes from the Quoter API, converts them to calldata with the SDK, and executes that calldata against canonical Core on a mainnet fork at each quote's block. The cases cover ETH to ERC20, ERC20 to ETH, ERC20 to ERC20, and exact-output swaps.
 
