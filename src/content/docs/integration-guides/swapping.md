@@ -15,7 +15,7 @@ Every interaction that moves tokens starts with `ICore#lock` (see the ["till" pa
 
 ## Swapping on EVM chains
 
-Production swaps go through the [Yul Router](/integration-guides/yul-router/) — a gas-optimized router deployed deterministically at the same address on each chain it has been released to, with routes encoded by [`@ekubo/yul-router-sdk`](https://www.npmjs.com/package/@ekubo/yul-router-sdk). Release v0.7.1 is deployed on every mainnet in the [EVM supported chains](/reference/contracts/evm-v3/#supported-chains) table, plus several testnets; the [release manifest](https://github.com/EkuboProtocol/yul-router/blob/v0.7.1/broadcast/releases/v0.7.1/manifest.json) lists each network. See the [Yul Router guide](/integration-guides/yul-router/) for the calldata model, hop types, and SDK usage.
+Production swaps go through the [Yul Router](/integration-guides/yul-router/) — a gas-optimized router deployed deterministically at the same address on each chain it has been released to, with routes encoded by [`@ekubo/yul-router-sdk`](https://www.npmjs.com/package/@ekubo/yul-router-sdk). Release v0.8.0 is deployed on all 13 mainnets in the [EVM supported chains](/reference/contracts/evm-v3/#supported-chains) table and on 13 testnets; the [release manifest](https://github.com/EkuboProtocol/yul-router/blob/v0.8.0/broadcast/releases/v0.8.0/manifest.json) lists each of the 26 networks. See the [Yul Router guide](/integration-guides/yul-router/) for the calldata model, hop types, and SDK usage.
 
 ## Reference routers
 

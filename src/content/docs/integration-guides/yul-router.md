@@ -5,9 +5,9 @@ description: >-
 title: "Yul Router"
 ---
 
-The [Yul Router](https://github.com/EkuboProtocol/yul-router/tree/v0.7.1) is a gas-focused router written in Yul that executes Ekubo swaps on EVM chains. It is how swaps are executed in production today: the [interface](https://ekubo.org) encodes routes from [Quoter API](/api/#quoter) results and sends them to the router.
+The [Yul Router](https://github.com/EkuboProtocol/yul-router/tree/v0.8.0) is a gas-focused router written in Yul that executes Ekubo swaps on EVM chains. It is how swaps are executed in production today: the [interface](https://ekubo.org) encodes routes from [Quoter API](/api/#quoter) results and sends them to the router.
 
-This page describes release **v0.7.1** of the router and of `@ekubo/yul-router-sdk`. The repository's `main` branch can contain unreleased changes, so read the source and README at the [`v0.7.1` tag](https://github.com/EkuboProtocol/yul-router/tree/v0.7.1) rather than at `main`.
+This page describes release **v0.8.0** of the router and of `@ekubo/yul-router-sdk`. The repository's `main` branch can contain unreleased changes, so read the source and README at the [`v0.8.0` tag](https://github.com/EkuboProtocol/yul-router/tree/v0.8.0) rather than at `main`.
 
 The router is deployed deterministically on every supported network. Always use `YUL_ROUTER_ADDRESS` exported by the same installed version of `@ekubo/yul-router-sdk` that you use to encode calldata. This keeps the router destination compatible with that version's encoding; do not copy or hard-code an address from documentation.
 
@@ -57,7 +57,7 @@ For `forwarded` and `signedExclusiveSwap` hops, the SDK defaults `forwardee` to 
 
 ### Review status
 
-The router's [Codex audit](https://github.com/EkuboProtocol/yul-router/blob/v0.7.1/audits/codex-audit-2026-07-06.md) covered commit `04d29c4` (July 6, 2026). That commit predates the `signedExclusiveSwap` hop (added July 8), forwarded mode (July 25), and `quote(bytes)` and partial routes (July 27); at the audited commit, `Core.forward(router, ...)` was rejected. The Cantina [AI audit scan](/reference/audits/) is dated July 24, 2026, also before forwarded mode, `quote(bytes)`, and partial routes were added. v0.7.1 was additionally reviewed by the CSO (ACCEPT, pinned to `c5a0dc4`, 2026-09-29); the Codex and Cantina reviews covered earlier revisions.
+The router's [Codex audit](https://github.com/EkuboProtocol/yul-router/blob/v0.8.0/audits/codex-audit-2026-07-06.md) covered commit `04d29c4` (July 6, 2026). That commit predates the `signedExclusiveSwap` hop (added July 8), forwarded mode (July 25), and `quote(bytes)` and partial routes (July 27); at the audited commit, `Core.forward(router, ...)` was rejected. The Cantina [AI audit scan](/reference/audits/) is dated July 24, 2026, also before forwarded mode, `quote(bytes)`, and partial routes were added. v0.7.1 was additionally reviewed by the CSO (ACCEPT, pinned to `c5a0dc4`, 2026-09-29); the Codex and Cantina reviews covered earlier revisions.
 
 CI continuously checks the router against production: it requests live mainnet quotes from the Quoter API, converts them to calldata with the SDK, and executes that calldata against canonical Core on a mainnet fork at each quote's block. The cases cover ETH to ERC20, ERC20 to ETH, ERC20 to ERC20, and exact-output swaps.
 
@@ -66,7 +66,7 @@ CI continuously checks the router against production: it requests live mainnet q
 Routes are encoded with [`@ekubo/yul-router-sdk`](https://www.npmjs.com/package/@ekubo/yul-router-sdk), which is published with npm provenance from the repository's release workflow:
 
 ```sh
-npm install @ekubo/yul-router-sdk@0.7.1
+npm install @ekubo/yul-router-sdk@0.8.0
 ```
 
 `viem` is a peer dependency.
@@ -87,6 +87,8 @@ const calldata = encodeRoutes({
   // unbounded threshold.
   calculatedAmountThreshold: minUsdcOut,
   recipient, // optional; defaults to the sender
+  // last unix second the route may execute; see Deadlines below
+  deadline: Math.floor(Date.now() / 1000) + 30 * 60,
   multiHops: [
     { specifiedAmount: 10n ** 18n, hops: [{ type: "core", poolKey }] },
     // e.g. a second split through a MEVCapture pool:
@@ -105,6 +107,14 @@ Notes:
 - All multi-hops in one call must agree on direction; mixing exact-in and exact-out throws.
 - `encodeRoute(...)` is a convenience wrapper for a single path; `generateCalldata(...)` is an alias of `encodeRoutes(...)`.
 - Limits: up to 256 multi-hops per call and 256 hops per multi-hop (`MAX_MULTIHOP_LENGTH`, `MAX_HOP_LENGTH`).
+
+### Deadlines
+
+`encodeRoutes(...)` and `encodeRoute(...)` accept an optional `deadline`: the last Unix timestamp, in seconds, at which the route may execute. It must fit in a `uint32`, and the SDK throws otherwise. The router compares it with the block timestamp before executing any hop: the route may still execute during the deadline second itself, and from the next second it reverts with `DeadlineExpired()` (selector `0x1ab7da6b`). The check applies in all three modes: direct, forwarded, and `quote(bytes)`.
+
+Omitting `deadline` encodes a route that never expires; such a route encodes exactly as it did before deadlines were added. Swaps submitted on behalf of users should always set a deadline. `calculatedAmountThreshold` bounds only the amounts, while a deadline also bounds how long a pool's fee or state can change before the route lands. The [interface](https://ekubo.org) sets a deadline when the user signs, 30 minutes ahead by default, counted from the latest block's timestamp rather than the device clock.
+
+In the encoded route, the deadline is a 4-byte value appended to the header after the optional recipient and signalled by header flag bit 1. Header flag bits above bit 1 are reserved, and the router rejects them with `InvalidRoute()`.
 
 ### Quoting a route on-chain
 
@@ -204,6 +214,7 @@ const calldata = encodeRoutes({
   specifiedToken,
   calculatedToken,
   calculatedAmountThreshold,
+  deadline: Math.floor(Date.now() / 1000) + 30 * 60,
   multiHops: quote.splits.map((split) => ({
     specifiedAmount: BigInt(split.amount_specified),
     hops: split.route.map(toHop),
@@ -211,7 +222,7 @@ const calldata = encodeRoutes({
 });
 ```
 
-Send the calldata to `YUL_ROUTER_ADDRESS` promptly, since quotes are pinned to a block. To confirm the route still clears your threshold at the current state, pass the same parameters to `generateQuoteCalldata(...)` first.
+Send the calldata to `YUL_ROUTER_ADDRESS` promptly, since quotes are pinned to a block; the `deadline` bounds how late it can still land. To confirm the route still clears your threshold at the current state, pass the same parameters to `generateQuoteCalldata(...)` first.
 
 ## Deploying to a new chain
 
