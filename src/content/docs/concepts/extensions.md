@@ -76,6 +76,10 @@ These extensions are already built and deployed. Each one is a pool type you can
 | **[Ve33](/products/ve33/)**                                               | EVM      | Token-governed liquidity: stakers vote to direct emissions and set pool fees, and earn the fees of the pools they support              |
 | **[Signed exclusive swaps](/integration-guides/signed-exclusive-swaps/)** | EVM      | RFQ-style pools where a controller signs each swap off-chain with its own fee and bounds                                               |
 
+### How MEV capture fees are credited
+
+MEV capture holds its additional fee in the pool and credits it to liquidity providers at the first interaction with the pool in a later block timestamp. On chains with sub-second blocks, several blocks can share one timestamp. The credit goes to the liquidity that is active at the pool price at that moment, not to the liquidity the surcharged swap traded through. Positions added in the same block timestamp after a surcharged swap share in that swap's additional fee, and positions removed in that timestamp do not. If the price was left in a range with no liquidity, that amount is not credited to anyone. A position near the edge of the active range can therefore receive more or less than its share of a given swap's additional fee, in some cases all of it or none of it. Ekubo estimates that from June 2025 to October 2026 this affected about 0.15% of the additional fees paid out, with no sign of deliberate exploitation. That is a historical estimate, not a limit. Deployed MEV capture extensions cannot be changed, so this applies to every existing MEV capture pool.
+
 Source code: [EVM extensions](https://github.com/EkuboProtocol/evm-contracts/tree/v3.2.0/src/extensions) and [Starknet extensions](https://github.com/EkuboProtocol/starknet-contracts/tree/v5.0.3/src/extensions).
 
 For how this design compares to Uniswap v4 hooks — and why the `forward` primitive replaces v4's custom-accounting machinery — see [Extensions vs. Uniswap v4 hooks on the Ekubo Blog](https://blog.ekubo.org/ekubo-extensions-vs-uniswap-v4-hooks/).
