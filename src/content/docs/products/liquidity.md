@@ -34,7 +34,7 @@ Core itself charges nothing — see [Protocol architecture](/concepts/architectu
 Extensions attach behavior to a pool without moving liquidity out of Core:
 
 - **TWAMM** — pools that back [DCA orders](/user-guides/dollar-cost-average-orders/). Providing liquidity here earns fees from order flow that executes against the pool when buy and sell orders are imbalanced, in addition to ordinary swap volume.
-- **MEV capture** — charges extra on price-moving swaps and returns that value to LPs instead of searchers.
+- **MEV capture** — charges extra on price-moving swaps and returns that value to LPs instead of searchers. MEV capture fees are credited at the pool's next interaction in a later block timestamp; see [How MEV capture fees are credited](/concepts/extensions/#how-mev-capture-fees-are-credited).
 - **Boosted fees** — lets anyone fund additional fee rewards for a pool's LPs, on top of swap fees. Used for targeted liquidity campaigns.
 - **[Ve33](/products/ve33/)** — replaces swap-fee income with emissions of a stake token, with voters directing where those emissions go and setting each pool's fee. LPs earn emissions; voters earn the swap fees.
 - **Oracle** — records price history for a token against native ETH on EVM (a configured quote token on Starknet). Oracle pools are full-range and fee-free by design.
