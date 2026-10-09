@@ -59,7 +59,7 @@ Companion to the [ownership update of 9 October 2026](/products/governance/#peri
 | Gnosis (100)           | AMBOwnerProxy                                                            | `0xdaa3293aab3a1da4f63ffdf5d015bb761f84a065` | 2026-10-08             | `0xc04ea38ac53d84e6a1c0d1701e817aae8b6a6746f146985b64acc1cfacf333c7` |
 | Polygon PoS (137)      | FxPortalOwnerProxy                                                       | `0x6ed0533539b76d160f7a2c7630c1c85313d78dcc` | 2026-10-08             | `0xb569f85ed1431c3c9a6a3a41f78e71f590f05aa5530360d42e00d0657ebc48d9` |
 
-Source code for all proxies is published and verified on the chains' explorers; the `OPStackOwnerProxy`, `ArbitrumOwnerProxy`, `AMBOwnerProxy` and `FxPortalOwnerProxy` sources are in the public [`EkuboProtocol/governance`](https://github.com/EkuboProtocol/governance) repository (`l1_proxy/`).
+Source code for all proxies is published and verified on the chains' explorers (Sourcify/Blockscout/Etherscan-family). The `OPStackOwnerProxy` and `ArbitrumOwnerProxy` sources are in the public [`EkuboProtocol/governance`](https://github.com/EkuboProtocol/governance) repository (`l1_proxy/`); the `AMBOwnerProxy` and `FxPortalOwnerProxy` sources are in that repository's [pull request #83](https://github.com/EkuboProtocol/governance/pull/83), pending merge.
 
 ## 3. Contracts that remain owned by the Ekubo, Inc. company key (6)
 
