@@ -6,6 +6,7 @@ title: "Contract addresses"
 Deployed contract addresses by deployment:
 
 - [EVM (V3)](/reference/contracts/evm-v3/) — the current EVM deployment: same deterministic addresses on every supported chain
+- [Peripheral ownership](/reference/contracts/peripheral-ownership/) — dated per-chain record of who owns the EVM Positions, Orders and Auctions contracts
 - [Starknet](/reference/contracts/starknet/) — the original Ekubo deployment on Starknet
 - [Starknet Sepolia](/reference/contracts/starknet-sepolia/) — the Starknet testnet deployment
 - [Governance](/reference/contracts/governance/) — the EKUBO token, Staker, and Governor contracts on Ethereum and Starknet mainnet
