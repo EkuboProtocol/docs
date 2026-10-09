@@ -254,6 +254,10 @@ export default defineConfig({
               slug: "reference/contracts",
               items: [
                 { label: "EVM (V3)", slug: "reference/contracts/evm-v3" },
+                {
+                  label: "Peripheral ownership",
+                  slug: "reference/contracts/peripheral-ownership",
+                },
                 { label: "Starknet", slug: "reference/contracts/starknet" },
                 {
                   label: "Starknet Sepolia",

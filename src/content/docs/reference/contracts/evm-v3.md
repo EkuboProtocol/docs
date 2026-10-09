@@ -121,6 +121,16 @@ ERC-721 manager for [DCA orders](/user-guides/dollar-cost-average-orders/). A fe
 also carry earlier manager deployments that are not canonical and should not be used for
 new transactions.
 
+Each manager has an `owner` role: on Positions it can withdraw accrued protocol fees to a
+recipient the owner chooses and administer metadata and ownership; on Orders it
+administers metadata and ownership only. Who holds
+that role differs by chain. It is not held by the DAO on every chain: on BNB Smart Chain
+and Monad, Ekubo, Inc. still owns the managers. See
+[Peripheral-contract ownership](/reference/contracts/peripheral-ownership/) for the
+dated, per-chain record and the
+[ownership update](/products/governance/#peripheral-contract-ownership-update-9-october-2026)
+for what it does and does not establish.
+
 ### Deployment-specific contracts
 
 Contracts added or reworked in `v3.2.0` are configuration-specific and have no universal address — their addresses are per deployment:
