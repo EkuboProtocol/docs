@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Ekubo Quoter API",
-    "version": "3.4.4",
+    "version": "3.4.10",
     "description": "Returns block-pinned split routes for exact-input and exact-output Ekubo Protocol swaps. Resolve token addresses and decimals through the Ekubo API token list before requesting a quote. All token amounts are base-unit decimal strings.",
     "contact": {
       "url": "https://ekubo.org",
@@ -242,7 +242,7 @@
           "estimated_gas_cost": {
             "type": "integer",
             "minimum": 0,
-            "description": "Routing execution-resource estimate. Transaction preparation should separately estimate the complete transaction."
+            "description": "Estimated gas to execute the route. On EVM chains this is the Ekubo Yul router's execution gas: router entry, the Core lock, and every split and hop of the route. It excludes the 21,000 intrinsic transaction gas, calldata gas, token payment and withdrawal (settlement), and any approval transaction. On Starknet it estimates the route's pool swaps only. Transaction preparation should separately estimate the complete transaction."
           },
           "price_impact": {
             "type": [
