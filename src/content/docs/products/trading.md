@@ -46,3 +46,7 @@ Trading from your own contract on either chain follows the same lock-and-callbac
 ## MEV capture
 
 The MEV capture extension charges an additional fee on swaps that move a pool's price significantly, and directs that value back to the pool's liquidity providers rather than to searchers. Pools using it are routed and quoted like any other pool.
+
+### How MEV capture fees are credited
+
+MEV capture holds its additional fee in the pool and credits it to liquidity providers at the first interaction with the pool in a later block timestamp. On chains with sub-second blocks, several blocks can share one timestamp. The credit goes to the liquidity that is active at the pool price at that moment, not to the liquidity the surcharged swap traded through. Positions added in the same block timestamp after a surcharged swap share in that swap's additional fee, and positions removed in that timestamp do not. If the price was left in a range with no liquidity, that amount is not credited to anyone. A position near the edge of the active range can therefore receive more or less than its share of a given swap's additional fee, in some cases all of it or none of it. Ekubo estimates that from June 2025 to October 2026 this affected about 0.15% of the additional fees paid out, with no sign of deliberate exploitation. That is a historical estimate, not a limit. Deployed MEV capture extensions cannot be changed, so this applies to every existing MEV capture pool.
