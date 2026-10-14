@@ -22,7 +22,8 @@
     "format:check": "prettier --check .",
     "deploy": "wrangler pages deploy dist --project-name ekubo-docs",
     "astro": "astro",
-    "lint": "eslint ."
+    "lint": "bun scripts/lint.ts",
+    "lint:prune": "bun scripts/lint.ts --prune"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
@@ -41,9 +42,10 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@axe-core/playwright": "^4.12.1",
+    "@types/bun": "^1.4.3",
     "@types/json-source-map": "^0.6.0",
-    "@typescript-eslint/parser": "8.68.0",
-    "eslint": "10.9.1",
+    "oxlint": "1.88.0",
+    "oxlint-tsgolint": "^7.0.2004",
     "playwright": "^1.62.1",
     "prettier": "^3.9.6",
     "prettier-plugin-astro": "^0.14.1",
