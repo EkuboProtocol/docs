@@ -7,3 +7,4 @@ public/assets/
 public/openapi/
 src/data/ekubo-wallet-policy.schema.json
 schemas/
+benchmarks/**/*.json
