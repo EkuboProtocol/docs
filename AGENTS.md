@@ -92,13 +92,22 @@ Do not restate math that has canonical published references. Link the reference 
 - `astro.config.mjs` lists every authored page except the hidden 404 page, and every listed page appears exactly once
 - All relative links and `/assets/` references resolve — note that moving a page changes its directory depth and silently breaks `../` paths
 - `bun run check` and `bun run build` pass, including live OpenAPI synchronization
+- `bun run lint` and `bun run format:check` pass (`bun run format` applies Prettier)
 - `bun run check:legacy`, `bun run check:a11y`, `bun run check:overflow`, `bun run check:theme`, and `bun run check:api` pass against a local preview
 - No em dashes or entities introduced inside fenced code blocks; shell flags such as `--rm` intact
 
-## Complexity Policy
-- Run `bun run lint` before considering a change done. CI runs it on every push and
+## Lint Policy
+
+- CI runs `bun run format:check`, `bun run lint` and `bun run check` on every push and
   pull request.
-- The only rule is ESLint's `complexity`, capped at 10 per function.
-- Prefer splitting a function over adding `// eslint-disable-next-line complexity`.
+- `bun run lint` runs oxlint with the rules in `.oxlintrc.json`: `complexity`, capped at
+  10 per function, and a set of type-aware TypeScript rules (floating and misused
+  promises, template and `+` operands, needless type assertions and so on). Warnings and
+  unused disable comments fail too.
+- Known violations are recorded per file and rule in `lint-suppressions.json`. A new
+  violation fails; after fixing one, run `bun run lint:prune` and commit the smaller file.
+  Never raise a count.
+- Prefer splitting a function over adding `// oxlint-disable-next-line complexity`.
   If a disable really is the right call (a table-driven or numeric routine where the
   branches are the point), put the reason on the line above it.
+- Prettier stays the formatter here because oxfmt cannot format `.astro` files.
