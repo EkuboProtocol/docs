@@ -21,7 +21,6 @@ const redirects = new Map(
 
 for (const file of legacyFiles) {
   const target = fileToTarget(file);
-  // Pages that moved off this site cannot be checked against the build output.
   if (isExternalTarget(target)) continue;
   const route = new URL(target, "https://docs.ekubo.org").pathname;
   const output =

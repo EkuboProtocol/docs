@@ -101,7 +101,6 @@ for (const scheme of ["light", "dark"]) {
       exact: true,
     });
     try {
-      // Use real pointer actions so an overlay cannot silently intercept the UI.
       await sourceButton.click({ timeout: 5_000 });
       const quoterOption = page.getByRole("option", {
         name: "Quoter API",

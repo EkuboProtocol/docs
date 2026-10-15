@@ -1,7 +1,4 @@
 #!/usr/bin/env node
-// Derives every figure on the Gas efficiency page from the raw snapshot and measurement
-// files in this directory, so each percentage can be re-checked without a calculator.
-// Run: node page-numbers.mjs
 import { readFileSync } from "node:fs";
 const j = (p) => JSON.parse(readFileSync(new URL(p, import.meta.url)));
 const ek = j("./prod/snapshots/ProdEkuboTest.json");
@@ -17,7 +14,6 @@ const tx = (snap, name) =>
 const pct = (a, b) => ((100 * (b - a)) / b).toFixed(1);
 const fmt = (n) => Math.round(n).toLocaleString("en-US");
 
-// --- production routers and minimal lockers, 1 / 2 / 3 pools, fresh ERC20 pair
 const legs = {
   "Ekubo, Yul router": [1, 2, 3].map((n) =>
     tx(
@@ -73,7 +69,6 @@ console.log(
   `  like-for-like minimal: Ekubo ${fmt(Em)} vs v4 ${fmt(V4m)} (${pct(Em, V4m)}%) vs v3 ${fmt(V3m)} (${pct(Em, V3m)}%)`,
 );
 
-// --- native ETH input
 const nat = {
   ekubo: tx(ek, "prod ekubo Yul router 1 pool ETH->B"),
   v4: tx(v4, "prod v4 minimal locker 1 pool ETH->B"),
@@ -86,7 +81,6 @@ console.log(
   `  native ETH in: Ekubo ${fmt(nat.ekubo)} vs v4 minimal ${fmt(nat.v4)} (${pct(nat.ekubo, nat.v4)}%) vs v3 SwapRouter ${fmt(nat.v3)} (${pct(nat.ekubo, nat.v3)}%)`,
 );
 
-// --- marginal cost per extra pool (minimal routers, transaction gas incl. calldata growth) and blend
 const marg = Object.fromEntries(
   Object.entries(legs)
     .filter(([, v]) => v.length === 3)
@@ -147,7 +141,6 @@ for (const p of rows) {
   );
 }
 
-// --- pools per swap, 30-day sample
 const r = month.receipts;
 console.log(
   `30-day sample: ${month.window.blocksRead} blocks, stride ${month.window.stride}, ${month.window.fromIso} .. ${month.window.toIso}, blocks ${month.window.fromBlock}..${month.window.toBlock}`,
@@ -177,7 +170,6 @@ if (month.calldata)
     `  router-only (calldata-decoded) txs ${month.calldata.decodedTxs}, avg ${month.calldata.avgPoolsPerSwapTx}`,
   );
 
-// --- chain-wide scenarios: share of block gas freed = share x saving
 const shares = [
   ["4.2%, measured DEX-router burn, lower bound", 0.042],
   ["19.4%, ultrasound 'defi' bracket", 0.194],

@@ -1,10 +1,3 @@
-/**
- * Runs axe's WCAG 2.1 AA and best-practice rules over every sitemap page in
- * both themes. This deliberately mirrors the blog's accessibility gate.
- *
- *   bun run check:a11y
- *   bun run check:a11y -- https://docs.example.com
- */
 import { readFileSync } from "node:fs";
 import AxeBuilder from "@axe-core/playwright";
 import { chromium } from "playwright";

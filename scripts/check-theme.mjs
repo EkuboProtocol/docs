@@ -55,8 +55,6 @@ for (const scheme of ["light", "dark"]) {
   await context.close();
 }
 
-// Simulate a cold connection and verify that fallback glyphs are never
-// painted while the preloaded brand face is still downloading.
 const coldContext = await browser.newContext({ colorScheme: "light" });
 const coldPage = await coldContext.newPage();
 await coldPage.route("**/fonts/*.woff2", async (route) => {

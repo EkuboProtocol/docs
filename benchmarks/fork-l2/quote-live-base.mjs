@@ -2,7 +2,6 @@ import {
   encodeRoute,
   encodeQuoteCalldata,
 } from "/home/sendmoodz/Work/ekubo/yul-router/sdk/src/index.ts";
-// live Base pool from the Ekubo API poolKeys listing: native ETH / USDC, fee 0x20c49ba5e353f7 (0.05%), spacing 1000
 const route = encodeRoute({
   specifiedToken: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
   calculatedToken: "0x0000000000000000000000000000000000000000",

@@ -1,4 +1,3 @@
-// Generates Yul-router calldata for the L2 fresh-pool WETH/USDC legs with the yul-router SDK.
 import { encodeRoute } from "/home/sendmoodz/Work/ekubo/yul-router/sdk/src/index.ts";
 import { writeFileSync } from "node:fs";
 const RECIPIENT = "0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496"; // forge test contract address (asserted in the test)
