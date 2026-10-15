@@ -39,11 +39,6 @@ export const legacyFiles = [
   "user-guides/governance.md",
 ];
 
-// GitBook published a page at its position in the table of contents, not at its
-// file path, so a page nested under a parent it did not live beside got a URL
-// no file name predicts. `concepts/extensions-vs-v4-hooks.md` sat under
-// Extensions and was served at `/concepts/extensions/extensions-vs-v4-hooks`,
-// which is the URL that was linked and shared.
 export const movedRoutes = {
   "concepts/extensions/extensions-vs-v4-hooks":
     "concepts/extensions-vs-v4-hooks.md",
@@ -80,22 +75,11 @@ export const movedRoutes = {
   "user-guides/governance/ekubo-inc": "products/governance.md",
 };
 
-/**
- * URLs the GitBook site served for pages that were retired before the current
- * structure existed, mapped to whatever now covers the subject. These have no
- * file in `legacyFiles` because the file was deleted years ago; the URL is what
- * survives, in old blog posts, Discord messages, and search results.
- *
- * Each target was chosen by reading the retired page, not by matching names.
- */
 export const retiredRoutes = {
-  // Section prefixes with no index page of their own.
   concepts: "/concepts/key-concepts/",
   reference: "/reference/contracts/",
   "user-guides": "/user-guides/add-liquidity/",
 
-  // "Background" and its "Key concepts" successor both explained the same
-  // primitives the current key concepts page covers.
   "about-ekubo/background": "/concepts/key-concepts/",
   "about-ekubo/key-concepts": "/concepts/key-concepts/",
   "introduction/key-concepts": "/concepts/key-concepts/",
@@ -104,14 +88,11 @@ export const retiredRoutes = {
   "introduction/features": "/about-ekubo/features/",
   features: "/about-ekubo/features/",
 
-  // The FAQs were folded into the pages that answer their questions.
   faq: "/",
   "about-ekubo/faq": "/",
   "introduction/faq": "/",
   "integration-guides/reference/frequently-asked-questions-faq": "/",
 
-  // Starknet DeFi Spring was an incentive campaign; incentives are documented
-  // as rewards now.
   "about-ekubo/starknet-defi-spring": "/products/rewards/",
   "integration-guides/reference/starknet-defi-spring": "/products/rewards/",
   "user-guides/incentives": "/products/rewards/",
@@ -120,7 +101,6 @@ export const retiredRoutes = {
   "user-guides/leaderboard": "/products/rewards/",
   "user-guides/swap": "/products/trading/",
 
-  // The till pattern and the core interfaces are the architecture page.
   "integration-guides/core-interfaces": "/concepts/architecture/",
   "integration-guides/core-interfaces/using-the-till-pattern":
     "/concepts/architecture/",
@@ -129,13 +109,11 @@ export const retiredRoutes = {
     "/concepts/architecture/",
   "integration-guides/reference/till-pattern": "/concepts/architecture/",
 
-  // An example extension, and the pages that preceded the current structure.
   "integration-guides/extensions/oracle": "/concepts/extensions/",
   "integrations/extensions": "/concepts/extensions/",
   "integrations/aggregators": "/integration-guides/aggregators/",
   "integration-guides/swapping/by-example": "/integration-guides/swapping/",
 
-  // Contract and API reference pages, under the names they had at the time.
   "integration-guides/contract-addresses": "/reference/contracts/",
   "integration-guides/reference/error-codes": "/reference/contracts/",
   "integration-guides/reference/evm-contracts": "/reference/contracts/evm-v3/",
@@ -152,7 +130,6 @@ export function fileToRoute(file) {
   return `/${file.slice(0, -".md".length)}/`;
 }
 
-// Targets may be absolute URLs when a page moved off the documentation site.
 const legacyTargetOverrides = {
   "reference/ekubo-api/README.md": "/api/",
   "reference/ekubo-api/endpoints.md": "/api/",

@@ -1,9 +1,3 @@
-/**
- * Checks every sitemap page at the same six phone widths used by the blog.
- *
- *   bun run check:overflow
- *   bun run check:overflow -- https://docs.example.com
- */
 import { readFileSync } from "node:fs";
 import { chromium } from "playwright";
 

@@ -1,9 +1,3 @@
-/*
- * Suisse Intl — the Ekubo brand typeface, self-hosted and subset.
- * These are the same optimized faces used by blog.ekubo.org and are derived
- * from the source fonts in the interface repository.
- */
-
 @font-face {
   font-family: "Suisse Intl";
   src: url("/fonts/suisse-intl-400.f6cfafea4909.woff2") format("woff2");
