@@ -79,6 +79,19 @@ Put a page where a reader would look for it, not where it was first written. Ref
 
 Do not restate math that has canonical published references. Link the reference and document only what is Ekubo-specific — see `reference/pool-math.md`.
 
+## Frontend clarity
+
+- Cut taglines, helper text and secondary labels. If a screen needs them to make
+  sense, fix the layout.
+- Make the best decision that will elevate all three: the user experience (UX),
+  developer experience (DX), and agent experience (AX) always, without breaking
+  anything.
+- Apply this to the documentation site's interface and redundant promotional
+  copy. Preserve substantive explanations, reference material, accessible names,
+  required metadata, and instructions readers need to complete their task.
+- Prefer clear navigation, hierarchy, and action labels; verify changed layouts
+  at narrow and desktop widths and with keyboard navigation.
+
 ## Style
 
 - Front matter carries a one-sentence `description` on every page

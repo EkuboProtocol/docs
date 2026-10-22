@@ -15,5 +15,3 @@ The contracts are open source under the [Ekubo DAO Shared Revenue License](https
 - **Building on Ekubo?** Start with [Integrating Ekubo](/integration-guides/).
 - **Curious how it works?** Read [Protocol architecture](/concepts/architecture/).
 - **Looking up an address, API, or audit?** See the [reference](/reference/contracts/).
-
-Questions? Ask in the [Discord](https://discord.ekubo.org).
