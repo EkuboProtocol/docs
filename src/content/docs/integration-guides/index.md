@@ -21,7 +21,11 @@ The open source [indexer](https://github.com/EkuboProtocol/indexer) ingests Ekub
 
 ## Connect an AI agent
 
-The public [MCP server](/products/mcp-server/) at `mcp.ekubo.org` exposes quoting, pool and position data, and unsigned execution plans to any MCP-capable agent.
+The public [MCP server](/products/mcp-server/) at `mcp.ekubo.org` exposes quoting, pool and position data, and unsigned execution plans to any MCP-capable agent. [Compare swap quotes with an AI agent](/integration-guides/compare-swap-quotes-with-an-agent/) walks through token resolution, base units, and a read-only quote comparison with a runnable script.
+
+## Move from Uniswap v3
+
+[Migrating from Uniswap v3](/integration-guides/migrating-from-uniswap-v3/) maps pool identity, ticks, fees, quoting, extensions, and licensing to Ekubo on EVM chains, and reads the same market from both protocols.
 
 ## Provide exclusive, quoted liquidity
 

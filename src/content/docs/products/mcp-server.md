@@ -215,13 +215,13 @@ Respect the freshness windows. Protocol data is cached upstream, and pool state,
 
 ### Request size
 
-Independently of the budgets, a single request may not exceed:
+Independently of the budgets, a single request may not exceed the limits below, as published by server version 0.53.2. The live values are under `operational_semantics.rate_limit_contract.request_limits` at `GET https://mcp.ekubo.org/` and are authoritative if this table drifts.
 
-| Limit                          | Value         | Rejection |
-| ------------------------------ | ------------- | --------- |
-| Body size                      | 262,144 bytes | `413`     |
-| JSON-RPC messages per request  | 20            | `400`     |
-| Combined tool cost per request | 40 units      | `400`     |
+| Limit                          | Value           | Rejection |
+| ------------------------------ | --------------- | --------- |
+| Body size                      | 2,097,152 bytes | `413`     |
+| JSON-RPC messages per request  | 20              | `400`     |
+| Combined tool cost per request | 40 units        | `400`     |
 
 The cost ceiling refuses rather than trims: an over-budget request is rejected outright instead of being quietly served at a discount. No single tool call reaches the ceiling on its own, so in practice it only ever asks you to split a batch — and JSON-RPC batching was removed from the protocol in revision 2025-06-18 in any case.
 
