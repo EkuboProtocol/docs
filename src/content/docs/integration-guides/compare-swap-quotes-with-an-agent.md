@@ -15,7 +15,7 @@ It uses the public [Ekubo MCP server](/products/mcp-server/), which needs no API
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Chains     | Same-chain swaps on the EVM chains the server indexes. The example uses Ethereum (chain ID 1). The quote tool takes EVM chain IDs only.                                                                                      |
 | Sources    | Every source the server returns for the request. On 24 October 2026 that was Ekubo and 0x for same-chain swaps; cross-chain requests go to Across, LayerZero, and LI.FI instead.                                             |
-| Server     | Observed on server version `0.53.1`, tool catalog revision `2026-10-21.legacy-route-removal`. The live catalog at [`https://mcp.ekubo.org/tools`](https://mcp.ekubo.org/tools) is authoritative where this page has drifted. |
+| Server     | Observed on server version `0.53.2`, tool catalog revision `2026-10-21.legacy-route-removal`. The live catalog at [`https://mcp.ekubo.org/tools`](https://mcp.ekubo.org/tools) is authoritative where this page has drifted. |
 | Quote kind | Indicative only: no `sender` and no `slippage_bps`, so no calldata is produced.                                                                                                                                              |
 
 ## Prerequisites
@@ -129,7 +129,7 @@ node compare-quotes.mjs
 
 ## Expected output
 
-This is the output observed on 24 October 2026. Token metadata should match exactly; the amounts and gas move with the market on every run.
+This is the output observed at 15:49 UTC on 24 October 2026. Token metadata should match exactly; the amounts and gas move with the market on every run.
 
 ```text
 ETH   chain 1  0x0000000000000000000000000000000000000000  decimals 18
@@ -137,15 +137,15 @@ USDC  chain 1  0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48  decimals 6
 
 exact_input 0.5 ETH = 500000000000000000 base units
 
-ekubo   amount_out 1185.581519 USDC  estimated_gas 275418  execution_hold false
-0x      amount_out 1190.085000 USDC  estimated_gas not reported  execution_hold false
+ekubo   amount_out 1143.880660 USDC  estimated_gas 111459  execution_hold false
+0x      amount_out 1147.935609 USDC  estimated_gas 246604  execution_hold false
 
 unavailable_sources []
 comparison_complete true
 execution_plans_included false
 ```
 
-In this run 0x quoted the larger output. Which source quotes more depends on the pair, the size, and the block, so do not assume either way; read the numbers each time.
+In this run 0x quoted the larger output and the higher gas estimate. Which source quotes more depends on the pair, the size, and the block, so do not assume either way; read the numbers each time.
 
 ## What each step is guarding against
 
@@ -163,7 +163,7 @@ A symbol does not identify a token across chains: USDC on Base is a different co
 
 `amount_out` is each source's reported output before the gas the sender pays. A gross comparison is what the server reports in `comparison.comparison_basis` (`highest_calculated_amount_out`), and it is not the whole cost. To compare net outcomes, value each option as `amount_out` minus `estimated_gas × gas price` converted to the output token, using a current gas price from your own RPC.
 
-That is only possible when a source reports gas. In the run above the 0x indicative quote reported no `estimated_gas`; treat that as unknown, not as zero, and say so rather than ranking on half the data. A wallet simulation of the chosen plan gives a fresher gas estimate; only the transaction receipt establishes the gas actually used. For cross-chain options, LayerZero charges `native_fee` outside `amount_out`, so add it to that option's cost.
+That is only possible when a source reports gas. Both sources reported `estimated_gas` in the run above, but a source can return it as `null`; treat that as unknown, not as zero, and say so rather than ranking on half the data. A wallet simulation of the chosen plan gives a fresher gas estimate; only the transaction receipt establishes the gas actually used. For cross-chain options, LayerZero charges `native_fee` outside `amount_out`, so add it to that option's cost.
 
 `price_impact` is reported by some sources and not others. It is a provider-computed figure, not a comparable cost, so it should not decide between sources on its own.
 

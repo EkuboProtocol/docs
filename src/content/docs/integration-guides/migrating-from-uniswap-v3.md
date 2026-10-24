@@ -39,7 +39,7 @@ The two protocols are not interchangeable at the code level. Pools are identifie
 
 ### Converting a tick
 
-The two tick bases differ, so a Uniswap tick does not map to a whole Ekubo tick. For the same token order, `ekuboTick ≈ uniswapTick × ln(1.0001) / ln(1.000001)`, a factor of about 99.99505. When native ETH replaces WETH, the token order can flip, as it does for USDC: USDC is `token0` of the Uniswap pool and `token1` of the Ekubo pool, so the sign flips too. In the example below, Uniswap tick `198574` corresponds to about Ekubo tick `-19856417`.
+The two tick bases differ, so a Uniswap tick does not map to a whole Ekubo tick. For the same token order, `ekuboTick ≈ uniswapTick × ln(1.0001) / ln(1.000001)`, a factor of about 99.99505. When native ETH replaces WETH, the token order can flip, as it does for USDC: USDC is `token0` of the Uniswap pool and `token1` of the Ekubo pool, so the sign flips too. In the example below, Uniswap tick `198935` corresponds to about Ekubo tick `-19892515`.
 
 Converting through the price is safer than converting ticks, because a position bound must also be a multiple of the target pool's tick spacing. Round each bound to that spacing and show the user the resulting price range: it will not equal the original range exactly.
 
@@ -192,21 +192,21 @@ node compare-pools.mjs
 
 ### Expected output
 
-Observed on 24 October 2026. The addresses, pool ID, config, fee, tick spacing, and Positions swap protocol fee should match exactly. Uniswap's `feeProtocol` is the value at that block and can change. Prices, ticks, and liquidity change with every block.
+Observed at block 26263507 (15:48:59 UTC on 24 October 2026). The addresses, pool ID, config, fee, tick spacing, and Positions swap protocol fee should match exactly. Uniswap's `feeProtocol` is the value at that block and can change. Prices, ticks, and liquidity change with every block.
 
 ```text
-Ethereum block 26260884
+Ethereum block 26263507
 
 Uniswap v3 USDC/WETH
   pool address    0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640
   token0          0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
   fee             500 / 1e6
   tick spacing    10
-  sqrtPriceX96    1624258718609798137812334441078588
-  tick            198574
-  liquidity       2152788552292764204
+  sqrtPriceX96    1653817353788712817544262592047087
+  tick            198935
+  liquidity       1847104564058872996
   feeProtocol     4 (token0), 4 (token1)
-  USDC per ETH    2379.29
+  USDC per ETH    2295.00
 
 Ekubo ETH/USDC
   pool id         0xde39735c66c6f51669c80e1fde362e42a1b1b927d49dee8d6577765a4e4d38c6
@@ -215,11 +215,11 @@ Ekubo ETH/USDC
   fee             9223372036854776 / 2^64
   tick spacing    4988
   extension       0x0000000000000000000000000000000000000000
-  sqrtRatio 64.128 16596422858715246736812597483405312
-  tick            -19856698
+  sqrtRatio 64.128 16300619316558869431231032374329344
+  tick            -19892666
   liquidity       8069515514150211
   Positions swap protocol fee 1844674407370955161 / 2^64
-  USDC per ETH    2378.75
+  USDC per ETH    2294.71
 ```
 
 ### Reading the output
@@ -243,17 +243,17 @@ curl -s https://prod-api-quoter.ekubo.org/1/1000000000000000000/0x00000000000000
   | jq '{block_number, total_calculated, estimated_gas_cost, splits: (.splits | length), first_split: (.splits[0] | {amount_specified, amount_calculated, pool_config: .route[0].swap.pool_key.config})}'
 ```
 
-Observed on 24 October 2026:
+Observed at 15:49 UTC on 24 October 2026:
 
 ```json
 {
-  "block_number": 26260896,
-  "total_calculated": "2365428425",
-  "estimated_gas_cost": 412468,
-  "splits": 8,
+  "block_number": 26263508,
+  "total_calculated": "2282386247",
+  "estimated_gas_cost": 206609,
+  "splits": 6,
   "first_split": {
     "amount_specified": "750000000000000000",
-    "amount_calculated": "1775133060",
+    "amount_calculated": "1712557071",
     "pool_config": "0x00000000000000000000000000000000000000000020c49ba5e353f88000137c"
   }
 }

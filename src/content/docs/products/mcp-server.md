@@ -215,7 +215,7 @@ Respect the freshness windows. Protocol data is cached upstream, and pool state,
 
 ### Request size
 
-Independently of the budgets, a single request may not exceed the limits below, as published by server version 0.53.1. The live values are under `operational_semantics.rate_limit_contract.request_limits` at `GET https://mcp.ekubo.org/` and are authoritative if this table drifts.
+Independently of the budgets, a single request may not exceed the limits below, as published by server version 0.53.2. The live values are under `operational_semantics.rate_limit_contract.request_limits` at `GET https://mcp.ekubo.org/` and are authoritative if this table drifts.
 
 | Limit                          | Value           | Rejection |
 | ------------------------------ | --------------- | --------- |
