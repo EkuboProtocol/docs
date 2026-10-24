@@ -163,7 +163,7 @@ A symbol does not identify a token across chains: USDC on Base is a different co
 
 `amount_out` is each source's reported output before the gas the sender pays. A gross comparison is what the server reports in `comparison.comparison_basis` (`highest_calculated_amount_out`), and it is not the whole cost. To compare net outcomes, value each option as `amount_out` minus `estimated_gas × gas price` converted to the output token, using a current gas price from your own RPC.
 
-That is only possible when a source reports gas. In the run above the 0x indicative quote reported no `estimated_gas`; treat that as unknown, not as zero, and say so rather than ranking on half the data. The wallet's simulation of the chosen plan is what establishes the actual gas. For cross-chain options, LayerZero charges `native_fee` outside `amount_out`, so add it to that option's cost.
+That is only possible when a source reports gas. In the run above the 0x indicative quote reported no `estimated_gas`; treat that as unknown, not as zero, and say so rather than ranking on half the data. A wallet simulation of the chosen plan gives a fresher gas estimate; only the transaction receipt establishes the gas actually used. For cross-chain options, LayerZero charges `native_fee` outside `amount_out`, so add it to that option's cost.
 
 `price_impact` is reported by some sources and not others. It is a provider-computed figure, not a comparable cost, so it should not decide between sources on its own.
 
