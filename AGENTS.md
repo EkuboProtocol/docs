@@ -1,6 +1,8 @@
 # Repository Guidelines
 
-Static Astro Starlight source for [docs.ekubo.org](https://docs.ekubo.org). Pages are Markdown with YAML front matter; `astro.config.mjs` defines navigation, and `src/pages/api/index.astro` renders the unified OpenAPI reference. This source repository is private, but everything built into `dist/` is public.
+Static Astro Starlight source for [docs.ekubo.org](https://docs.ekubo.org). Pages are Markdown with YAML front matter; `astro.config.mjs` defines navigation, and `src/pages/api/index.astro` renders the unified OpenAPI reference. This source repository is public, and so is everything built into `dist/`.
+
+Treat everything pushed here as published: commit messages, branch names, pull requests, and file contents. Keep internal tracker identifiers, task titles, and coordination notes out of all of them. If your local branch name carries an internal identifier, keep it locally and push under a neutral, descriptive name, for example `git push origin HEAD:refs/heads/docs/<topic>`.
 
 ## The cardinal rule: verify against code, not prose
 
@@ -30,7 +32,7 @@ starkli call <governor> get_config --rpc <rpc>
 cast call <positions> "SWAP_PROTOCOL_FEE_X64()(uint64)" --rpc-url <rpc>
 ```
 
-Cite such values as _current_, note that they are configurable, and point readers at the getter.
+Cite such values as _current_ and point readers at the getter. Check the source before calling a value configurable: an `immutable` set in a constructor is fixed for that deployment and differs only between deployments, while a value with an owner-gated setter can change at any block.
 
 ## Do not generalize across chains or contracts
 
