@@ -238,6 +238,14 @@ export default defineConfig({
               label: "Reading pool price",
               slug: "integration-guides/reading-pool-price",
             },
+            {
+              label: "Compare swap quotes with an agent",
+              slug: "integration-guides/compare-swap-quotes-with-an-agent",
+            },
+            {
+              label: "Migrating from Uniswap v3",
+              slug: "integration-guides/migrating-from-uniswap-v3",
+            },
           ],
         },
         {
