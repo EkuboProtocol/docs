@@ -215,6 +215,7 @@ export default defineConfig({
               label: "Dollar-cost average orders",
               slug: "user-guides/dollar-cost-average-orders",
             },
+            { label: "Launch a token", slug: "user-guides/launch-a-token" },
             { label: "EKUBO token", slug: "user-guides/ekubo-token" },
             {
               label: "Participate in governance",
