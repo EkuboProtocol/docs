@@ -129,6 +129,18 @@ export default defineConfig({
             "The interactive API reference is generated from the live OpenAPI specifications on every build.",
           optionalLinks: [
             {
+              label: "AI tools for developers",
+              url: "https://docs.ekubo.org/integration-guides/ai-tools/",
+              description:
+                "Reusable developer skills and the EVM extension lock/forward/settle workflow",
+            },
+            {
+              label: "Ekubo extension-authoring skill",
+              url: "https://github.com/EkuboProtocol/evm-contracts/tree/main/skills/ekubo-extension-authoring",
+              description:
+                "SKILL.md with architecture patterns and a testing checklist",
+            },
+            {
               label: "Ekubo API OpenAPI 3.1",
               url: "https://docs.ekubo.org/openapi/ekubo.json",
               description:
@@ -227,6 +239,10 @@ export default defineConfig({
           items: [
             { label: "Integrating Ekubo", slug: "integration-guides" },
             { label: "SDKs", slug: "integration-guides/sdks" },
+            {
+              label: "AI tools for developers",
+              slug: "integration-guides/ai-tools",
+            },
             { label: "Swapping", slug: "integration-guides/swapping" },
             { label: "Yul Router", slug: "integration-guides/yul-router" },
             { label: "Aggregators", slug: "integration-guides/aggregators" },
