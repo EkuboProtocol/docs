@@ -27,6 +27,8 @@ The public [MCP server](/products/mcp-server/) at `mcp.ekubo.org` exposes quotin
 
 [Migrating from Uniswap v3](/integration-guides/migrating-from-uniswap-v3/) maps pool identity, ticks, fees, quoting, extensions, and licensing to Ekubo on EVM chains, and reads the same market from both protocols.
 
+For AI-assisted smart contract development, see [AI tools for developers](/integration-guides/ai-tools/): reuse our extension-authoring skill and build EVM extensions around periphery contracts, forwarding, and Core saved balances.
+
 ## Provide exclusive, quoted liquidity
 
 Market makers can run RFQ-style pools where each swap is signed off-chain with its own fee and bounds, while still settling in Ekubo Core — see [Signed exclusive swaps](/integration-guides/signed-exclusive-swaps/).
