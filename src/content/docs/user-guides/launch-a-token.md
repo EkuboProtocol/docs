@@ -53,4 +53,11 @@ An ERC-20 quote token must be trusted. Ekubo keeps one balance per token across 
 
 ## Contracts
 
-The launch contracts are not deployed yet. Their addresses on Robinhood Chain (chain ID 4663) will be listed here once they are deployed and verified.
+The launch contracts are deployed on Robinhood Chain (chain ID 4663). Their source is verified on Sourcify with exact creation and runtime matches.
+
+| Contract                                                                                             | Address                                      | Description                                                                                 |
+| ---------------------------------------------------------------------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| [ZeroSeedLaunch](https://repo.sourcify.dev/4663/0x517621Ea1bf51F31826819b118fa4dfEb4D198D2)          | `0x517621Ea1bf51F31826819b118fa4dfEb4D198D2` | The extension: owns every launch position and charges the creator fee (`feeAt`)             |
+| [ZeroSeedLaunchPeriphery](https://repo.sourcify.dev/4663/0x52378E3Cf26554bc83bBA4fa9ADe6d70Cfa23921) | `0x52378E3Cf26554bc83bBA4fa9ADe6d70Cfa23921` | Creates launches and tracks owners (`create`, `claimFees`, `transferLaunch`, `launchOwner`) |
+
+Both use the Ekubo V3 [Core](/reference/contracts/evm-v3/#core-and-extensions) contract.
