@@ -12,6 +12,12 @@ Because an execution plan is signer-neutral calldata rather than an Ekubo-specif
 
 The server is **non-custodial and read-only with respect to keys**. It never holds funds, never signs, and never submits. Tools that produce a transaction return a reference to an unsigned _execution plan_; signing and submission happen in the user's own wallet tooling.
 
+## Task guides
+
+[Compare swap quotes with an AI agent](https://docs.ekubo.org/integration-guides/compare-swap-quotes-with-an-agent/) walks through indicative, read-only EVM quote comparison. Execution is a separate continuation.
+
+[Migrate a Uniswap v3 integration](https://docs.ekubo.org/integration-guides/migrating-from-uniswap-v3/) maps the semantic differences and adapter work needed to integrate Ekubo on EVM chains. Plan for a new adapter rather than a drop-in replacement.
+
 ## Connecting
 
 The server speaks Streamable HTTP and requires no authentication.

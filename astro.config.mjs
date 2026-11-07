@@ -129,6 +129,18 @@ export default defineConfig({
             "The interactive API reference is generated from the live OpenAPI specifications on every build.",
           optionalLinks: [
             {
+              label: "Compare swap quotes with an AI agent",
+              url: "https://docs.ekubo.org/integration-guides/compare-swap-quotes-with-an-agent/",
+              description:
+                "Indicative, read-only EVM quote comparison; execution is a separate continuation",
+            },
+            {
+              label: "Migrate a Uniswap v3 integration",
+              url: "https://docs.ekubo.org/integration-guides/migrating-from-uniswap-v3/",
+              description:
+                "Evaluate EVM semantic differences and new-adapter work; not a drop-in replacement",
+            },
+            {
               label: "AI tools for developers",
               url: "https://docs.ekubo.org/integration-guides/ai-tools/",
               description:
