@@ -1,9 +1,11 @@
 ---
-description: How to become a liquidity provider on Ekubo
-title: "Add liquidity"
+description: Add liquidity on Ekubo by choosing a token pair and pool, setting a price range and depositing tokens into a position.
+title: "How to add liquidity on Ekubo"
 ---
 
-To add liquidity to Ekubo and start earning fees from swaps, [create a position](https://ekubo.org/positions/new).
+To add liquidity on Ekubo, [create and fund a position](https://ekubo.org/positions/new): choose a token pair and pool, select a price range, then enter the amounts to deposit. Connect a wallet on your chosen network to submit the deposit.
+
+Compare the available [pool types](/products/liquidity/#pool-types) and read the [liquidity provision risks](/products/liquidity/#risk) before choosing your position. Swap fees depend on trades using your liquidity while it is in range.
 
 :::note
 Bookmark the app and beware of signing transactions from other websites claiming to be Ekubo that are not hosted on ekubo.org. [Read more](https://en.wikipedia.org/wiki/Phishing) about phishing scams.

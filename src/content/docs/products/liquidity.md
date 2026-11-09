@@ -47,6 +47,10 @@ A liquidity position is an ERC-721 token minted by the Positions contract, so it
 Never sell the NFT representing a position or an order — it _is_ the claim on the underlying capital.
 :::
 
+## Liquidity data API
+
+The [public API reference](/api/) provides separate endpoints for owner positions and pair liquidity. Use `GET /positions/{address}` with `state=opened` to list currently owned positions with nonzero liquidity. Use `GET /tokens/{chainId}/{tokenA}/{tokenB}/liquidity` for a token pair's liquidity chart aggregated across pools on one chain. The pair chart is not an owner's portfolio balance or value.
+
 ## Rewards beyond swap fees
 
 Liquidity can also earn from [incentive campaigns](/products/rewards/), which measure the depth your position provides near the market price and distribute reward tokens through periodic drops.
