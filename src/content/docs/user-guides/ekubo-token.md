@@ -1,9 +1,14 @@
 ---
-description: Information about the EKUBO token
-title: "EKUBO token"
+description: EKUBO token addresses on Ethereum and Starknet, total supply, distribution, airdrop claims and protocol governance.
+title: "EKUBO token: supply, addresses and governance"
 ---
 
-The EKUBO token is an [L1 Ethereum token](https://etherscan.io/token/0x04C46E830Bb56ce22735d5d8Fc9CB90309317d0f) bridged to [Starknet](https://voyager.online/token/0x075afe6402ad5a5c20dd25e10ec3b3986acaa647b77e4ae24b0cbc9a54a27a87), developed for the purpose of decentralizing ownership of Ekubo Protocol.
+EKUBO is the token used in [Ekubo Protocol governance](/products/governance/), with a total supply of **10,000,000 tokens**. It is an Ethereum token bridged to Starknet, developed for the purpose of decentralizing ownership of Ekubo Protocol.
+
+| Network  | Token contract address                                                                                                                                                  |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ethereum | [`0x04C46E830Bb56ce22735d5d8Fc9CB90309317d0f`](https://etherscan.io/token/0x04C46E830Bb56ce22735d5d8Fc9CB90309317d0f)                                                   |
+| Starknet | [`0x075afe6402ad5a5c20dd25e10ec3b3986acaa647b77e4ae24b0cbc9a54a27a87`](https://voyager.online/token/0x075afe6402ad5a5c20dd25e10ec3b3986acaa647b77e4ae24b0cbc9a54a27a87) |
 
 ## Initial distribution
 
@@ -79,7 +84,7 @@ The team allocation of EKUBO tokens is entirely held by Ekubo, Inc., and the com
 
 The governance contract addresses can be found in the [governance contracts reference](/reference/contracts/governance/).
 
-You can learn more about how the governance contracts work [here](./).
+Read how [staking, delegation and proposals work](/products/governance/#the-three-contracts).
 
 ## Disclaimer
 
