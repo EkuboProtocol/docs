@@ -1,0 +1,246 @@
+---
+// A live Ekubo widget for the BNB Chain BNCB/USDT Fynd pool. The docs page is
+// the host: it connects the reader's browser wallet and lends it to the
+// widget through the hosted SDK, exactly as an integrating site would.
+interface Props {
+  view: "swap" | "position";
+  label: string;
+}
+
+const { view, label } = Astro.props;
+---
+
+<section
+  class="embed-example not-content"
+  data-embed-example
+  data-view={view}
+  aria-label={label}
+>
+  <div class="embed-example-bar">
+    <select data-wallet-select aria-label="Browser wallet" hidden></select>
+    <button type="button" data-connect>Connect wallet</button>
+    <button type="button" data-disconnect hidden>Disconnect</button>
+    <p data-status role="status" aria-live="polite"></p>
+  </div>
+  <div class="embed-example-frame" data-frame></div>
+  <noscript>
+    <p>The live widget requires JavaScript.</p>
+  </noscript>
+</section>
+
+<script>
+  type Provider = {
+    request: (args: { method: string; params?: unknown }) => Promise<unknown>;
+    on?: (event: string, listener: (...args: never[]) => void) => void;
+  };
+  type Announced = { info: { name: string; uuid: string }; provider: Provider };
+  type Widget = {
+    update: (config: Record<string, unknown>) => void;
+    on: (name: string, handler: (payload: unknown) => void) => () => void;
+  };
+  type Sdk = {
+    create: (container: HTMLElement, config: Record<string, unknown>) => Widget;
+  };
+
+  const EMBED_ORIGIN = "https://embed.ekubo.org";
+  const FYND_POOL = {
+    chainId: 56,
+    token0: "0x4902c5ebc598265ed2212b559b042de8a5eeec3f",
+    token1: "0x55d398326f99059ff775485246999027b3197955",
+    fee: "0",
+    tickSpacing: 1024,
+    extension: "fynd-amm",
+    extensionAddress: "0x550CFe1292d0D9c0d28f232b3F42Edb4439B1D09",
+    poolId:
+      "0x942e8f465b349913a0a115c8f346028f549129748184d8eac4fafc7b88c863a9",
+  };
+
+  const wallets: Announced[] = [];
+  const widgets: Widget[] = [];
+  const examples = [
+    ...document.querySelectorAll<HTMLElement>("[data-embed-example]"),
+  ];
+  let connected: { provider: Provider; account: string } | null = null;
+
+  function part<T extends HTMLElement>(example: HTMLElement, name: string) {
+    return example.querySelector(`[data-${name}]`) as T;
+  }
+
+  function shortAddress(address: string) {
+    return `${address.slice(0, 6)}…${address.slice(-4)}`;
+  }
+
+  function renderWallets() {
+    for (const example of examples) {
+      const select = part<HTMLSelectElement>(example, "wallet-select");
+      select.replaceChildren(
+        ...wallets.map(
+          (wallet) => new Option(wallet.info.name, wallet.info.uuid),
+        ),
+      );
+      select.hidden = connected !== null || wallets.length < 2;
+    }
+  }
+
+  function render(message?: string) {
+    for (const example of examples) {
+      part(example, "connect").hidden = connected !== null;
+      part(example, "disconnect").hidden = connected === null;
+      part(example, "status").textContent =
+        message ??
+        (connected ? `Connected ${shortAddress(connected.account)}` : "");
+    }
+    renderWallets();
+  }
+
+  function pickWallet(example: HTMLElement): Provider | undefined {
+    const select = part<HTMLSelectElement>(example, "wallet-select");
+    const chosen = wallets.find((wallet) => wallet.info.uuid === select.value);
+    const injected = (window as { ethereum?: Provider }).ethereum;
+    return (chosen ?? wallets[0])?.provider ?? injected;
+  }
+
+  function setProvider(provider: Provider | undefined) {
+    for (const widget of widgets) widget.update({ provider });
+  }
+
+  function onAccountsChanged(provider: Provider, accounts: unknown) {
+    if (connected?.provider !== provider) return;
+    const account = Array.isArray(accounts) ? accounts[0] : undefined;
+    if (typeof account === "string") connected = { provider, account };
+    else {
+      connected = null;
+      setProvider(undefined);
+    }
+    render();
+  }
+
+  async function connect(example: HTMLElement) {
+    const provider = pickWallet(example);
+    if (!provider) {
+      render("No browser wallet found. Install one, then reload the page.");
+      return;
+    }
+    try {
+      const accounts = await provider.request({
+        method: "eth_requestAccounts",
+      });
+      const account = Array.isArray(accounts) ? accounts[0] : undefined;
+      if (typeof account !== "string") throw new Error("No account");
+      connected = { provider, account };
+      provider.on?.("accountsChanged", ((value: unknown) =>
+        onAccountsChanged(provider, value)) as (...args: never[]) => void);
+      setProvider(provider);
+      render();
+    } catch {
+      render("The wallet did not connect. Try again.");
+    }
+  }
+
+  function disconnect() {
+    connected = null;
+    setProvider(undefined);
+    render();
+  }
+
+  function theme() {
+    return document.documentElement.dataset.theme === "light"
+      ? "light"
+      : "dark";
+  }
+
+  window.addEventListener("eip6963:announceProvider", (event) => {
+    const detail = (event as CustomEvent<Announced>).detail;
+    if (!wallets.some((wallet) => wallet.info.uuid === detail.info.uuid))
+      wallets.push(detail);
+    renderWallets();
+  });
+  window.dispatchEvent(new Event("eip6963:requestProvider"));
+
+  for (const example of examples) {
+    part(example, "connect").addEventListener("click", () => {
+      void connect(example);
+    });
+    part(example, "disconnect").addEventListener("click", disconnect);
+  }
+
+  try {
+    const sdkUrl = `${EMBED_ORIGIN}/sdk.js`;
+    const sdk = (await import(/* @vite-ignore */ sdkUrl)) as Sdk;
+    for (const example of examples) {
+      widgets.push(
+        sdk.create(part(example, "frame"), {
+          embedOrigin: EMBED_ORIGIN,
+          pool: FYND_POOL,
+          view: example.dataset.view,
+          theme: theme(),
+          title: example.getAttribute("aria-label") ?? "Ekubo",
+        }),
+      );
+    }
+    new MutationObserver(() => {
+      for (const widget of widgets) widget.update({ theme: theme() });
+    }).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+  } catch {
+    render("The widget could not load. Reload the page to try again.");
+  }
+</script>
+
+<style is:global>
+  .embed-example {
+    margin-block: 1.5rem;
+    overflow: hidden;
+    max-width: 30rem;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.65rem;
+    background: var(--sl-color-gray-7);
+  }
+
+  .embed-example-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--sl-color-gray-5);
+  }
+
+  .embed-example-bar p {
+    margin: 0;
+    color: var(--sl-color-gray-2);
+    font-size: var(--sl-text-sm);
+  }
+
+  .embed-example-bar button,
+  .embed-example-bar select {
+    min-height: 2.25rem;
+    padding: 0.35rem 0.85rem;
+    border: 1px solid var(--sl-color-gray-4);
+    border-radius: 0.45rem;
+    background: var(--sl-color-black);
+    color: var(--sl-color-white);
+    font: inherit;
+    font-size: var(--sl-text-sm);
+    cursor: pointer;
+  }
+
+  .embed-example-bar button[data-connect] {
+    border-color: var(--sl-color-accent);
+    background: var(--sl-color-accent);
+    color: var(--sl-color-black);
+    font-weight: 600;
+  }
+
+  .embed-example-bar button:focus-visible,
+  .embed-example-bar select:focus-visible {
+    outline: 2px solid var(--sl-color-accent-high);
+    outline-offset: 2px;
+  }
+
+  .embed-example [hidden] {
+    display: none;
+  }
+</style>
