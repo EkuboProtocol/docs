@@ -75,6 +75,7 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 32,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]*$",
               "description": "Token symbol search"
             },
             "required": false,
@@ -214,10 +215,57 @@
                                 "bridge_address": {
                                   "type": "string",
                                   "description": "Token address for the destination chain"
+                                },
+                                "relationship": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "enum": [
+                                    "canonical_bridge",
+                                    "native_issuer",
+                                    "interoperability",
+                                    "unknown",
+                                    null
+                                  ],
+                                  "description": "How the destination token relates to this one: a copy minted by the canonical bridge, a deployment by the issuer itself, a version issued through an interoperability protocol such as LayerZero, or unknown. Null when not yet recorded"
+                                },
+                                "bridge_name": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "description": "Bridge, issuer or interoperability protocol, when known"
+                                },
+                                "source_name": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "description": "Source the link was taken from. Null when not yet recorded"
+                                },
+                                "source_url": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "description": "Location of that source. Null when not yet recorded"
+                                },
+                                "inferred_reverse": {
+                                  "type": [
+                                    "boolean",
+                                    "null"
+                                  ],
+                                  "description": "True when this direction was mirrored from a one-way link in the source rather than read from it. Null when not yet recorded"
                                 }
                               },
                               "required": [
-                                "bridge_address"
+                                "bridge_address",
+                                "relationship",
+                                "bridge_name",
+                                "source_name",
+                                "source_url",
+                                "inferred_reverse"
                               ]
                             }
                           }
@@ -298,10 +346,57 @@
                                 "bridge_address": {
                                   "type": "string",
                                   "description": "Token address for the destination chain"
+                                },
+                                "relationship": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "enum": [
+                                    "canonical_bridge",
+                                    "native_issuer",
+                                    "interoperability",
+                                    "unknown",
+                                    null
+                                  ],
+                                  "description": "How the destination token relates to this one: a copy minted by the canonical bridge, a deployment by the issuer itself, a version issued through an interoperability protocol such as LayerZero, or unknown. Null when not yet recorded"
+                                },
+                                "bridge_name": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "description": "Bridge, issuer or interoperability protocol, when known"
+                                },
+                                "source_name": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "description": "Source the link was taken from. Null when not yet recorded"
+                                },
+                                "source_url": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "description": "Location of that source. Null when not yet recorded"
+                                },
+                                "inferred_reverse": {
+                                  "type": [
+                                    "boolean",
+                                    "null"
+                                  ],
+                                  "description": "True when this direction was mirrored from a one-way link in the source rather than read from it. Null when not yet recorded"
                                 }
                               },
                               "required": [
-                                "bridge_address"
+                                "bridge_address",
+                                "relationship",
+                                "bridge_name",
+                                "source_name",
+                                "source_url",
+                                "inferred_reverse"
                               ]
                             }
                           }
@@ -448,10 +543,57 @@
                             "bridge_address": {
                               "type": "string",
                               "description": "Token address for the destination chain"
+                            },
+                            "relationship": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "enum": [
+                                "canonical_bridge",
+                                "native_issuer",
+                                "interoperability",
+                                "unknown",
+                                null
+                              ],
+                              "description": "How the destination token relates to this one: a copy minted by the canonical bridge, a deployment by the issuer itself, a version issued through an interoperability protocol such as LayerZero, or unknown. Null when not yet recorded"
+                            },
+                            "bridge_name": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "Bridge, issuer or interoperability protocol, when known"
+                            },
+                            "source_name": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "Source the link was taken from. Null when not yet recorded"
+                            },
+                            "source_url": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "Location of that source. Null when not yet recorded"
+                            },
+                            "inferred_reverse": {
+                              "type": [
+                                "boolean",
+                                "null"
+                              ],
+                              "description": "True when this direction was mirrored from a one-way link in the source rather than read from it. Null when not yet recorded"
                             }
                           },
                           "required": [
-                            "bridge_address"
+                            "bridge_address",
+                            "relationship",
+                            "bridge_name",
+                            "source_name",
+                            "source_url",
+                            "inferred_reverse"
                           ]
                         }
                       }
@@ -470,6 +612,97 @@
                     ]
                   },
                   "description": "Array of tokens"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request parameters are invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An unexpected server error occurred",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tokens/price-changes": {
+      "get": {
+        "tags": [
+          "Meta"
+        ],
+        "summary": "Batch token 24 hour USD price changes",
+        "description": "The latest USD price of each requested token and its price 24 hours ago, for showing a 24 hour change in token lists. Accepts up to 100 tokens.",
+        "operationId": "get_BatchGetTokenUsdPriceChanges",
+        "parameters": [
+          {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(?:\\d+|0x[a-fA-F0-9]+):0x[a-fA-F0-9]+$",
+                "description": "Token identifier formatted as chain_id:token_address where chain_id may be decimal or 0x-prefixed hexadecimal"
+              },
+              "description": "Repeat the id parameter to fetch multiple tokens (e.g. ?id=1:0x...&id=0x1:0x...)",
+              "example": "1:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+            },
+            "required": true,
+            "description": "Repeat the id parameter to fetch multiple tokens (e.g. ?id=1:0x...&id=0x1:0x...)",
+            "name": "id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Latest and 24 hour old USD prices",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "chain_id": {
+                        "type": "string"
+                      },
+                      "address": {
+                        "type": "string"
+                      },
+                      "usd_price": {
+                        "type": "number",
+                        "minimum": 0,
+                        "description": "The latest USD price"
+                      },
+                      "usd_price_24h_ago": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "description": "The latest USD price observed at or before 24 hours ago, at most a few hours earlier. Null when there is none"
+                      }
+                    },
+                    "required": [
+                      "chain_id",
+                      "address",
+                      "usd_price",
+                      "usd_price_24h_ago"
+                    ]
+                  },
+                  "description": "One entry per requested token that has a USD price, in request order"
                 }
               }
             }
@@ -614,7 +847,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -699,10 +932,57 @@
                           "bridge_address": {
                             "type": "string",
                             "description": "Token address for the destination chain"
+                          },
+                          "relationship": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "enum": [
+                              "canonical_bridge",
+                              "native_issuer",
+                              "interoperability",
+                              "unknown",
+                              null
+                            ],
+                            "description": "How the destination token relates to this one: a copy minted by the canonical bridge, a deployment by the issuer itself, a version issued through an interoperability protocol such as LayerZero, or unknown. Null when not yet recorded"
+                          },
+                          "bridge_name": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "Bridge, issuer or interoperability protocol, when known"
+                          },
+                          "source_name": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "Source the link was taken from. Null when not yet recorded"
+                          },
+                          "source_url": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "Location of that source. Null when not yet recorded"
+                          },
+                          "inferred_reverse": {
+                            "type": [
+                              "boolean",
+                              "null"
+                            ],
+                            "description": "True when this direction was mirrored from a one-way link in the source rather than read from it. Null when not yet recorded"
                           }
                         },
                         "required": [
-                          "bridge_address"
+                          "bridge_address",
+                          "relationship",
+                          "bridge_name",
+                          "source_name",
+                          "source_url",
+                          "inferred_reverse"
                         ]
                       }
                     }
@@ -1628,11 +1908,62 @@
                           "chain_id"
                         ]
                       }
+                    },
+                    "totals": {
+                      "type": "object",
+                      "properties": {
+                        "tvlUsd": {
+                          "type": "number",
+                          "description": "USD value of tvlByToken, using the latest token prices; unpriced tokens count as 0"
+                        },
+                        "tvlDeltaUsdYesterday": {
+                          "type": "number",
+                          "description": "USD value of the tvlDeltaByTokenByDate entries dated tvlDeltaDate, at the latest token prices"
+                        },
+                        "tvlDeltaDate": {
+                          "type": "string",
+                          "description": "The UTC date (YYYY-MM-DD) summed into tvlDeltaUsdYesterday: the day before the response was computed"
+                        }
+                      },
+                      "required": [
+                        "tvlUsd",
+                        "tvlDeltaUsdYesterday",
+                        "tvlDeltaDate"
+                      ]
+                    },
+                    "totalsByChain": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "tvlUsd": {
+                            "type": "number",
+                            "description": "USD value of tvlByToken, using the latest token prices; unpriced tokens count as 0"
+                          },
+                          "tvlDeltaUsdYesterday": {
+                            "type": "number",
+                            "description": "USD value of the tvlDeltaByTokenByDate entries dated tvlDeltaDate, at the latest token prices"
+                          },
+                          "chain_id": {
+                            "type": "string",
+                            "pattern": "^0x[a-fA-F0-9]+$",
+                            "description": "A hexadecimal number"
+                          }
+                        },
+                        "required": [
+                          "tvlUsd",
+                          "tvlDeltaUsdYesterday",
+                          "chain_id"
+                        ]
+                      },
+                      "description": "The same totals per chain, sorted by chain_id"
                     }
                   },
                   "required": [
                     "tvlByToken",
-                    "tvlDeltaByTokenByDate"
+                    "tvlDeltaByTokenByDate",
+                    "totals",
+                    "totalsByChain"
                   ]
                 }
               }
@@ -1768,11 +2099,47 @@
                           "chain_id"
                         ]
                       }
+                    },
+                    "totals": {
+                      "type": "object",
+                      "properties": {
+                        "volumeUsd24h": {
+                          "type": "number",
+                          "description": "USD value of volumeByToken_24h, using the latest token prices; unpriced tokens count as 0"
+                        }
+                      },
+                      "required": [
+                        "volumeUsd24h"
+                      ]
+                    },
+                    "totalsByChain": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "volumeUsd24h": {
+                            "type": "number",
+                            "description": "USD value of volumeByToken_24h, using the latest token prices; unpriced tokens count as 0"
+                          },
+                          "chain_id": {
+                            "type": "string",
+                            "pattern": "^0x[a-fA-F0-9]+$",
+                            "description": "A hexadecimal number"
+                          }
+                        },
+                        "required": [
+                          "volumeUsd24h",
+                          "chain_id"
+                        ]
+                      },
+                      "description": "The same totals per chain, sorted by chain_id"
                     }
                   },
                   "required": [
                     "volumeByTokenByDate",
-                    "volumeByToken_24h"
+                    "volumeByToken_24h",
+                    "totals",
+                    "totalsByChain"
                   ]
                 }
               }
@@ -1834,7 +2201,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -1856,7 +2223,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -1878,7 +2245,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -1900,7 +2267,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -2028,7 +2395,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -2050,7 +2417,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -2072,7 +2439,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -2094,7 +2461,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -2116,7 +2483,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -2260,7 +2627,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -2282,7 +2649,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -2304,7 +2671,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -2559,7 +2926,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -2588,12 +2955,12 @@
             "schema": {
               "type": "integer",
               "minimum": 3600,
-              "maximum": 86400,
+              "maximum": 2592000,
               "default": 86400,
-              "description": "History duration in seconds, up to 24 hours"
+              "description": "History duration in seconds, up to 30 days. Prices older than a day are kept at hourly resolution, so older buckets are exact only for intervals that are whole hours"
             },
             "required": false,
-            "description": "History duration in seconds, up to 24 hours",
+            "description": "History duration in seconds, up to 30 days. Prices older than a day are kept at hourly resolution, so older buckets are exact only for intervals that are whole hours",
             "name": "duration",
             "in": "query"
           }
@@ -2690,6 +3057,174 @@
         }
       }
     },
+    "/tokens/{chainId}/{tokenAddress}/net-flow": {
+      "get": {
+        "tags": [
+          "Prices"
+        ],
+        "summary": "Get token net buy and sell flow",
+        "description": "Returns how much of a token traders bought from and sold into Ekubo pools in each interval, across every pool on the chain that holds the token, including TWAMM and limit order execution. Buckets use the same boundaries as the token price history and only buckets with at least one swap are returned; an unknown token returns no buckets. A multi-hop route that passes through the token adds the same amount to both bought and sold, so the net flow is exact while the gross amounts include that routing.",
+        "operationId": "get_GetTokenNetFlow",
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "title": "Chain ID",
+              "description": "The ID of the network that is being fetched",
+              "format": "int64",
+              "minimum": 1,
+              "maximum": 9223372036854776000
+            },
+            "required": true,
+            "description": "The ID of the network that is being fetched",
+            "name": "chainId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^0x[a-fA-F0-9]+$",
+                  "description": "A hexadecimal number"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^\\d+$",
+                  "description": "A decimal number"
+                }
+              ],
+              "title": "Address",
+              "description": "An address on the specified blockchain network"
+            },
+            "required": true,
+            "description": "An address on the specified blockchain network",
+            "name": "tokenAddress",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 60,
+              "maximum": 86400,
+              "default": 900,
+              "description": "Bucket size in seconds"
+            },
+            "required": false,
+            "description": "Bucket size in seconds",
+            "name": "interval",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 3600,
+              "maximum": 2592000,
+              "default": 86400,
+              "description": "History duration in seconds ending now, up to 30 days and at most 1000 intervals"
+            },
+            "required": false,
+            "description": "History duration in seconds ending now, up to 30 days and at most 1000 intervals",
+            "name": "duration",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The token's bought and sold amounts per interval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "timestamp": {
+                      "type": "integer",
+                      "description": "Response time, unix seconds"
+                    },
+                    "start": {
+                      "type": "integer",
+                      "description": "Start of the window, unix seconds"
+                    },
+                    "end": {
+                      "type": "integer",
+                      "description": "End of the window, unix seconds"
+                    },
+                    "interval": {
+                      "type": "integer"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "start": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "string",
+                                "format": "date-time"
+                              }
+                            ],
+                            "description": "Bucket start time"
+                          },
+                          "bought": {
+                            "type": "string",
+                            "description": "Raw token units that left Ekubo pools to traders in the bucket, as a decimal string"
+                          },
+                          "sold": {
+                            "type": "string",
+                            "description": "Raw token units traders paid into Ekubo pools in the bucket, as a decimal string"
+                          },
+                          "swap_count": {
+                            "type": "integer",
+                            "description": "Number of swaps in the bucket that touched the token"
+                          }
+                        },
+                        "required": [
+                          "start",
+                          "bought",
+                          "sold",
+                          "swap_count"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "timestamp",
+                    "start",
+                    "end",
+                    "interval",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request parameters are invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An unexpected server error occurred",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/price/{chainId}/{baseToken}/{quoteToken}/history": {
       "get": {
         "tags": [
@@ -2709,7 +3244,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -2732,7 +3267,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -2755,7 +3290,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -2925,7 +3460,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -2948,7 +3483,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -2971,7 +3506,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -3171,7 +3706,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -3194,7 +3729,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -3401,7 +3936,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -3424,7 +3959,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -3528,7 +4063,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -3551,7 +4086,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -3696,7 +4231,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -3719,7 +4254,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -3808,7 +4343,7 @@
                       "properties": {
                         "sqrt_ratio": {
                           "type": "string",
-                          "pattern": "^\\d+e?\\d*$",
+                          "pattern": "^\\d+$",
                           "description": "A decimal number"
                         },
                         "tick": {
@@ -3816,7 +4351,7 @@
                         },
                         "liquidity": {
                           "type": "string",
-                          "pattern": "^\\d+e?\\d*$",
+                          "pattern": "^\\d+$",
                           "description": "A decimal number"
                         }
                       },
@@ -3902,7 +4437,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -3925,7 +4460,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -3947,7 +4482,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -3969,7 +4504,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -3991,7 +4526,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -4097,7 +4632,7 @@
                             "properties": {
                               "sqrt_ratio": {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               },
                               "tick": {
@@ -4105,7 +4640,7 @@
                               },
                               "liquidity": {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               }
                             },
@@ -4198,7 +4733,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -4220,7 +4755,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -4323,7 +4858,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -4345,7 +4880,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -4367,7 +4902,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -4389,7 +4924,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -4452,7 +4987,7 @@
                               },
                               {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               }
                             ],
@@ -4545,7 +5080,7 @@
                             "properties": {
                               "sqrt_ratio": {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               },
                               "tick": {
@@ -4553,7 +5088,7 @@
                               },
                               "liquidity": {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               }
                             },
@@ -4643,7 +5178,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -4665,7 +5200,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -4728,7 +5263,7 @@
                               },
                               {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               }
                             ],
@@ -4821,7 +5356,7 @@
                             "properties": {
                               "sqrt_ratio": {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               },
                               "tick": {
@@ -4829,7 +5364,7 @@
                               },
                               "liquidity": {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               }
                             },
@@ -4919,7 +5454,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -4941,7 +5476,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -4963,7 +5498,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -4985,7 +5520,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -5132,7 +5667,7 @@
                   },
                   {
                     "type": "string",
-                    "pattern": "^\\d+e?\\d*$",
+                    "pattern": "^\\d+$",
                     "description": "A decimal number"
                   }
                 ],
@@ -5319,7 +5854,7 @@
                           },
                           "liquidity": {
                             "type": "string",
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           },
                           "pool_state": {
@@ -5330,7 +5865,7 @@
                             "properties": {
                               "sqrt_ratio": {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               },
                               "tick": {
@@ -5338,7 +5873,7 @@
                               },
                               "liquidity": {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               },
                               "fee": {
@@ -5361,12 +5896,12 @@
                               "properties": {
                                 "amount": {
                                   "type": "string",
-                                  "pattern": "^\\d+e?\\d*$",
+                                  "pattern": "^\\d+$",
                                   "description": "A decimal number"
                                 },
                                 "pending": {
                                   "type": "string",
-                                  "pattern": "^\\d+e?\\d*$",
+                                  "pattern": "^\\d+$",
                                   "description": "A decimal number"
                                 }
                               },
@@ -5470,7 +6005,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -5654,7 +6189,7 @@
                           },
                           "liquidity": {
                             "type": "string",
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           },
                           "pool_state": {
@@ -5665,7 +6200,7 @@
                             "properties": {
                               "sqrt_ratio": {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               },
                               "tick": {
@@ -5673,7 +6208,7 @@
                               },
                               "liquidity": {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               },
                               "fee": {
@@ -5696,12 +6231,12 @@
                               "properties": {
                                 "amount": {
                                   "type": "string",
-                                  "pattern": "^\\d+e?\\d*$",
+                                  "pattern": "^\\d+$",
                                   "description": "A decimal number"
                                 },
                                 "pending": {
                                   "type": "string",
-                                  "pattern": "^\\d+e?\\d*$",
+                                  "pattern": "^\\d+$",
                                   "description": "A decimal number"
                                 }
                               },
@@ -5877,7 +6412,7 @@
                         },
                         {
                           "type": "string",
-                          "pattern": "^\\d+e?\\d*$",
+                          "pattern": "^\\d+$",
                           "description": "A decimal number"
                         }
                       ],
@@ -6392,7 +6927,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -6414,7 +6949,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -6436,7 +6971,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -6466,7 +7001,7 @@
                         },
                         {
                           "type": "string",
-                          "pattern": "^\\d+e?\\d*$",
+                          "pattern": "^\\d+$",
                           "description": "A decimal number"
                         }
                       ],
@@ -6721,7 +7256,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -6743,7 +7278,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -6765,7 +7300,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -6879,7 +7414,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -6901,7 +7436,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -6923,7 +7458,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -6992,7 +7527,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -7014,7 +7549,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -7036,7 +7571,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -7164,7 +7699,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -7187,7 +7722,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -7210,7 +7745,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -7233,7 +7768,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -7356,7 +7891,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -7379,7 +7914,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -7502,7 +8037,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -7525,7 +8060,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -7626,7 +8161,7 @@
                   },
                   {
                     "type": "string",
-                    "pattern": "^\\d+e?\\d*$",
+                    "pattern": "^\\d+$",
                     "description": "A decimal number"
                   }
                 ],
@@ -7740,7 +8275,7 @@
                                         },
                                         {
                                           "type": "string",
-                                          "pattern": "^\\d+e?\\d*$",
+                                          "pattern": "^\\d+$",
                                           "description": "A decimal number"
                                         }
                                       ],
@@ -7757,7 +8292,7 @@
                                         },
                                         {
                                           "type": "string",
-                                          "pattern": "^\\d+e?\\d*$",
+                                          "pattern": "^\\d+$",
                                           "description": "A decimal number"
                                         }
                                       ],
@@ -7791,12 +8326,12 @@
                                 },
                                 "total_proceeds_withdrawn": {
                                   "type": "string",
-                                  "pattern": "^\\d+e?\\d*$",
+                                  "pattern": "^\\d+$",
                                   "description": "A decimal number"
                                 },
                                 "sale_rate": {
                                   "type": "string",
-                                  "pattern": "^\\d+e?\\d*$",
+                                  "pattern": "^\\d+$",
                                   "description": "A decimal number"
                                 },
                                 "last_collect_proceeds": {
@@ -7807,8 +8342,18 @@
                                 },
                                 "total_amount_sold": {
                                   "type": "string",
-                                  "pattern": "^\\d+e?\\d*$",
+                                  "pattern": "^\\d+$",
                                   "description": "A decimal number"
+                                },
+                                "amount_sold_checkpoint": {
+                                  "type": "string",
+                                  "pattern": "^\\d+$",
+                                  "description": "Amount sold up to amount_sold_checkpoint_time. It only changes when the order is updated; after that time the order sells at sale_rate, so amount sold at time t is amount_sold_checkpoint + floor((min(t, end_time) - amount_sold_checkpoint_time) * sale_rate / 2**32)"
+                                },
+                                "amount_sold_checkpoint_time": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "description": "The epoch time in seconds up to which amount_sold_checkpoint is accounted, between start_time and end_time"
                                 }
                               },
                               "required": [
@@ -7816,7 +8361,9 @@
                                 "total_proceeds_withdrawn",
                                 "sale_rate",
                                 "last_collect_proceeds",
-                                "total_amount_sold"
+                                "total_amount_sold",
+                                "amount_sold_checkpoint",
+                                "amount_sold_checkpoint_time"
                               ]
                             }
                           }
@@ -7907,7 +8454,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -8019,7 +8566,7 @@
                                         },
                                         {
                                           "type": "string",
-                                          "pattern": "^\\d+e?\\d*$",
+                                          "pattern": "^\\d+$",
                                           "description": "A decimal number"
                                         }
                                       ],
@@ -8036,7 +8583,7 @@
                                         },
                                         {
                                           "type": "string",
-                                          "pattern": "^\\d+e?\\d*$",
+                                          "pattern": "^\\d+$",
                                           "description": "A decimal number"
                                         }
                                       ],
@@ -8070,12 +8617,12 @@
                                 },
                                 "total_proceeds_withdrawn": {
                                   "type": "string",
-                                  "pattern": "^\\d+e?\\d*$",
+                                  "pattern": "^\\d+$",
                                   "description": "A decimal number"
                                 },
                                 "sale_rate": {
                                   "type": "string",
-                                  "pattern": "^\\d+e?\\d*$",
+                                  "pattern": "^\\d+$",
                                   "description": "A decimal number"
                                 },
                                 "last_collect_proceeds": {
@@ -8086,8 +8633,18 @@
                                 },
                                 "total_amount_sold": {
                                   "type": "string",
-                                  "pattern": "^\\d+e?\\d*$",
+                                  "pattern": "^\\d+$",
                                   "description": "A decimal number"
+                                },
+                                "amount_sold_checkpoint": {
+                                  "type": "string",
+                                  "pattern": "^\\d+$",
+                                  "description": "Amount sold up to amount_sold_checkpoint_time. It only changes when the order is updated; after that time the order sells at sale_rate, so amount sold at time t is amount_sold_checkpoint + floor((min(t, end_time) - amount_sold_checkpoint_time) * sale_rate / 2**32)"
+                                },
+                                "amount_sold_checkpoint_time": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "description": "The epoch time in seconds up to which amount_sold_checkpoint is accounted, between start_time and end_time"
                                 }
                               },
                               "required": [
@@ -8095,7 +8652,9 @@
                                 "total_proceeds_withdrawn",
                                 "sale_rate",
                                 "last_collect_proceeds",
-                                "total_amount_sold"
+                                "total_amount_sold",
+                                "amount_sold_checkpoint",
+                                "amount_sold_checkpoint_time"
                               ]
                             }
                           }
@@ -8186,7 +8745,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -8292,7 +8851,7 @@
                                         },
                                         {
                                           "type": "string",
-                                          "pattern": "^\\d+e?\\d*$",
+                                          "pattern": "^\\d+$",
                                           "description": "A decimal number"
                                         }
                                       ],
@@ -8309,7 +8868,7 @@
                                         },
                                         {
                                           "type": "string",
-                                          "pattern": "^\\d+e?\\d*$",
+                                          "pattern": "^\\d+$",
                                           "description": "A decimal number"
                                         }
                                       ],
@@ -8331,12 +8890,12 @@
                                 },
                                 "liquidity": {
                                   "type": "string",
-                                  "pattern": "^\\d+e?\\d*$",
+                                  "pattern": "^\\d+$",
                                   "description": "A decimal number"
                                 },
                                 "amount": {
                                   "type": "string",
-                                  "pattern": "^\\d+e?\\d*$",
+                                  "pattern": "^\\d+$",
                                   "description": "A decimal number"
                                 },
                                 "token0_amount_withdrawn": {
@@ -8344,7 +8903,7 @@
                                     "string",
                                     "null"
                                   ],
-                                  "pattern": "^\\d+e?\\d*$",
+                                  "pattern": "^\\d+$",
                                   "description": "A decimal number"
                                 },
                                 "token1_amount_withdrawn": {
@@ -8352,7 +8911,7 @@
                                     "string",
                                     "null"
                                   ],
-                                  "pattern": "^\\d+e?\\d*$",
+                                  "pattern": "^\\d+$",
                                   "description": "A decimal number"
                                 }
                               },
@@ -8452,7 +9011,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -8474,7 +9033,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -8496,7 +9055,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -8565,7 +9124,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -8587,7 +9146,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -8609,7 +9168,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -8678,7 +9237,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -8700,7 +9259,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -8722,7 +9281,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -8822,7 +9381,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -8865,7 +9424,7 @@
                                   },
                                   {
                                     "type": "string",
-                                    "pattern": "^\\d+e?\\d*$",
+                                    "pattern": "^\\d+$",
                                     "description": "A decimal number"
                                   }
                                 ],
@@ -8881,7 +9440,7 @@
                                   },
                                   {
                                     "type": "string",
-                                    "pattern": "^\\d+e?\\d*$",
+                                    "pattern": "^\\d+$",
                                     "description": "A decimal number"
                                   }
                                 ],
@@ -8914,7 +9473,7 @@
                               },
                               {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               }
                             ],
@@ -8930,7 +9489,7 @@
                               },
                               {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               }
                             ],
@@ -8939,7 +9498,7 @@
                           },
                           "total_sale_rate": {
                             "type": "string",
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           },
                           "boost_end_time": {
@@ -8951,7 +9510,7 @@
                               },
                               {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               },
                               {
@@ -8970,7 +9529,7 @@
                               },
                               {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               },
                               {
@@ -9043,7 +9602,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -9065,7 +9624,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -9087,7 +9646,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -9201,7 +9760,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -9223,7 +9782,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -9245,7 +9804,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -9296,7 +9855,7 @@
                           },
                           "total_sale_rate": {
                             "type": "string",
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           },
                           "participants_count": {
@@ -9308,7 +9867,7 @@
                               "string",
                               "null"
                             ],
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           },
                           "boost_rate": {
@@ -9316,7 +9875,7 @@
                               "string",
                               "null"
                             ],
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           },
                           "boost_end_time": {
@@ -9328,7 +9887,7 @@
                               },
                               {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               },
                               {
@@ -9347,7 +9906,7 @@
                               },
                               {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               },
                               {
@@ -9362,7 +9921,7 @@
                               "string",
                               "null"
                             ],
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           },
                           "boost_amount": {
@@ -9370,7 +9929,7 @@
                               "string",
                               "null"
                             ],
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           }
                         },
@@ -9450,7 +10009,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -9472,7 +10031,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -9494,7 +10053,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -9563,7 +10122,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -9723,7 +10282,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -9782,7 +10341,7 @@
                               },
                               {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               }
                             ],
@@ -9791,7 +10350,7 @@
                           },
                           "amount": {
                             "type": "string",
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           },
                           "votingRecord": {
@@ -9874,7 +10433,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -9924,7 +10483,7 @@
                               },
                               {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               }
                             ],
@@ -9933,7 +10492,7 @@
                           },
                           "weight": {
                             "type": "string",
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           },
                           "yea": {
@@ -9998,7 +10557,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -10044,7 +10603,7 @@
                               },
                               {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               }
                             ],
@@ -10053,7 +10612,7 @@
                           },
                           "weight": {
                             "type": "string",
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           },
                           "vote": {
@@ -10137,7 +10696,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -10159,7 +10718,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -10182,7 +10741,7 @@
                   "properties": {
                     "amountDelegatedTo": {
                       "type": "string",
-                      "pattern": "^\\d+e?\\d*$",
+                      "pattern": "^\\d+$",
                       "description": "A decimal number"
                     },
                     "delegates": {
@@ -10199,7 +10758,7 @@
                               },
                               {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               }
                             ],
@@ -10208,7 +10767,7 @@
                           },
                           "amount": {
                             "type": "string",
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           }
                         },
@@ -10269,7 +10828,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -10340,7 +10899,7 @@
                           },
                           "pool_key_id": {
                             "type": "string",
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           },
                           "pool_id": {
@@ -10360,7 +10919,7 @@
                           },
                           "fee": {
                             "type": "string",
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           },
                           "tick_spacing": {
@@ -10446,7 +11005,7 @@
                             "properties": {
                               "sqrt_ratio": {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               },
                               "tick": {
@@ -10454,7 +11013,7 @@
                               },
                               "liquidity": {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               }
                             },
@@ -10466,7 +11025,7 @@
                           },
                           "pool_total_vote_weight": {
                             "type": "string",
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           },
                           "swap_fee": {
@@ -10542,7 +11101,7 @@
                           },
                           "last_event_id": {
                             "type": "string",
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           }
                         },
@@ -10584,7 +11143,7 @@
                     },
                     "total_vote_weight": {
                       "type": "string",
-                      "pattern": "^\\d+e?\\d*$",
+                      "pattern": "^\\d+$",
                       "description": "A decimal number"
                     },
                     "pagination": {
@@ -10666,7 +11225,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -10739,7 +11298,7 @@
                               },
                               {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               }
                             ],
@@ -10748,7 +11307,7 @@
                           },
                           "total_vote_weight": {
                             "type": "string",
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           }
                         },
@@ -10760,7 +11319,7 @@
                     },
                     "total_vote_weight": {
                       "type": "string",
-                      "pattern": "^\\d+e?\\d*$",
+                      "pattern": "^\\d+$",
                       "description": "A decimal number"
                     },
                     "pagination": {
@@ -10842,7 +11401,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -10864,7 +11423,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -10961,7 +11520,7 @@
                           },
                           "amount": {
                             "type": "string",
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           },
                           "end_time": {
@@ -11050,7 +11609,7 @@
                               "string",
                               "null"
                             ],
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           },
                           "applied_vote_weight": {
@@ -11058,7 +11617,7 @@
                               "string",
                               "null"
                             ],
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           },
                           "voted_swap_fee": {
@@ -11066,7 +11625,7 @@
                               "string",
                               "null"
                             ],
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           },
                           "pool_total_vote_weight": {
@@ -11074,7 +11633,7 @@
                               "string",
                               "null"
                             ],
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           },
                           "minted_at": {
@@ -11101,12 +11660,12 @@
                           },
                           "last_stake_changed_event_id": {
                             "type": "string",
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           },
                           "last_transfer_event_id": {
                             "type": "string",
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           }
                         },
@@ -11268,7 +11827,7 @@
                               },
                               {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               }
                             ],
@@ -11304,7 +11863,7 @@
                                 },
                                 {
                                   "type": "string",
-                                  "pattern": "^\\d+e?\\d*$",
+                                  "pattern": "^\\d+$",
                                   "description": "A decimal number"
                                 }
                               ],
@@ -11326,7 +11885,7 @@
                                     },
                                     {
                                       "type": "string",
-                                      "pattern": "^\\d+e?\\d*$",
+                                      "pattern": "^\\d+$",
                                       "description": "A decimal number"
                                     }
                                   ],
@@ -11342,7 +11901,7 @@
                                     },
                                     {
                                       "type": "string",
-                                      "pattern": "^\\d+e?\\d*$",
+                                      "pattern": "^\\d+$",
                                       "description": "A decimal number"
                                     }
                                   ],
@@ -11361,7 +11920,7 @@
                                     "string",
                                     "null"
                                   ],
-                                  "pattern": "^\\d+e?\\d*$",
+                                  "pattern": "^\\d+$",
                                   "description": "A decimal number"
                                 },
                                 "depth1": {
@@ -11369,32 +11928,32 @@
                                     "string",
                                     "null"
                                   ],
-                                  "pattern": "^\\d+e?\\d*$",
+                                  "pattern": "^\\d+$",
                                   "description": "A decimal number"
                                 },
                                 "distributed": {
                                   "type": "string",
-                                  "pattern": "^\\d+e?\\d*$",
+                                  "pattern": "^\\d+$",
                                   "description": "A decimal number"
                                 },
                                 "scheduled": {
                                   "type": "string",
-                                  "pattern": "^\\d+e?\\d*$",
+                                  "pattern": "^\\d+$",
                                   "description": "A decimal number"
                                 },
                                 "daily_rewards": {
                                   "type": "string",
-                                  "pattern": "^\\d+e?\\d*$",
+                                  "pattern": "^\\d+$",
                                   "description": "A decimal number"
                                 },
                                 "daily_rewards_token0": {
                                   "type": "string",
-                                  "pattern": "^\\d+e?\\d*$",
+                                  "pattern": "^\\d+$",
                                   "description": "A decimal number"
                                 },
                                 "daily_rewards_token1": {
                                   "type": "string",
-                                  "pattern": "^\\d+e?\\d*$",
+                                  "pattern": "^\\d+$",
                                   "description": "A decimal number"
                                 },
                                 "realized_volatility": {
@@ -11501,7 +12060,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -11523,7 +12082,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -11556,6 +12115,19 @@
             "description": "Filter to rewards in periods that ended at or before this time",
             "name": "endTime",
             "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "24h"
+              ],
+              "description": "Also return incentiveInsights: earnings over the 24 hours ending at each campaign's latest computed reward period"
+            },
+            "required": false,
+            "description": "Also return incentiveInsights: earnings over the 24 hours ending at each campaign's latest computed reward period",
+            "name": "insights",
+            "in": "query"
           }
         ],
         "responses": {
@@ -11576,12 +12148,12 @@
                           },
                           "amount": {
                             "type": "string",
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           },
                           "pending": {
                             "type": "string",
-                            "pattern": "^\\d+e?\\d*$",
+                            "pattern": "^\\d+$",
                             "description": "A decimal number"
                           }
                         },
@@ -11591,6 +12163,76 @@
                           "pending"
                         ]
                       }
+                    },
+                    "incentiveInsights": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "campaignSlug": {
+                            "type": "string"
+                          },
+                          "historyWindow": {
+                            "type": "object",
+                            "properties": {
+                              "startTime": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "format": "date-time",
+                                "description": "Start of the window, inclusive; null when unavailable"
+                              },
+                              "endTime": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "format": "date-time",
+                                "description": "End of the window, exclusive. Equal to computedThrough; null when unavailable"
+                              },
+                              "amount": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "pattern": "^\\d+$",
+                                "description": "Reward token base units earned in the window. complete: the exact amount, and \"0\" is a genuine zero. partial: an exact subtotal of the periods fully inside the window, a lower bound on the window's earnings. unavailable: always null"
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": [
+                                  "complete",
+                                  "partial",
+                                  "unavailable"
+                                ],
+                                "description": "complete: every reward period touching the window is computed and fully inside it, or earned this position nothing. partial: some period crossing the window edge earned this position rewards that cannot be split, so amount excludes them. unavailable: nothing has been computed, or no period fits inside the window"
+                              }
+                            },
+                            "required": [
+                              "startTime",
+                              "endTime",
+                              "amount",
+                              "status"
+                            ]
+                          },
+                          "computedThrough": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "format": "date-time",
+                            "description": "Rewards for every period of the campaign ending at or before this time are computed. null when no period has been computed"
+                          }
+                        },
+                        "required": [
+                          "campaignSlug",
+                          "historyWindow",
+                          "computedThrough"
+                        ],
+                        "description": "The position's earnings over the 24 hours ending at the latest completed and computed reward period of the campaign"
+                      },
+                      "description": "Present only when insights=24h is requested. One entry per campaign the position has rewards in, plus every running campaign on the chain whose locker filter admits it. Independent of startTime and endTime"
                     }
                   },
                   "required": [
@@ -11643,7 +12285,7 @@
                 },
                 {
                   "type": "string",
-                  "pattern": "^\\d+e?\\d*$",
+                  "pattern": "^\\d+$",
                   "description": "A decimal number"
                 }
               ],
@@ -11711,7 +12353,7 @@
                                   },
                                   {
                                     "type": "string",
-                                    "pattern": "^\\d+e?\\d*$",
+                                    "pattern": "^\\d+$",
                                     "description": "A decimal number"
                                   },
                                   {
@@ -11754,7 +12396,7 @@
                                   },
                                   {
                                     "type": "string",
-                                    "pattern": "^\\d+e?\\d*$",
+                                    "pattern": "^\\d+$",
                                     "description": "A decimal number"
                                   }
                                 ],
@@ -11763,7 +12405,7 @@
                               },
                               "amount": {
                                 "type": "string",
-                                "pattern": "^\\d+e?\\d*$",
+                                "pattern": "^\\d+$",
                                 "description": "A decimal number"
                               }
                             },
