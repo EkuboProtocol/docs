@@ -1,19 +1,30 @@
 ---
-// A live Ekubo widget for the BNB Chain BNCB/USDT Fynd pool. The docs page is
-// the host: it connects the reader's browser wallet and lends it to the
-// widget through the hosted SDK, exactly as an integrating site would.
+// A live Ekubo widget for one pool. The docs page is the host: it connects
+// the reader's browser wallet and lends it to the widget through the hosted
+// SDK, exactly as an integrating site would.
 interface Props {
   view: "swap" | "position";
   label: string;
+  pool: {
+    chainId: number;
+    token0: string;
+    token1: string;
+    fee: string;
+    tickSpacing: number;
+    extension?: "none" | "fynd-amm";
+    extensionAddress?: string;
+    poolId?: string;
+  };
 }
 
-const { view, label } = Astro.props;
+const { view, label, pool } = Astro.props;
 ---
 
 <section
   class="embed-example not-content"
   data-embed-example
   data-view={view}
+  data-pool={JSON.stringify(pool)}
   aria-label={label}
 >
   <div class="embed-example-bar">
@@ -43,17 +54,6 @@ const { view, label } = Astro.props;
   };
 
   const EMBED_ORIGIN = "https://embed.ekubo.org";
-  const FYND_POOL = {
-    chainId: 56,
-    token0: "0x4902c5ebc598265ed2212b559b042de8a5eeec3f",
-    token1: "0x55d398326f99059ff775485246999027b3197955",
-    fee: "0",
-    tickSpacing: 1024,
-    extension: "fynd-amm",
-    extensionAddress: "0x550CFe1292d0D9c0d28f232b3F42Edb4439B1D09",
-    poolId:
-      "0x942e8f465b349913a0a115c8f346028f549129748184d8eac4fafc7b88c863a9",
-  };
 
   const wallets: Announced[] = [];
   const widgets: Widget[] = [];
@@ -171,7 +171,7 @@ const { view, label } = Astro.props;
       widgets.push(
         sdk.create(part(example, "frame"), {
           embedOrigin: EMBED_ORIGIN,
-          pool: FYND_POOL,
+          pool: JSON.parse(example.dataset.pool ?? "{}") as unknown,
           view: example.dataset.view,
           theme: theme(),
           title: example.getAttribute("aria-label") ?? "Ekubo",
