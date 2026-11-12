@@ -99,17 +99,31 @@ The `pool` object takes `chainId`, `token0`, `token1`, `fee` and `tickSpacing`, 
 
 ## Events
 
-| Event                   | Payload                                                              | When                                                                                           |
-| ----------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `ready`                 | `version`, `capabilities`                                            | The widget has loaded and connected to your page.                                              |
-| `resize`                | `height`                                                             | The widget's content height changed.                                                           |
-| `connection-required`   | none                                                                 | The widget has no account: on load, or after the wallet disconnects.                           |
-| `transaction-submitted` | `chainId`, `kind`, `id`                                              | The wallet returned a transaction hash or a batch ID.                                          |
-| `transaction-confirmed` | `chainId`, `transactionHash`, `status`                               | A receipt was found, including for token approvals.                                            |
-| `position-created`      | `chainId`, `positionsAddress`, `owner`, `tokenId`, `transactionHash` | A position was minted to the connected account.                                                |
-| `error`                 | `code`, `message`                                                    | The configuration is invalid, the connection to the widget failed, or a wallet request failed. |
+| Event                    | Payload                                                              | When                                                                                           |
+| ------------------------ | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `ready`                  | `version`, `capabilities`                                            | The widget has loaded and connected to your page.                                              |
+| `resize`                 | `height`                                                             | The widget's content height changed.                                                           |
+| `connection-required`    | none                                                                 | The widget has no account: on load, or after the wallet disconnects.                           |
+| `transaction-submitted`  | `chainId`, `kind`, `id`                                              | The wallet returned a transaction hash or a batch ID.                                          |
+| `transaction-confirmed`  | `chainId`, `transactionHash`, `status`                               | A receipt was found, including for token approvals.                                            |
+| `position-created`       | `chainId`, `positionsAddress`, `owner`, `tokenId`, `transactionHash` | A position was minted to the connected account.                                                |
+| `token-select-requested` | `view`, `field`, `token`, `otherToken`                               | The user clicked one of the widget's tokens. Only sent if you listen for it; see below.        |
+| `error`                  | `code`, `message`                                                    | The configuration is invalid, the connection to the widget failed, or a wallet request failed. |
 
 Events are notifications for your interface. If you grant anything for a transaction or a position, verify it on chain first.
+
+## Letting users change tokens
+
+The widget never changes its own tokens. To offer a choice, listen for `token-select-requested` right after `create()`, before the widget loads. The widget's tokens then become buttons. A click sends the clicked `token`, the `otherToken` and the `field` (`"input"` or `"output"` for swap, `"base"` or `"quote"` for a position). Show your own token picker, then call `update({ pool })` with the new pool.
+
+```js
+widget.on("token-select-requested", async ({ token, otherToken }) => {
+  const pool = await pickPool(token, otherToken); // your own picker
+  if (pool) widget.update({ pool });
+});
+```
+
+If nothing listens, the tokens are plain labels.
 
 ## What the widget can ask the wallet
 
