@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Ekubo Quoter API",
-    "version": "3.4.10",
+    "version": "3.5.2",
     "description": "Returns block-pinned split routes for exact-input and exact-output Ekubo Protocol swaps. Resolve token addresses and decimals through the Ekubo API token list before requesting a quote. All token amounts are base-unit decimal strings.",
     "contact": {
       "url": "https://ekubo.org",
@@ -244,6 +244,11 @@
             "minimum": 0,
             "description": "Estimated gas to execute the route. On EVM chains this is the Ekubo Yul router's execution gas: router entry, the Core lock, and every split and hop of the route. It excludes the 21,000 intrinsic transaction gas, calldata gas, token payment and withdrawal (settlement), and any approval transaction. On Starknet it estimates the route's pool swaps only. Transaction preparation should separately estimate the complete transaction."
           },
+          "quote_timestamp": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Unix seconds used by quote math. Accounting uses the response block_number/block_hash state snapshot; it is not an execution receipt. Additive field; older servers may omit it."
+          },
           "price_impact": {
             "type": [
               "number",
@@ -269,6 +274,13 @@
           "route"
         ],
         "properties": {
+          "hop_accounting": {
+            "type": "array",
+            "description": "Additive quote-time accounting aligned one-to-one with route in quote order: input-to-output for exact input, output-to-input for exact output. Each split uses its final selected/requoted raw amounts. Shares use absolute amount_specified (input shares for exact input, output shares for exact output). Missing accounting on older servers is unknown, never zero.",
+            "items": {
+              "$ref": "#/components/schemas/HopAccounting"
+            }
+          },
           "amount_specified": {
             "type": "string",
             "pattern": "^-?[0-9]+$"
@@ -293,6 +305,119 @@
                 }
               ]
             }
+          }
+        }
+      },
+      "HopAccounting": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "token_in",
+          "token_out",
+          "amount_in",
+          "amount_out",
+          "status",
+          "reason",
+          "components"
+        ],
+        "properties": {
+          "token_in": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "token_out": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "amount_in": {
+            "type": "string",
+            "pattern": "^[0-9]+$",
+            "description": "Economic input magnitude in token_in base units, regardless of exact-output quote ordering."
+          },
+          "amount_out": {
+            "type": "string",
+            "pattern": "^[0-9]+$",
+            "description": "Economic output magnitude in token_out base units."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "complete",
+              "partial",
+              "unavailable"
+            ],
+            "description": "Completeness of supported quote model charges, not recipient allocation or eventual execution."
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Stable machine reason when accounting is partial/unavailable, for example unsupported_chain_accounting, unsupported_pool_model (such as MEVCapture v2.1) or quote_model_mismatch. Treat unknown reasons as unavailable."
+          },
+          "components": {
+            "type": "array",
+            "description": "Supported EVM pools retain Core and extension charges for both pool-key tokens, including known zeros. Match by kind and token, not index. Sum amounts for route pool token0 to obtain fees0, independently token1 for fees1; never sum across tokens or subtract again from quoted amounts. Missing/unsupported accounting is not zero.",
+            "items": {
+              "$ref": "#/components/schemas/AccountingComponent"
+            }
+          }
+        }
+      },
+      "AccountingComponent": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "token",
+          "amount",
+          "attribution",
+          "recipient",
+          "recipient_reason"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "core_fee",
+              "extension_fee",
+              "extension_adjustment",
+              "wrapper_fee"
+            ]
+          },
+          "token": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "amount": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^-?[0-9]+$",
+            "description": "Exact raw base units: positive charge to trader, negative rebate, string zero known zero, null unavailable (see hop reason). Already included in amount_in/out; do not apply again or sum across tokens. Current SDK models do not quote rebates."
+          },
+          "attribution": {
+            "type": "string",
+            "enum": [
+              "core_pool",
+              "extension",
+              "none",
+              "unknown"
+            ],
+            "description": "Proven accounting destination only, never an assertion of LP payouts or auction-proceeds ownership. Core pool identity is in the aligned route node."
+          },
+          "recipient": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^0x[0-9a-fA-F]+$",
+            "description": "Proven recipient address, otherwise null. Current SDK does not expose recipient transfers."
+          },
+          "recipient_reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Reason the recipient is unknown, or no_charge_recipient for a known zero wrapper fee."
           }
         }
       },

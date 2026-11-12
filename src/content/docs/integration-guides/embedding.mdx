@@ -77,9 +77,7 @@ Load the SDK as a module from the embed origin, create the widget in a container
 
 Use the provider your page already connects with, for example one discovered through EIP-6963, rather than `window.ethereum` if you support several wallets. Pass `provider: undefined` to disconnect. Until the widget has an account it shows a disabled **Connect a wallet to continue**, and it emits `connection-required` so your page can prompt the user to connect.
 
-:::note[Allowed sites]
-A browser only lets the widget load inside pages whose origin is on its allowlist, and the widget ignores messages from any other origin. To embed it on your site, ask in the [Ekubo Discord](https://discord.ekubo.org) to have your exact origins added, for example `https://app.example.com` and your staging origin.
-:::
+Any site served over HTTPS can embed the widget, and `http://localhost` works during development.
 
 ## Configuration
 
