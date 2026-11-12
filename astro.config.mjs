@@ -259,6 +259,10 @@ export default defineConfig({
             { label: "Yul Router", slug: "integration-guides/yul-router" },
             { label: "Aggregators", slug: "integration-guides/aggregators" },
             {
+              label: "Embedding the widget",
+              slug: "integration-guides/embedding",
+            },
+            {
               label: "Signed exclusive swaps",
               slug: "integration-guides/signed-exclusive-swaps",
             },

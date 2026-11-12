@@ -1,0 +1,99 @@
+---
+description: Add Ekubo's swap or add-liquidity widget for one pool to your site, using your page's own wallet connection
+title: "Embedding the widget"
+---
+
+import EmbedWidgetExample from "../../../components/EmbedWidgetExample.astro";
+
+The Ekubo widget shows the swap or add-liquidity flow from [ekubo.org](https://ekubo.org) for a single pool, inside an iframe served from `https://embed.ekubo.org`. Your page owns the wallet. You connect it as you normally would and hand its EIP-1193 provider to the widget, and the widget has no connect button of its own. Every transaction is still shown to the user by their wallet before it is signed.
+
+The pool and the view are fixed by the iframe URL. The widget has no token, pool or view selectors, so to show another pool or switch between swap and add liquidity, your page changes the configuration.
+
+## Try it
+
+These examples run on this page exactly as they would on yours. Connecting your wallet here connects it to both widgets, and the transactions are real: they are sent on BNB Chain to the BNCB/USDT pool, which uses the Fynd AMM extension.
+
+<EmbedWidgetExample view="position" label="Ekubo add liquidity widget" />
+
+<EmbedWidgetExample view="swap" label="Ekubo swap widget" />
+
+## Add it to your page
+
+Load the SDK as a module from the embed origin, create the widget in a container, and pass the provider once your page has an account:
+
+```html
+<div id="ekubo"></div>
+<script type="module">
+  import { create } from "https://embed.ekubo.org/sdk.js";
+
+  const widget = create(document.getElementById("ekubo"), {
+    embedOrigin: "https://embed.ekubo.org",
+    pool: {
+      chainId: 56,
+      token0: "0x4902c5ebc598265ed2212b559b042de8a5eeec3f",
+      token1: "0x55d398326f99059ff775485246999027b3197955",
+      fee: "0",
+      tickSpacing: 1024,
+      extension: "fynd-amm",
+      extensionAddress: "0x550CFe1292d0D9c0d28f232b3F42Edb4439B1D09",
+      poolId:
+        "0x942e8f465b349913a0a115c8f346028f549129748184d8eac4fafc7b88c863a9",
+    },
+    view: "position",
+  });
+
+  // After your page connects a wallet, and again whenever it changes:
+  const [account] = await window.ethereum.request({
+    method: "eth_requestAccounts",
+  });
+  widget.update({ provider: window.ethereum });
+
+  widget.on("position-created", (event) => console.log(event));
+</script>
+```
+
+Use the provider your page already connects with, for example one discovered through EIP-6963, rather than `window.ethereum` if you support several wallets. Pass `provider: undefined` to disconnect. Until the widget has an account it shows a disabled **Connect a wallet to continue**, and it emits `connection-required` so your page can prompt the user to connect.
+
+:::note[Allowed sites]
+A browser only lets the widget load inside pages whose origin is on its allowlist, and the widget ignores messages from any other origin. To embed it on your site, ask in the [Ekubo Discord](https://discord.ekubo.org) to have your exact origins added, for example `https://app.example.com` and your staging origin.
+:::
+
+## Configuration
+
+`create(container, config)` adds the iframe to `container` and returns a handle with `update(config)`, `on(event, handler)` and `destroy()`. `update` swaps a new provider in place; any other change reloads the frame.
+
+| Field           | Type                     | Description                                                                                    |
+| --------------- | ------------------------ | ---------------------------------------------------------------------------------------------- |
+| `embedOrigin`   | string                   | `https://embed.ekubo.org`. Required.                                                           |
+| `pool`          | object                   | The pool to show. Required; see below.                                                         |
+| `provider`      | EIP-1193 provider        | The connected wallet. Passed in JavaScript, never in the URL.                                  |
+| `view`          | `"position"` or `"swap"` | The flow to show. Defaults to `"position"`.                                                    |
+| `range`         | object                   | Initial `tickLower` and `tickUpper` for a new position.                                        |
+| `theme`         | `"light"` or `"dark"`    | Colour theme. Defaults to the user's system setting.                                           |
+| `lang`          | string                   | Interface language, for example `"de"`.                                                        |
+| `title`         | string                   | Accessible name of the iframe.                                                                 |
+| `initialHeight` | number                   | Height in CSS pixels until the widget reports its own. The iframe then resizes to its content. |
+
+The `pool` object takes `chainId`, `token0`, `token1`, `fee` and `tickSpacing`, and optionally `extension` (`"none"` or `"fynd-amm"`), `extensionAddress` and `poolId`. When `poolId` is given, the widget checks it against the pool the other fields describe. Version 1 accepts concentrated-liquidity pools without an extension or with the Fynd AMM extension, on the EVM chains [ekubo.org](https://ekubo.org) supports.
+
+## Events
+
+| Event                   | Payload                                                              | When                                                                                           |
+| ----------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `ready`                 | `version`, `capabilities`                                            | The widget has loaded and connected to your page.                                              |
+| `resize`                | `height`                                                             | The widget's content height changed.                                                           |
+| `connection-required`   | none                                                                 | The widget has no account: on load, or after the wallet disconnects.                           |
+| `transaction-submitted` | `chainId`, `kind`, `id`                                              | The wallet returned a transaction hash or a batch ID.                                          |
+| `transaction-confirmed` | `chainId`, `transactionHash`, `status`                               | A receipt was found, including for token approvals.                                            |
+| `position-created`      | `chainId`, `positionsAddress`, `owner`, `tokenId`, `transactionHash` | A position was minted to the connected account.                                                |
+| `error`                 | `code`, `message`                                                    | The configuration is invalid, the connection to the widget failed, or a wallet request failed. |
+
+Events are notifications for your interface. If you grant anything for a transaction or a position, verify it on chain first.
+
+## What the widget can ask the wallet
+
+The widget sends only these methods to your provider: `eth_accounts`, `eth_chainId`, `wallet_switchEthereumChain`, `wallet_getCapabilities`, `eth_sendTransaction`, `wallet_sendCalls` and `wallet_getCallsStatus`. It never asks the wallet to connect and never signs messages. When the wallet is on another chain, the widget asks it to switch to the pool's chain.
+
+Add liquidity always deposits into the configured pool, after any token approvals it needs. Swap is limited to the pool's two tokens and chain but not to the pool itself: it uses the same routing as [ekubo.org](https://ekubo.org), so the wallet may be asked to approve and call the Ekubo router or, when Ekubo has no route, the 0x contracts the quote names.
+
+Opened directly in a browser tab, the widget URL shows the same flow read-only, with prices and quotes but no wallet.
