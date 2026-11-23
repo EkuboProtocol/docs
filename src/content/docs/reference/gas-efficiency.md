@@ -18,7 +18,9 @@ Base and Arbitrum rows use real tokens on L2 forks, and the pool-core breakdown
 comes from lab harnesses on a fresh local chain. Throughput, the pools-per-swap
 blend and the chain-wide shares are calculated from these measurements.
 [Sources and reproduction](#sources-and-reproduction) links each figure to its
-recorded data, calldata, harness and calculation.
+recorded data, calldata, harness and calculation. For what the route figures mean
+when choosing where to swap, including when gas is not the deciding factor, see
+[Gas for multi-pool swaps](/comparisons/multi-pool-swap-gas/).
 
 ## Bottom line
 

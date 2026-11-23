@@ -19,7 +19,7 @@ For the step-by-step version in the app, see [Add liquidity](/user-guides/add-li
 
 All three settle in the same Core contract and are quoted and routed together, so choosing one does not fragment your liquidity away from the others.
 
-Ekubo's ticks are 1/100th of a basis point — 100x finer than most concentrated-liquidity AMMs — so a range can be drawn exactly where you want it. See [Pool math](/reference/pool-math/) for how positions and prices are represented.
+Ekubo's ticks are 1/100th of a basis point — 100x finer than most concentrated-liquidity AMMs — so a range can be drawn exactly where you want it. See [Pool math](/reference/pool-math/) for how positions and prices are represented. A pool's tick spacing sets how narrow its ranges can actually be; [Concentrated liquidity ranges](/comparisons/concentrated-liquidity-ranges/) compares this with Uniswap v3 and v4, with a worked example.
 
 ## Fees
 

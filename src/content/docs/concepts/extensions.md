@@ -78,4 +78,4 @@ These extensions are already built and deployed. Each one is a pool type you can
 
 Source code: [EVM extensions](https://github.com/EkuboProtocol/evm-contracts/tree/v3.2.0/src/extensions) and [Starknet extensions](https://github.com/EkuboProtocol/starknet-contracts/tree/v5.0.3/src/extensions).
 
-For how this design compares to Uniswap v4 hooks — and why the `forward` primitive replaces v4's custom-accounting machinery — see [Extensions vs. Uniswap v4 hooks on the Ekubo Blog](https://blog.ekubo.org/ekubo-extensions-vs-uniswap-v4-hooks/).
+For how this design compares to Uniswap v4 hooks — and why the `forward` primitive replaces v4's custom-accounting machinery — see [Extensions vs. Uniswap v4 hooks on the Ekubo Blog](https://blog.ekubo.org/ekubo-extensions-vs-uniswap-v4-hooks/). [Ekubo vs Uniswap v4](/comparisons/ekubo-vs-uniswap-v4/) compares the two protocols more broadly, including fees, ticks, licensing, and when v4 is the better fit.

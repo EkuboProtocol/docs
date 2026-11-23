@@ -73,6 +73,7 @@ Sections, in navigation order, each with a distinct job:
 - **About Ekubo** — what the protocol is; accessible, no implementation detail
 - **Products** — what you can do with it, one page per facet
 - **Concepts** — how the protocol works, chain-agnostic where possible
+- **Comparisons** — factual decision pages against named alternatives; every claim sourced, each page says when the alternative fits better, no rankings or superlatives
 - **User Guides** — task-oriented instructions for the app
 - **Integration Guides** — task-oriented instructions for developers
 - **Reference** — lookup material: addresses, APIs, math, audits

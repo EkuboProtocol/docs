@@ -1,0 +1,35 @@
+{
+  "fetched_at": "2026-11-23T01:09:35Z",
+  "sources": {
+    "tvl": "https://api.llama.fi/protocols",
+    "ethereum_dex_volume": "https://api.llama.fi/overview/dexs/ethereum?excludeTotalDataChart=true&excludeTotalDataChartBreakdown=true"
+  },
+  "ethereum_dex_volume_7d_total_usd": 11070588623.699999,
+  "protocols": {
+    "ekubo": {
+      "tvl_usd": 19745992.168422777,
+      "tvl_ethereum_usd": 1418693.587301437,
+      "ethereum_dex_volume_7d_usd": 47847382
+    },
+    "uniswap-v4": {
+      "tvl_usd": 1344756532.993945,
+      "tvl_ethereum_usd": 641321656.9210168,
+      "ethereum_dex_volume_7d_usd": 3510951076
+    },
+    "uniswap-v3": {
+      "tvl_usd": 1240940251.567824,
+      "tvl_ethereum_usd": 670414276.8862394,
+      "ethereum_dex_volume_7d_usd": 2278455330
+    },
+    "balancer-v3": {
+      "tvl_usd": 6734652.357713185,
+      "tvl_ethereum_usd": 5192330.270303429,
+      "ethereum_dex_volume_7d_usd": 1109968
+    },
+    "curve-dex": {
+      "tvl_usd": 998844498.280461,
+      "tvl_ethereum_usd": 950855032.0536091,
+      "ethereum_dex_volume_7d_usd": 751214075
+    }
+  }
+}

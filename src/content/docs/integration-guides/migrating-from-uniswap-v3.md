@@ -278,6 +278,8 @@ Adding Ekubo does not require removing Uniswap. Keep the existing integration, a
 - Your product depends on Uniswap-specific surfaces: `observe()` on arbitrary pairs, Uniswap position NFTs accepted by other protocols, or tooling built on `@uniswap/v3-sdk` types.
 - Your contracts would be derived from or incorporate Ekubo's contracts or ABI, and the [license](https://github.com/EkuboProtocol/evm-contracts/blob/v3.4.0/LICENSE) terms do not suit you. This page does not interpret the license; read it with your own counsel.
 
+[Ekubo vs Uniswap v4](/comparisons/ekubo-vs-uniswap-v4/) and [Concentrated liquidity ranges](/comparisons/concentrated-liquidity-ranges/) cover the same decision against Uniswap v4 and for liquidity providers.
+
 For aggregators and solvers, adding Ekubo as an additional source is the usual pattern. The [Aggregators](/integration-guides/aggregators/) guide and its reference implementations show how others did it.
 
 ## Troubleshooting

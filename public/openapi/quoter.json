@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Ekubo Quoter API",
-    "version": "3.5.2",
+    "version": "3.5.5",
     "description": "Returns block-pinned split routes for exact-input and exact-output Ekubo Protocol swaps. Resolve token addresses and decimals through the Ekubo API token list before requesting a quote. All token amounts are base-unit decimal strings.",
     "contact": {
       "url": "https://ekubo.org",
@@ -351,7 +351,7 @@
               "string",
               "null"
             ],
-            "description": "Stable machine reason when accounting is partial/unavailable, for example unsupported_chain_accounting, unsupported_pool_model (such as MEVCapture v2.1) or quote_model_mismatch. Treat unknown reasons as unavailable."
+            "description": "Stable machine reason when accounting is partial/unavailable, for example unsupported_chain_accounting, unsupported_pool_model or quote_model_mismatch. Treat unknown reasons as unavailable."
           },
           "components": {
             "type": "array",
