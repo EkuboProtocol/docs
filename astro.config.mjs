@@ -141,6 +141,30 @@ export default defineConfig({
                 "Evaluate EVM semantic differences and new-adapter work; not a drop-in replacement",
             },
             {
+              label: "Ekubo vs Uniswap v4",
+              url: "https://docs.ekubo.org/comparisons/ekubo-vs-uniswap-v4/",
+              description:
+                "EVM singleton design, extensions and hooks, fees, ticks, licensing, and when Uniswap v4 fits better",
+            },
+            {
+              label: "Gas for multi-pool swaps",
+              url: "https://docs.ekubo.org/comparisons/multi-pool-swap-gas/",
+              description:
+                "Measured one- to three-pool route gas on Ethereum for Ekubo, Uniswap v4 and v3, and when gas is not decisive",
+            },
+            {
+              label: "TWAMM and TWAP orders",
+              url: "https://docs.ekubo.org/comparisons/twamm-and-twap-orders/",
+              description:
+                "Ekubo TWAMM compared with CoW Protocol TWAP orders and Fraxswap for gradual EVM trades, with each design's limits",
+            },
+            {
+              label: "Concentrated liquidity ranges",
+              url: "https://docs.ekubo.org/comparisons/concentrated-liquidity-ranges/",
+              description:
+                "Tick size, tick spacing, mint gas and protocol fees on Ekubo, Uniswap v3 and v4, with a worked ETH/USDC example",
+            },
+            {
               label: "AI tools for developers",
               url: "https://docs.ekubo.org/integration-guides/ai-tools/",
               description:
@@ -228,6 +252,27 @@ export default defineConfig({
                   link: "https://blog.ekubo.org/ekubo-extensions-vs-uniswap-v4-hooks/",
                 },
               ],
+            },
+          ],
+        },
+        {
+          label: "Comparisons",
+          items: [
+            {
+              label: "Ekubo vs Uniswap v4",
+              slug: "comparisons/ekubo-vs-uniswap-v4",
+            },
+            {
+              label: "Gas for multi-pool swaps",
+              slug: "comparisons/multi-pool-swap-gas",
+            },
+            {
+              label: "TWAMM and TWAP orders",
+              slug: "comparisons/twamm-and-twap-orders",
+            },
+            {
+              label: "Concentrated liquidity ranges",
+              slug: "comparisons/concentrated-liquidity-ranges",
             },
           ],
         },

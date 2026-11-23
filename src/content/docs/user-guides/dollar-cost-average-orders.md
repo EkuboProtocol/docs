@@ -33,6 +33,8 @@ Consider using TWAMM in the following cases:
 - When converting tokens programmatically
 - When you want to buy/sell a token but don't want to time the entry/exit
 
+For how these orders compare with TWAP orders on CoW Protocol and with Fraxswap, including when those fit better, see [TWAMM and TWAP orders](/comparisons/twamm-and-twap-orders/).
+
 Note that the price you receive on your DCA orders is heavily dependent on the liquidity in the pools and other orders on the pool over the period that the order executes. If you want to ensure good execution, it's best to supply liquidity to the pool on which you want to place the order to limit the price impact of each swap.
 
 ## Creating DCA orders
